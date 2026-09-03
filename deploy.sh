@@ -14,8 +14,8 @@ set -euo pipefail
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 SERVER_IP="178.156.198.66"
 DEPLOY_USER="root"                       # <PLACEHOLDER> confirm the deploy user
-SSH_KEY="${HOME}/.ssh/hetzner_pvn"       # <PLACEHOLDER> your other Hetzner boxes
-                                         #   use this key; NOT verified for this host
+SSH_KEY="${HOME}/.ssh/id_ed25519"     # verified: matches the authorized key
+
 
 REPO_URL="git@github.com:bbarnes4318/overflow.git"   # <PLACEHOLDER> confirm repo
 BRANCH="main"
@@ -27,8 +27,10 @@ INDEX_NAME="index.html"                  # file is renamed to this in WEB_ROOT
 WEB_SERVICE="nginx"                      # <PLACEHOLDER> nginx | caddy | apache2
 HEALTH_URL="https://overflowcalls.com"   # <PLACEHOLDER> URL to verify after deploy
 
-# Host key fingerprint read from the server on 2026-09-03. Verify this against
-# your Hetzner console before trusting it; the script aborts on mismatch.
+# !! HOST KEY CONFLICT: on 2026-09-03 this server presented ED25519/ECDSA/RSA keys
+# !! that ALL differ from the entries stored in ~/.ssh/known_hosts (lines 112-114).
+# !! Confirm the fingerprint below from the Hetzner web console before running.
+# The script aborts on mismatch.
 EXPECTED_HOSTKEY="SHA256:NkBxlnNuY+VJqP/ZMyXOGeJife9CFhhqNIKV6NBGdVw"
 # ──────────────────────────────────────────────────────────────────────────────
 
