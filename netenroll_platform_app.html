@@ -262,6 +262,12 @@
             // Automated Security Test Suite Logs
             const [secTestResults, setSecTestResults] = useState([]);
 
+            // The "Run Stripe Tests" button in the Admin portal referenced both
+            // `runStripeTestSuite` and `testResults`, and neither was ever
+            // defined. Two undefined identifiers in the render path took the
+            // whole Admin portal down with a blank screen. Declared here.
+            const [testResults, setTestResults] = useState([]);
+
             // Modal & Notifications
             const [showAppModal, setShowAppModal] = useState(false);
             const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -497,6 +503,18 @@
                 }, ...prev]);
                 logAdminAuditAction('REFUND_ISSUED', appId, `Refund issued for Stripe Intent ${intentId}`);
                 showNotification(`Refund issued for Application ${appId}`);
+            };
+
+            // Stripe test suite: referenced by a button that was wired to a
+            // function nobody wrote. It reports its own absence rather than
+            // returning invented passes - a billing console showing green for
+            // tests that never ran is worse than one showing nothing.
+            const runStripeTestSuite = () => {
+                setTestResults([{
+                    name: 'Stripe integration suite',
+                    pass: false,
+                    details: 'Not implemented. This control was wired to a function that was never written.'
+                }]);
             };
 
             // AUTOMATED PRODUCTION SECURITY AUDIT SUITE RUNNER
