@@ -10,6 +10,8 @@
     "test:unit": "node tests/run.js unit",
     "test:integration": "node tests/run.js integration",
     "test": "node tests/run.js",
+    "webhooks:check": "node scripts/repoint-webhooks.js --dry-run",
+    "webhooks:repoint": "node scripts/repoint-webhooks.js",
     "test:e2e": "playwright test",
     "check": "npm run lint && npm test"
   },
