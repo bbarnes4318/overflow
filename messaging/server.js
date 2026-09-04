@@ -1175,7 +1175,17 @@ app.get('/api/settings', (req, res) => {
     // this change and are left as-is rather than silently breaking the settings
     // form that reads them.)
     const { anthropic_api_key, ...rest } = settings;
-    res.json({ ...rest, anthropic_api_key_set: !!anthropic_api_key });
+
+    // The numbers this tenant may send from. Derived from tenant_dids on every
+    // read rather than mirrored into settings - the CSV that used to live here
+    // was deleted by the multi-tenant migration precisely so there would be
+    // one source of truth, and the sender dropdowns went blank because they
+    // were still reading it.
+    const dids = db.getTenantDids(req.tenantId)
+      .filter(d => d.enabled)
+      .map(d => d.did);
+
+    res.json({ ...rest, tenant_dids: dids, anthropic_api_key_set: !!anthropic_api_key });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

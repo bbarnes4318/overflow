@@ -935,9 +935,18 @@ function updateSenderDropdowns(settings) {
   const bulkvsNumber = settings.sender_number || '';
 
   // The DIDs cleared for sending, in rotation order.
-  const pool = (settings.fractel_enabled_dids || '')
-    .split(',')
-    .map(d => d.trim().replace(/[^\d]/g, '').replace(/^1(?=\d{10}$)/, ''))
+  //
+  // These come from tenant_dids via /api/settings. The old
+  // fractel_enabled_dids CSV was removed when numbers became tenant-owned;
+  // reading it here is what left every sender dropdown empty. The fallback is
+  // kept only so a stale cached page degrades to the old behaviour instead of
+  // rendering nothing.
+  const raw = Array.isArray(settings.tenant_dids)
+    ? settings.tenant_dids
+    : String(settings.fractel_enabled_dids || '').split(',');
+
+  const pool = raw
+    .map(d => String(d).trim().replace(/[^\d]/g, '').replace(/^1(?=\d{10}$)/, ''))
     .filter(d => d.length === 10);
 
   const options = [];
@@ -957,6 +966,17 @@ function updateSenderDropdowns(settings) {
     options.push({ value: did, label: `FracTEL ${formatDid(did)}` });
   });
 
+  // Silence is the wrong answer here. An empty <select> looks like a rendering
+  // bug; saying no numbers are assigned points at the actual cause.
+  if (!options.length) {
+    options.push({
+      value: '',
+      label: 'No sending numbers assigned to this account',
+      disabled: true,
+      selected: true
+    });
+  }
+
   // Add BulkVS as disabled/grayed out
   if (bulkvsNumber) {
     options.push({ value: bulkvsNumber, label: `BulkVS (${bulkvsNumber}) - Disabled`, disabled: true });
@@ -964,7 +984,7 @@ function updateSenderDropdowns(settings) {
 
   const renderOption = opt => {
     if (opt.disabled) {
-      return `<option value="${opt.value}" disabled style="color: #666; background-color: #1a1d24;">${opt.label}</option>`;
+      return `<option value="${opt.value}" disabled${opt.selected ? ' selected' : ''} style="color: #666; background-color: #1a1d24;">${opt.label}</option>`;
     }
     return `<option value="${opt.value}"${opt.selected ? ' selected' : ''}>${opt.label}</option>`;
   };

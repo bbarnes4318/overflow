@@ -195,6 +195,20 @@ test('pacing status shows only the tenant own numbers', async () => {
   assert.ok(!pacingB.dids.some(d => d.did === DID_A), "B must not see A's DID state");
 });
 
+// Every sender dropdown in the UI is built from this field. When multi-tenancy
+// moved numbers into tenant_dids it deleted the fractel_enabled_dids CSV the
+// front end was reading, and all five of those dropdowns silently rendered
+// empty - the app could still send, but nobody could choose what to send from.
+// Nothing threw, which is why it survived a full test run.
+test('settings carries the tenant own sending numbers, and only those', async () => {
+  const settingsA = (await A.get('/api/settings')).json;
+  const settingsB = (await B.get('/api/settings')).json;
+
+  assert.ok(Array.isArray(settingsA.tenant_dids), 'settings must carry tenant_dids');
+  assert.deepStrictEqual(settingsA.tenant_dids, [DID_A], 'A sees exactly its own number');
+  assert.deepStrictEqual(settingsB.tenant_dids, [DID_B], 'B sees exactly its own number');
+});
+
 /* ================================================================
  * By-id endpoints — 404, never the record, never 403
  * ================================================================ */
