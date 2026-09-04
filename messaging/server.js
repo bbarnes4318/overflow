@@ -188,15 +188,26 @@ app.post('/api/auth/login', (req, res) => {
       }
     }
 
-    // The session opens on the user's own tenant. A superadmin starts with none
-    // and picks one via /api/tenants/switch.
-    const session = db.createSession(user.username, user.tenant_id || null);
+    // The session opens on the user's own tenant.
+    //
+    // A superadmin belongs to no tenant, so their session would open with none
+    // set - and since the WebSocket refuses a session without one, the dashboard
+    // came up reporting "WS Disconnected" with no explanation. When exactly one
+    // tenant exists there is no choice to make, so open on it. With several,
+    // the session stays unset and the sidebar prompts for a switch.
+    let openingTenantId = user.tenant_id || null;
+    if (user.role === 'superadmin' && !openingTenantId) {
+      const tenants = db.getTenants().filter(t => t.status === 'active');
+      if (tenants.length === 1) openingTenantId = tenants[0].id;
+    }
+
+    const session = db.createSession(user.username, openingTenantId);
     res.setHeader('Set-Cookie', sessionCookie(req, session.token, 7 * 24 * 60 * 60));
     res.json({
       success: true,
       username: session.username,
       role: user.role,
-      tenant_id: user.tenant_id || null
+      tenant_id: openingTenantId
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
