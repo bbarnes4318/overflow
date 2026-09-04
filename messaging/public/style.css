@@ -1692,6 +1692,29 @@ body {
   gap: 4px;
 }
 
+/* The element carries both form-group and form-row. form-group sets
+   flex-direction: column, so the direction has to be set explicitly here or
+   the pair stacks instead of sitting side by side. */
+.settings-form .form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.settings-form .form-row > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.settings-form .form-row input { width: 100%; }
+
+@media (max-width: 640px) {
+  .settings-form .form-row { flex-direction: column; }
+}
+
 .form-group label {
   font-size: 11px;
   font-weight: 500;
