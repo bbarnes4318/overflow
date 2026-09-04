@@ -4,6 +4,15 @@ const fs = require('fs');
 const crypto = require('crypto');
 const classification = require('./public/lib/classification');
 
+// The merge fields a template may reference. One list, shared with variation.js
+// so a field cannot exist for substitution but not for measurement.
+const {
+  MERGE_FIELDS,
+  MERGE_COLUMNS,
+  DEFAULT_MERGE_WIDTHS,
+  mergePlaceholders
+} = require('./merge_fields');
+
 // SMS_DB_PATH lets tests point at a throwaway database. Production leaves it
 // unset and gets the file next to this module, exactly as before.
 const dbPath = process.env.SMS_DB_PATH || path.resolve(__dirname, 'database.sqlite');
@@ -488,6 +497,18 @@ function initDatabase() {
     console.log("Database migration: Added 'zip' column to conversations table.");
   }
 
+  // Migration: the merge columns.
+  //
+  // Driven off MERGE_FIELDS rather than a hand-written list, so adding a field
+  // to that list migrates itself. Reads table_info fresh: earlier migrations in
+  // this same run may already have changed the shape captured in `tableInfo`.
+  const liveColumns = db.prepare('PRAGMA table_info(conversations)').all().map(c => c.name);
+  for (const column of MERGE_COLUMNS) {
+    if (liveColumns.includes(column)) continue;
+    db.prepare(`ALTER TABLE conversations ADD COLUMN ${column} TEXT`).run();
+    console.log(`Database migration: Added '${column}' column to conversations table.`);
+  }
+
   // Migration: Add assigned_did column. Holds the FracTEL number this contact
   // is pinned to, so every message in a thread comes from the same sender.
   const hasAssignedDid = tableInfo.some(column => column.name === 'assigned_did');
@@ -697,6 +718,14 @@ function migrateToMultiTenant() {
           unread INTEGER DEFAULT 0,
           city TEXT,
           zip TEXT,
+          -- The rest of the merge columns. They are listed here, not just added
+          -- by the ALTER above, because that ALTER runs FIRST: this rebuild then
+          -- copies every column the old table has into a table declared here,
+          -- and a column missing from this list fails the copy outright with
+          -- "table conversations has no column named bus_name".
+          bus_name TEXT,
+          state TEXT,
+          years TEXT,
           disposition TEXT,
           disposition_at TEXT,
           scheduled_at TEXT,
@@ -1019,12 +1048,24 @@ function getConversationsForList(tenantId) {
   }));
 }
 
-function getOrCreateConversation(tenantId, phoneNumber, contactName = null, city = null, zip = null) {
+/**
+ * Find or create this tenant's conversation with a contact.
+ *
+ * `contactName`, `city` and `zip` stay positional because a dozen call sites
+ * already pass them that way; everything else arrives in `extra`, keyed by
+ * merge column. Both are folded into one object and the merge fields are then
+ * handled as a list - the previous version carried a near-identical if-block
+ * per field, which is how a fourth field gets added to the insert and forgotten
+ * in the update.
+ */
+function getOrCreateConversation(tenantId, phoneNumber, contactName = null, city = null, zip = null, extra = null) {
   const tid = requireTenant(tenantId);
   const cleanPhone = normalizePhoneNumber(phoneNumber);
   if (!cleanPhone) {
     throw new Error("Invalid phone number");
   }
+
+  const incoming = Object.assign({ name: contactName, city, zip }, extra || {});
 
   // Scoped by tenant: two tenants holding the same contact get two independent
   // conversations, which is the whole point of UNIQUE(tenant_id, phone_number).
@@ -1032,48 +1073,49 @@ function getOrCreateConversation(tenantId, phoneNumber, contactName = null, city
                .get(tid, cleanPhone);
   if (!conv) {
     try {
-      const result = db.prepare('INSERT INTO conversations (tenant_id, phone_number, name, city, zip) VALUES (?, ?, ?, ?, ?)').run(tid, cleanPhone, contactName, city, zip);
+      // tenant_id and phone_number are written literally rather than folded
+      // into the generated column list. The scoping audit reads this file as
+      // text, and a statement whose tenant column only appears at runtime is a
+      // statement it cannot vouch for - which is exactly the kind it exists to
+      // catch. Keeping them visible costs nothing and keeps the check honest.
+      const placeholders = MERGE_COLUMNS.map(() => '?').join(', ');
+      const result = db.prepare(
+        `INSERT INTO conversations (tenant_id, phone_number, ${MERGE_COLUMNS.join(', ')})
+         VALUES (?, ?, ${placeholders})`
+      ).run(tid, cleanPhone, ...MERGE_COLUMNS.map(c => (incoming[c] == null ? null : incoming[c])));
+
       conv = {
         id: result.lastInsertRowid,
         tenant_id: tid,
         phone_number: cleanPhone,
-        name: contactName,
-        city: city,
-        zip: zip,
         last_message_text: null,
         last_message_at: null,
         created_at: new Date().toISOString()
       };
+      for (const column of MERGE_COLUMNS) {
+        conv[column] = incoming[column] == null ? null : incoming[column];
+      }
     } catch (e) {
       // Handle race condition
       conv = db.prepare('SELECT * FROM conversations WHERE tenant_id = ? AND phone_number = ?')
                .get(tid, cleanPhone);
     }
   } else {
-    let needsUpdate = false;
     const updateFields = [];
     const updateValues = [];
 
-    if (contactName && conv.name !== contactName) {
-      conv.name = contactName;
-      updateFields.push("name = ?");
-      updateValues.push(contactName);
-      needsUpdate = true;
-    }
-    if (city && conv.city !== city) {
-      conv.city = city;
-      updateFields.push("city = ?");
-      updateValues.push(city);
-      needsUpdate = true;
-    }
-    if (zip && conv.zip !== zip) {
-      conv.zip = zip;
-      updateFields.push("zip = ?");
-      updateValues.push(zip);
-      needsUpdate = true;
+    // Only a supplied value overwrites: a later import that omits a column must
+    // not blank what an earlier one filled in.
+    for (const column of MERGE_COLUMNS) {
+      const value = incoming[column];
+      if (value == null || value === '') continue;
+      if (conv[column] === value) continue;
+      conv[column] = value;
+      updateFields.push(`${column} = ?`);
+      updateValues.push(value);
     }
 
-    if (needsUpdate) {
+    if (updateFields.length) {
       updateValues.push(conv.id, tid);
       db.prepare(`UPDATE conversations SET ${updateFields.join(', ')} WHERE id = ? AND tenant_id = ?`).run(...updateValues);
     }
@@ -1340,17 +1382,8 @@ function getNextQueuedMessage() {
  *
  * Ordered oldest-first, so the queue still drains in FIFO order within each DID.
  */
-/**
- * Substitute the merge fields a template may reference.
- * Shared by the import and campaign paths so both behave identically.
- */
-function mergePlaceholders(template, contact) {
-  const c = contact || {};
-  return String(template == null ? '' : template)
-    .replace(/\[Name\]/gi, c.name || '')
-    .replace(/\[City\]/gi, c.city || '')
-    .replace(/\[Zip(?:\s*Code)?\]/gi, c.zip || '');
-}
+// Substitution lives in merge_fields.js, re-exported here because the import
+// and campaign paths have always reached for it on the db module.
 
 /**
  * The widest merge values a campaign will actually substitute.
@@ -1385,14 +1418,12 @@ function getPlaceholderWidths(tenantId, conversationIds = null) {
     ? conversationIds
     : null;
 
-  return {
-    name: percentile('name', ids) || DEFAULT_MERGE_WIDTHS.name,
-    city: percentile('city', ids) || DEFAULT_MERGE_WIDTHS.city,
-    zip: percentile('zip', ids) || DEFAULT_MERGE_WIDTHS.zip
-  };
+  const widths = {};
+  for (const column of MERGE_COLUMNS) {
+    widths[column] = percentile(column, ids) || DEFAULT_MERGE_WIDTHS[column];
+  }
+  return widths;
 }
-
-const DEFAULT_MERGE_WIDTHS = { name: 14, city: 14, zip: 5 };
 
 /**
  * Pick this recipient's template from a variant pool.
@@ -1898,7 +1929,7 @@ function bulkImportLeads(tenantId, leads, messageTemplate, fromNumber = null, op
 
       let conv;
       try {
-        conv = getOrCreateConversation(tid, normalized, lead.name, lead.city, lead.zip);
+        conv = getOrCreateConversation(tid, normalized, lead.name, lead.city, lead.zip, lead);
       } catch (err) {
         result.invalid_rows++;
         result.errors.push({ phone_number: normalized, error: err.message });
@@ -1935,7 +1966,14 @@ function bulkImportLeads(tenantId, leads, messageTemplate, fromNumber = null, op
         // Each recipient draws a template from the variant pool, then the merge
         // fields are substituted. original_body keeps the approved template
         // merged for this same contact, so the audit trail shows both halves.
-        const contact = { name: lead.name, city: lead.city, zip: lead.zip };
+        // Prefer the stored row: it holds values an earlier import supplied
+        // that this file may omit.
+        const contact = {};
+        for (const column of MERGE_COLUMNS) {
+          contact[column] = lead[column] != null && lead[column] !== ''
+            ? lead[column]
+            : (conv ? conv[column] : null);
+        }
         const variant = pickVariant(variantPool, insertedMessages.length);
         const body = mergePlaceholders(variant.text || messageTemplate, contact);
         const originalBody = mergePlaceholders(messageTemplate, contact);
@@ -2618,6 +2656,8 @@ module.exports = {
   getDidSendSummary,
   failStaleSendingMessages,
   mergePlaceholders,
+  MERGE_FIELDS,
+  MERGE_COLUMNS,
   pickVariant,
   getPlaceholderWidths,
   getQueueStats,

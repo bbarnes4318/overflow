@@ -38,8 +38,9 @@ const NEW_CONVERSATION_COLUMNS = [
 
 test('migrations create a complete schema on a fresh database', () => {
   const { dir, file } = tempFile('fresh');
+  let db;
   try {
-    const db = loadDbModule(file);
+    db = loadDbModule(file);
     db.initDatabase();
 
     const cols = columnsOf(db.db, 'conversations');
@@ -61,14 +62,17 @@ test('migrations create a complete schema on a fresh database', () => {
       .forEach(t => assert.ok(columnsOf(db.db, t).includes('tenant_id'),
         `${t}.tenant_id must exist`));
 
-    db.db.close();
   } finally {
+    // Closed here, not at the end of the try: a failing assertion skipped
+    // that close, and rmSync then threw EBUSY over the top of the real error.
+    try { if (db) db.db.close(); } catch (_) { /* already closed */ }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test('migrations upgrade a legacy database that predates the new columns', () => {
   const { dir, file } = tempFile('legacy');
+  let db;
   try {
     // Build the ORIGINAL schema by hand — no disposition, no suppression.
     const legacy = new Database(file);
@@ -102,7 +106,7 @@ test('migrations upgrade a legacy database that predates the new columns', () =>
                     VALUES (1,'inbound','a','b','STOP','received')`).run();
     legacy.close();
 
-    const db = loadDbModule(file);
+    db = loadDbModule(file);
     db.initDatabase();
 
     const cols = columnsOf(db.db, 'conversations');
@@ -130,16 +134,19 @@ test('migrations upgrade a legacy database that predates the new columns', () =>
     const twin = db.getOrCreateConversation(other.id, '+15559990001', 'Same Number');
     assert.notStrictEqual(twin.id, conv.id, 'two tenants, two rows, one number');
 
-    db.db.close();
   } finally {
+    // Closed here, not at the end of the try: a failing assertion skipped
+    // that close, and rmSync then threw EBUSY over the top of the real error.
+    try { if (db) db.db.close(); } catch (_) { /* already closed */ }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test('running migrations repeatedly is safe and changes nothing', () => {
   const { dir, file } = tempFile('repeat');
+  let db;
   try {
-    const db = loadDbModule(file);
+    db = loadDbModule(file);
     db.initDatabase();
     const tenantId = db.createTenant('Repeat Tenant').id;
     db.getOrCreateConversation(tenantId, '+15559990002', 'Repeat');
@@ -167,16 +174,19 @@ test('running migrations repeatedly is safe and changes nothing', () => {
     assert.deepStrictEqual(after.conversations, before.conversations, 'existing data untouched');
     assert.strictEqual(after.conversations[0].disposition, 'no', 'disposition preserved');
 
-    db.db.close();
   } finally {
+    // Closed here, not at the end of the try: a failing assertion skipped
+    // that close, and rmSync then threw EBUSY over the top of the real error.
+    try { if (db) db.db.close(); } catch (_) { /* already closed */ }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test('backfill finds historical opt-outs anywhere in the message history', () => {
   const { dir, file } = tempFile('backfill');
+  let db;
   try {
-    const db = loadDbModule(file);
+    db = loadDbModule(file);
     db.initDatabase();
     const raw = db.db;
     const tenantId = db.createTenant('Backfill Tenant').id;
@@ -226,16 +236,19 @@ test('backfill finds historical opt-outs anywhere in the message history', () =>
     const after = raw.prepare('SELECT * FROM conversations WHERE id = ?').get(buried);
     assert.strictEqual(after.opted_out_at, buriedRow.opted_out_at, 'timestamp not rewritten');
 
-    db.db.close();
   } finally {
+    // Closed here, not at the end of the try: a failing assertion skipped
+    // that close, and rmSync then threw EBUSY over the top of the real error.
+    try { if (db) db.db.close(); } catch (_) { /* already closed */ }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test('backfill respects a deliberate re-opt-in', () => {
   const { dir, file } = tempFile('optin');
+  let db;
   try {
-    const db = loadDbModule(file);
+    db = loadDbModule(file);
     db.initDatabase();
     const raw = db.db;
     const tenantId = db.createTenant('Opt-in Tenant').id;
@@ -253,16 +266,19 @@ test('backfill respects a deliberate re-opt-in', () => {
     assert.strictEqual(raw.prepare('SELECT opted_out FROM conversations WHERE id = ?').get(id).opted_out, 0,
       'the backfill must not undo a deliberate re-opt-in');
 
-    db.db.close();
   } finally {
+    // Closed here, not at the end of the try: a failing assertion skipped
+    // that close, and rmSync then threw EBUSY over the top of the real error.
+    try { if (db) db.db.close(); } catch (_) { /* already closed */ }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test('a dry-run backfill reports without writing', () => {
   const { dir, file } = tempFile('dryrun');
+  let db;
   try {
-    const db = loadDbModule(file);
+    db = loadDbModule(file);
     db.initDatabase();
     const raw = db.db;
     const tenantId = db.createTenant('Dry Run Tenant').id;
@@ -278,8 +294,10 @@ test('a dry-run backfill reports without writing', () => {
     assert.strictEqual(raw.prepare('SELECT opted_out FROM conversations WHERE id = ?').get(id).opted_out, 0,
       'dry run must not write');
 
-    db.db.close();
   } finally {
+    // Closed here, not at the end of the try: a failing assertion skipped
+    // that close, and rmSync then threw EBUSY over the top of the real error.
+    try { if (db) db.db.close(); } catch (_) { /* already closed */ }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });

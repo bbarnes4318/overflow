@@ -931,6 +931,66 @@ function formatDid(did) {
   return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : did;
 }
 
+/**
+ * The merge fields the server will substitute.
+ *
+ * Populated from /api/settings. The fallback is the set that existed before
+ * the list was served, so a stale cached page still imports name, city and zip
+ * rather than importing nothing at all.
+ */
+let mergeFields = [
+  { column: 'name', token: '[Name]', header: 'name|contact|lead', headerFlags: 'i' },
+  { column: 'city', token: '[City]', header: 'city', headerFlags: 'i' },
+  { column: 'zip', token: '[Zip]', header: 'zip|postal', headerFlags: 'i' }
+];
+
+function applyMergeFields(settings) {
+  if (Array.isArray(settings.merge_fields) && settings.merge_fields.length) {
+    mergeFields = settings.merge_fields;
+  }
+
+  // Say what actually exists rather than a list hard-coded in the markup.
+  const tokens = mergeFields.map(f => `<strong>${f.token}</strong>`);
+  const sentence = tokens.length > 1
+    ? tokens.slice(0, -1).join(', ') + ' and ' + tokens[tokens.length - 1]
+    : tokens.join('');
+  document.querySelectorAll('.merge-help').forEach(el => {
+    el.innerHTML = `Use ${sentence} to insert the lead's details. ` +
+      `A field the contact has no value for is left blank.`;
+  });
+}
+
+/**
+ * Which CSV column feeds which merge field.
+ *
+ * Ordered by the field list, and a column is claimed once: without that, a
+ * "Business Name" header matches the name pattern first and the business name
+ * lands in the contact's name.
+ */
+function mapCsvHeaders(headers) {
+  const map = {};
+  const claimed = new Set();
+
+  // Longest header patterns first, so the specific ones (business name) win
+  // over the general ones (name) when both match the same column.
+  const ordered = mergeFields.slice().sort((a, b) => b.header.length - a.header.length);
+
+  for (const field of ordered) {
+    let re;
+    try {
+      re = new RegExp(field.header, field.headerFlags || 'i');
+    } catch (_) {
+      continue;
+    }
+    const idx = headers.findIndex((h, i) => !claimed.has(i) && re.test(h));
+    if (idx !== -1) {
+      map[field.column] = idx;
+      claimed.add(idx);
+    }
+  }
+  return map;
+}
+
 function updateSenderDropdowns(settings) {
   const bulkvsNumber = settings.sender_number || '';
 
@@ -1002,6 +1062,8 @@ function updateSenderDropdowns(settings) {
   ].forEach(select => {
     if (select) select.innerHTML = senderOptionsHtml;
   });
+
+  applyMergeFields(settings);
 
   // Update connection cards status in right panel
   updateGatewayStatusUI(settings);
@@ -3175,17 +3237,21 @@ function parseCSV(text) {
     
     // Find column indexes
     let phoneIdx = headers.findIndex(h => /phone|number|num|tel|mobile/i.test(h));
-    let nameIdx = headers.findIndex(h => /name|contact|lead/i.test(h));
-    let cityIdx = headers.findIndex(h => /city/i.test(h));
-    let zipIdx = headers.findIndex(h => /zip|postal/i.test(h));
+    const fieldIdx = mapCsvHeaders(headers);
 
     // Fallbacks if headers don't match standard names
     if (phoneIdx === -1) {
       // If there are columns, default to index 1 or 0
       phoneIdx = headers.length > 1 ? 1 : 0;
     }
-    if (nameIdx === -1 && headers.length > 1) {
-      nameIdx = phoneIdx === 0 ? 1 : 0;
+    // Last-resort guess when no header looks like a name at all. It must not
+    // steal a column another field already claimed: a sheet headed
+    // "Phone, Business Name, City" would otherwise import the business name as
+    // the contact's name as well.
+    if (fieldIdx.name === undefined && headers.length > 1) {
+      const candidate = phoneIdx === 0 ? 1 : 0;
+      const taken = candidate === phoneIdx || Object.values(fieldIdx).includes(candidate);
+      if (!taken) fieldIdx.name = candidate;
     }
 
     const tempLeads = [];
@@ -3201,17 +3267,15 @@ function parseCSV(text) {
       const rawPhone = columns[phoneIdx !== -1 ? phoneIdx : 0] || '';
       // Strip formatting: keep numbers and plus
       const phone = rawPhone.replace(/[^\d+]/g, '');
-      const name = nameIdx !== -1 && nameIdx < columns.length ? columns[nameIdx] : '';
-      const city = cityIdx !== -1 && cityIdx < columns.length ? columns[cityIdx] : '';
-      const zip = zipIdx !== -1 && zipIdx < columns.length ? columns[zipIdx] : '';
 
       if (phone && phone.length >= 7) {
-        tempLeads.push({
-          phone_number: phone,
-          name: name || null,
-          city: city || null,
-          zip: zip || null
-        });
+        const lead = { phone_number: phone };
+        for (const field of mergeFields) {
+          const idx = fieldIdx[field.column];
+          const value = idx !== undefined && idx < columns.length ? columns[idx] : '';
+          lead[field.column] = value || null;
+        }
+        tempLeads.push(lead);
       }
     }
 

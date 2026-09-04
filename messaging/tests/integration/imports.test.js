@@ -130,3 +130,70 @@ test('bulk send reports the same structured skip data', () => {
   assert.strictEqual(result.skipped.length, 1);
   assert.strictEqual(result.skipped[0].id, optedOut);
 });
+
+/* ================================================================
+ * Merge fields, end to end.
+ *
+ * The unit tests prove substitution. These prove the values survive
+ * the whole path: CSV row -> conversations columns -> queued body.
+ * That path had six hand-written branches before, and a field could
+ * reach the insert but not the update.
+ * ================================================================ */
+
+test('every merge field reaches the queued message body', () => {
+  db.bulkImportLeads(tenantId, [{
+    phone_number: '+15553330060',
+    name: 'Jo',
+    city: 'Austin',
+    zip: '78701',
+    bus_name: 'Acme Roofing',
+    state: 'TX',
+    years: '12'
+  }], 'Hi [Name] at [Bus_name] in [City], [State] [Zip] - [Years] years.', '5555550100');
+
+  const conv = raw.prepare('SELECT * FROM conversations WHERE phone_number = ?')
+                  .get('+15553330060');
+  assert.strictEqual(conv.bus_name, 'Acme Roofing');
+  assert.strictEqual(conv.state, 'TX');
+  assert.strictEqual(conv.years, '12');
+
+  const msg = raw.prepare(
+    'SELECT body FROM messages WHERE conversation_id = ? ORDER BY id DESC LIMIT 1'
+  ).get(conv.id);
+  assert.strictEqual(msg.body,
+    'Hi Jo at Acme Roofing in Austin, TX 78701 - 12 years.');
+});
+
+// The update branch is the one that used to be forgotten: a field could be
+// written on insert and silently ignored on every later import.
+test('a second import updates the newer merge fields too', () => {
+  db.bulkImportLeads(tenantId, [{
+    phone_number: '+15553330061', name: 'Pat', bus_name: 'Old Name', state: 'CA', years: '1'
+  }], null, '5555550100');
+
+  db.bulkImportLeads(tenantId, [{
+    phone_number: '+15553330061', name: 'Pat', bus_name: 'New Name', state: 'NV', years: '4'
+  }], null, '5555550100');
+
+  const conv = raw.prepare('SELECT * FROM conversations WHERE phone_number = ?')
+                  .get('+15553330061');
+  assert.strictEqual(conv.bus_name, 'New Name');
+  assert.strictEqual(conv.state, 'NV');
+  assert.strictEqual(conv.years, '4');
+});
+
+// A file that omits a column must not blank what an earlier import supplied.
+test('an import that omits a column leaves the stored value alone', () => {
+  db.bulkImportLeads(tenantId, [{
+    phone_number: '+15553330062', name: 'Sam', bus_name: 'Keep Me', state: 'TX', years: '9'
+  }], null, '5555550100');
+
+  db.bulkImportLeads(tenantId, [{ phone_number: '+15553330062', name: 'Sam' }],
+    null, '5555550100');
+
+  const conv = raw.prepare('SELECT * FROM conversations WHERE phone_number = ?')
+                  .get('+15553330062');
+  assert.strictEqual(conv.bus_name, 'Keep Me');
+  assert.strictEqual(conv.state, 'TX');
+  assert.strictEqual(conv.years, '9');
+});

@@ -49,7 +49,7 @@ Never introduce:
 
 Keep each variant within the source's character count plus 15%. Match the source's register: plain, direct, conversational. If the source is a question, the variant is a question.
 
-Some source messages contain merge placeholders in square brackets such as [Name], [City], or [Zip]. Reproduce these placeholders exactly as written, in a position where the substituted value reads naturally. Never invent a value for them.`;
+Some source messages contain merge placeholders in square brackets such as [Name], [City], [Zip], [Bus_name], [State], or [Years]. Reproduce these placeholders exactly as written, in a position where the substituted value reads naturally. Never invent a value for them.`;
 
 const VARIANT_SCHEMA = {
   type: 'object',
@@ -154,16 +154,10 @@ function normalizeForCompare(text) {
  * on every contact with a long name.
  * ------------------------------------------------------------------ */
 
-// Fallbacks used when the caller supplies no measured widths.
-const DEFAULT_PLACEHOLDER_WIDTHS = { name: 14, city: 14, zip: 5 };
-
-function fillPlaceholders(text, widths) {
-  const w = Object.assign({}, DEFAULT_PLACEHOLDER_WIDTHS, widths || {});
-  return String(text)
-    .replace(/\[Name\]/gi, 'N'.repeat(Math.max(0, w.name)))
-    .replace(/\[City\]/gi, 'C'.repeat(Math.max(0, w.city)))
-    .replace(/\[Zip(?:\s*Code)?\]/gi, 'Z'.repeat(Math.max(0, w.zip)));
-}
+// Both the placeholder set and the fallback widths come from merge_fields.js.
+// Keeping a second copy here is how a field ends up substitutable but not
+// measurable - it would merge fine and then quietly cost an extra segment.
+const { fillPlaceholders, DEFAULT_MERGE_WIDTHS: DEFAULT_PLACEHOLDER_WIDTHS } = require('./merge_fields');
 
 /**
  * What this template costs to send, once merge fields are substituted at their

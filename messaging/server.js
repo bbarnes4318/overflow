@@ -4,6 +4,7 @@ const WebSocket = require('ws');
 const path = require('path');
 const dotenv = require('dotenv');
 const db = require('./database');
+const mergeFields = require('./merge_fields');
 const queueWorker = require('./queue');
 const variation = require('./variation');
 const contentLint = require('./content_lint');
@@ -566,7 +567,12 @@ app.post('/api/conversations', (req, res) => {
     return res.status(400).json({ error: 'Phone number is required' });
   }
   try {
-    const conv = db.getOrCreateConversation(req.tenantId, phone_number, name, city || null, zip || null);
+    // Whatever merge columns the body carries, without naming them one by one.
+    const extra = {};
+    for (const column of db.MERGE_COLUMNS) {
+      if (req.body[column] != null && req.body[column] !== '') extra[column] = req.body[column];
+    }
+    const conv = db.getOrCreateConversation(req.tenantId, phone_number, name, city || null, zip || null, extra);
     res.status(201).json(conv);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1185,7 +1191,14 @@ app.get('/api/settings', (req, res) => {
       .filter(d => d.enabled)
       .map(d => d.did);
 
-    res.json({ ...rest, tenant_dids: dids, anthropic_api_key_set: !!anthropic_api_key });
+    res.json({
+      ...rest,
+      tenant_dids: dids,
+      // The browser maps CSV headers and renders the placeholder help from
+      // this, so both follow the server's definition instead of a second copy.
+      merge_fields: mergeFields.describe(),
+      anthropic_api_key_set: !!anthropic_api_key
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
