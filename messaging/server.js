@@ -244,7 +244,7 @@ const PUBLIC_PATHS = [
   '/login.html',
   '/login.css',
   '/login.js',
-  '/netenroll-logo.svg',
+  '/netenroll-logo-dark.png',
   '/favicon.ico',
   '/api/auth/status',
   '/api/auth/signup',

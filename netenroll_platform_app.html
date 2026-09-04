@@ -312,6 +312,21 @@
             </svg>
         );
 
+        // The wordmark. Intrinsic width/height are the real pixel dimensions of
+        // each file so the browser reserves the right box before the image
+        // loads; CSS sets the height and the aspect ratio does the rest.
+        // The two files are trimmed to their ink, so they are not quite the
+        // same ratio - hence per-variant dimensions rather than one constant.
+        const Wordmark = ({ dark = false, className = 'h-[26px] w-auto' }) => (
+            <img
+                src={dark ? 'netenroll-logo-dark.png' : 'netenroll-logo.png'}
+                width={dark ? 560 : 918}
+                height={dark ? 112 : 179}
+                alt="NetEnroll"
+                className={className}
+            />
+        );
+
         const PlusMark = () => (
             <svg className="w-[18px] h-[18px] text-muted" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
@@ -794,18 +809,12 @@
                         : "sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80"}>
                         <div className="max-w-[1240px] mx-auto px-5 sm:px-6 h-[72px] flex items-center justify-between gap-4">
 
-                            <button onClick={() => setCurrentTab('marketing')} className="flex items-center gap-2.5 shrink-0" aria-label="NetEnroll home">
-                                <span className="w-8 h-8 rounded-lg bg-brandgreen flex items-center justify-center shrink-0">
-                                    <svg className="w-4 h-4 text-white" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                        <path d="M4 13.5L8 6l4 5 4-3.5" stroke="currentColor" strokeWidth="2"
-                                              strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </span>
+                            <button onClick={() => setCurrentTab('marketing')} className="flex items-center shrink-0" aria-label="NetEnroll home">
                                 <span className="text-left leading-none">
-                                    <span className={isPublic
-                                        ? "block text-[17px] font-bold tracking-[-0.01em] text-ink"
-                                        : "block text-[17px] font-bold tracking-[-0.01em] text-white"}>NETENROLL</span>
-                                    <span className="block mt-[3px] text-[9.5px] font-medium tracking-[0.14em] text-muted">PAY-PER-APPLICATION</span>
+                                    {/* The portals sit on slate, where the black half of the
+                                        mark disappears - hence the light-on-dark cut. */}
+                                    <Wordmark dark={!isPublic} className="h-[26px] w-auto" />
+                                    <span className="block mt-[6px] text-[9.5px] font-medium tracking-[0.14em] text-muted">PAY-PER-APPLICATION</span>
                                 </span>
                             </button>
 
@@ -2458,15 +2467,7 @@
                             <div className="max-w-[1180px] mx-auto px-5 sm:px-6 py-14">
                                 <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
                                     <div>
-                                        <div className="flex items-center gap-2.5">
-                                            <span className="w-7 h-7 rounded-lg bg-brandgreen flex items-center justify-center">
-                                                <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                                    <path d="M4 13.5L8 6l4 5 4-3.5" stroke="currentColor" strokeWidth="2"
-                                                          strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                            </span>
-                                            <span className="text-[15px] font-bold tracking-[-0.01em] text-ink">NETENROLL</span>
-                                        </div>
+                                        <Wordmark className="h-[24px] w-auto" />
                                         <p className="mt-4 text-sm leading-relaxed text-muted max-w-xs">
                                             Performance-based final expense call distribution for licensed
                                             insurance professionals.

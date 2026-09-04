@@ -193,6 +193,12 @@ if [ -f "${WEB_ROOT}/${INDEX_NAME}" ]; then
   cp -a "${WEB_ROOT}/${INDEX_NAME}" "${WEB_ROOT}/${INDEX_NAME}.bak.\$(date +%Y%m%d-%H%M%S)"
 fi
 install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
+
+# The page references these by relative path, so they must sit beside it in the
+# web root. Installing only the HTML leaves a broken image in the header.
+for asset in netenroll-logo.png netenroll-logo-dark.png; do
+  install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
+done
 echo "--> Published \$(wc -c < "${WEB_ROOT}/${INDEX_NAME}") bytes to ${WEB_ROOT}/${INDEX_NAME}"
 
 # 2a. The static site's own vhost. Written once, then left alone so certbot's
