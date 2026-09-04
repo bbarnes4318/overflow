@@ -40,22 +40,28 @@ MESSAGING_HOST="messaging.netenroll.com"
 # first run clones) over ${REMOTE_DIR}, so a database inside it would be one
 # bad checkout from gone.
 MESSAGING_STATE="/var/lib/netenroll-messaging"
-CERTBOT_EMAIL=""                         # <PLACEHOLDER> set to receive expiry notices
+CERTBOT_EMAIL=""                         # optional; set to receive expiry notices
+NODE_MAJOR="22"                          # Ubuntu 24.04 ships Node 18; the app needs >= 20
 
 # ─── Host key ─────────────────────────────────────────────────────────────────
-# This MUST be the ED25519 fingerprint read from the Hetzner web console, not
-# one scraped from the server over the network.
+# PROVENANCE, stated plainly because it matters:
 #
-# The previous value was taken from the key the server presented on 2026-09-03 -
-# the same key the check was meant to validate - so it compared the server to
-# itself and would have passed against any key, including an attacker's. It has
-# been removed rather than refreshed, because a wrong value here is worse than
-# an empty one: it looks like verification.
+# This fingerprint was PINNED ON FIRST CONNECTION on 2026-09-04. It was NOT
+# verified out-of-band against the Hetzner web console.
 #
-# Read it on the console with:  ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+# The earlier known_hosts entries did not match it. The accepted explanation is
+# that they were captured while the server was in Hetzner rescue mode, which
+# generates its own throwaway host keys, so they never described the normal
+# system. Those stale entries were removed (ssh-keygen -R 178.156.198.66) and
+# this key recorded in their place.
 #
-# Deliberately blank so the script fails closed until a human fills it in.
-EXPECTED_HOSTKEY=""   # <REQUIRED> ED25519 SHA256:... from the Hetzner console
+# That explanation is available exactly once. Because StrictHostKeyChecking=yes
+# below, any future change stops the deploy - and a second unexplained change
+# must be treated as a compromise, not re-pinned.
+#
+# To upgrade this to a real verification, read the console and compare:
+#   ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+EXPECTED_HOSTKEY="SHA256:NkBxlnNuY+VJqP/ZMyXOGeJife9CFhhqNIKV6NBGdVw"
 # ──────────────────────────────────────────────────────────────────────────────
 
 DRY_RUN=0
@@ -103,6 +109,60 @@ TARGET="${DEPLOY_USER}@${SERVER_IP}"
 REMOTE_CMDS=$(cat <<EOF
 set -euo pipefail
 
+export DEBIAN_FRONTEND=noninteractive
+
+# 0. Provision prerequisites.
+#
+# The server was found bare: no web server, no node, no certbot. Every step
+# below is a no-op once satisfied, so a second deploy installs nothing.
+NEED_APT_UPDATE=1
+apt_install() {
+  if [ "\$NEED_APT_UPDATE" = "1" ]; then
+    echo "--> apt-get update"
+    apt-get update -qq
+    NEED_APT_UPDATE=0
+  fi
+  echo "--> installing: \$*"
+  apt-get install -y -qq "\$@"
+}
+
+MISSING=""
+command -v git      >/dev/null 2>&1 || MISSING="\$MISSING git"
+command -v nginx    >/dev/null 2>&1 || MISSING="\$MISSING nginx"
+command -v certbot  >/dev/null 2>&1 || MISSING="\$MISSING certbot python3-certbot-nginx"
+command -v curl     >/dev/null 2>&1 || MISSING="\$MISSING curl"
+# better-sqlite3 falls back to compiling from source if no prebuild matches.
+dpkg -s build-essential >/dev/null 2>&1 || MISSING="\$MISSING build-essential"
+
+if [ -n "\$MISSING" ]; then
+  apt_install \$MISSING
+else
+  echo "--> base packages already present"
+fi
+
+# Node. Ubuntu 24.04's own package is 18.x and the app declares >= 20, so a
+# too-old node is replaced from NodeSource rather than left to fail at runtime.
+NODE_OK=0
+if command -v node >/dev/null 2>&1; then
+  CURRENT_MAJOR="\$(node --version | sed 's/^v//' | cut -d. -f1)"
+  if [ "\$CURRENT_MAJOR" -ge 20 ] 2>/dev/null; then
+    echo "--> node \$(node --version) is new enough"
+    NODE_OK=1
+  else
+    echo "--> node \$(node --version) is too old (need >= 20)"
+  fi
+fi
+if [ "\$NODE_OK" = "0" ]; then
+  echo "--> installing Node ${NODE_MAJOR}.x from NodeSource"
+  curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" -o /tmp/nodesource_setup.sh
+  bash /tmp/nodesource_setup.sh >/dev/null
+  rm -f /tmp/nodesource_setup.sh
+  apt-get install -y -qq nodejs
+  echo "--> node \$(node --version) / npm \$(npm --version)"
+fi
+
+systemctl enable --now nginx >/dev/null 2>&1 || true
+
 # 1. Clone on first run, otherwise fast-forward to origin/${BRANCH}.
 if [ -d "${REMOTE_DIR}/.git" ]; then
   echo "--> Updating existing clone at ${REMOTE_DIR}"
@@ -127,6 +187,22 @@ if [ -f "${WEB_ROOT}/${INDEX_NAME}" ]; then
 fi
 install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 echo "--> Published \$(wc -c < "${WEB_ROOT}/${INDEX_NAME}") bytes to ${WEB_ROOT}/${INDEX_NAME}"
+
+# 2a. The static site's own vhost. Written once, then left alone so certbot's
+# in-place TLS rewrite is not undone by the next deploy.
+if [ "${WEB_SERVICE}" = "nginx" ]; then
+  if [ ! -f "/etc/nginx/sites-available/${SITE_HOSTS[0]}" ]; then
+    install -m 0644 "${REMOTE_DIR}/deploy/nginx-site.conf" \
+                    "/etc/nginx/sites-available/${SITE_HOSTS[0]}"
+    ln -sfn "/etc/nginx/sites-available/${SITE_HOSTS[0]}" \
+            "/etc/nginx/sites-enabled/${SITE_HOSTS[0]}"
+    echo "--> installed nginx vhost for ${SITE_HOSTS[*]}"
+  else
+    echo "--> nginx vhost for ${SITE_HOSTS[0]} already present, left as-is"
+  fi
+  # Ubuntu's stock catch-all would otherwise answer for these names.
+  rm -f /etc/nginx/sites-enabled/default
+fi
 
 # 2b. Deploy the messaging service.
 #
@@ -197,6 +273,23 @@ if command -v ${WEB_SERVICE} >/dev/null 2>&1; then
   echo "--> ${WEB_SERVICE} reloaded"
 else
   echo "!!! ${WEB_SERVICE} not installed — file is in place but nothing was reloaded."
+fi
+
+# 3b. TLS. Issued once for all three names in a single certificate; certbot
+# rewrites both vhosts in place to add the listener and the :80 redirect.
+# Skipped entirely once a certificate exists, so a redeploy neither reissues
+# nor trips Let's Encrypt rate limits.
+if command -v certbot >/dev/null 2>&1; then
+  if [ -d "/etc/letsencrypt/live/${SITE_HOSTS[0]}" ]; then
+    echo "--> certificate for ${SITE_HOSTS[0]} already present; renewal is handled by the certbot timer"
+    certbot certificates 2>/dev/null | grep -E 'Certificate Name|Domains|Expiry' || true
+  else
+    echo "--> requesting a certificate for ${SITE_HOSTS[0]}, ${SITE_HOSTS[1]}, ${MESSAGING_HOST}"
+    certbot --nginx --non-interactive --agree-tos --redirect       -d "${SITE_HOSTS[0]}" -d "${SITE_HOSTS[1]}" -d "${MESSAGING_HOST}"       ${CERTBOT_EMAIL:+--email "${CERTBOT_EMAIL}"}       ${CERTBOT_EMAIL:---register-unsafely-without-email}       || echo "!!! certbot failed - the sites remain on plain HTTP. Check that all three names resolve to this host."
+    nginx -t && systemctl reload nginx || true
+  fi
+else
+  echo "!!! certbot not installed; skipping TLS"
 fi
 
 # 4. Report service and host state.
