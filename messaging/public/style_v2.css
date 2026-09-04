@@ -1784,6 +1784,14 @@ body {
   gap: 10px;
 }
 
+/* Only the range sliders carried an accent colour, so checkboxes fell back to
+   the browser default, which renders violet on a dark background and reads as
+   a second, unintended brand colour. */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--primary);
+}
+
 .range-container input[type="range"] {
   flex: 1;
   accent-color: var(--primary);
