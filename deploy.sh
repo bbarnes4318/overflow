@@ -40,7 +40,14 @@ MESSAGING_HOST="messaging.netenroll.com"
 # first run clones) over ${REMOTE_DIR}, so a database inside it would be one
 # bad checkout from gone.
 MESSAGING_STATE="/var/lib/netenroll-messaging"
-CERTBOT_EMAIL=""                         # optional; set to receive expiry notices
+CERTBOT_EMAIL="jimbosky35@gmail.com"     # receives certificate expiry notices
+# One flag or the other, never both: ${VAR:-default} substitutes the VALUE when
+# set, which previously emitted the address twice.
+if [[ -n "$CERTBOT_EMAIL" ]]; then
+  CERTBOT_EMAIL_ARG="--email ${CERTBOT_EMAIL}"
+else
+  CERTBOT_EMAIL_ARG="--register-unsafely-without-email"
+fi
 NODE_MAJOR="22"                          # Ubuntu 24.04 ships Node 18; the app needs >= 20
 
 # ─── Host key ─────────────────────────────────────────────────────────────────
@@ -285,7 +292,7 @@ if command -v certbot >/dev/null 2>&1; then
     certbot certificates 2>/dev/null | grep -E 'Certificate Name|Domains|Expiry' || true
   else
     echo "--> requesting a certificate for ${SITE_HOSTS[0]}, ${SITE_HOSTS[1]}, ${MESSAGING_HOST}"
-    certbot --nginx --non-interactive --agree-tos --redirect       -d "${SITE_HOSTS[0]}" -d "${SITE_HOSTS[1]}" -d "${MESSAGING_HOST}"       ${CERTBOT_EMAIL:+--email "${CERTBOT_EMAIL}"}       ${CERTBOT_EMAIL:---register-unsafely-without-email}       || echo "!!! certbot failed - the sites remain on plain HTTP. Check that all three names resolve to this host."
+    certbot --nginx --non-interactive --agree-tos --redirect       -d "${SITE_HOSTS[0]}" -d "${SITE_HOSTS[1]}" -d "${MESSAGING_HOST}"       ${CERTBOT_EMAIL_ARG}       || echo "!!! certbot failed - the sites remain on plain HTTP. Check that all three names resolve to this host."
     nginx -t && systemctl reload nginx || true
   fi
 else
