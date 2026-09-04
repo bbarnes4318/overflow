@@ -39,11 +39,20 @@ MESSAGING_HOST="messaging.overflowcalls.com"
 MESSAGING_STATE="/var/lib/overflow-messaging"
 CERTBOT_EMAIL=""                         # <PLACEHOLDER> set to receive expiry notices
 
-# !! HOST KEY CONFLICT: on 2026-09-03 this server presented ED25519/ECDSA/RSA keys
-# !! that ALL differ from the entries stored in ~/.ssh/known_hosts (lines 112-114).
-# !! Confirm the fingerprint below from the Hetzner web console before running.
-# The script aborts on mismatch.
-EXPECTED_HOSTKEY="SHA256:NkBxlnNuY+VJqP/ZMyXOGeJife9CFhhqNIKV6NBGdVw"
+# ─── Host key ─────────────────────────────────────────────────────────────────
+# This MUST be the ED25519 fingerprint read from the Hetzner web console, not
+# one scraped from the server over the network.
+#
+# The previous value was taken from the key the server presented on 2026-09-03 -
+# the same key the check was meant to validate - so it compared the server to
+# itself and would have passed against any key, including an attacker's. It has
+# been removed rather than refreshed, because a wrong value here is worse than
+# an empty one: it looks like verification.
+#
+# Read it on the console with:  ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+#
+# Deliberately blank so the script fails closed until a human fills it in.
+EXPECTED_HOSTKEY=""   # <REQUIRED> ED25519 SHA256:... from the Hetzner console
 # ──────────────────────────────────────────────────────────────────────────────
 
 DRY_RUN=0
@@ -57,6 +66,14 @@ die()  { printf '\033[1;31mxxx\033[0m %s\n' "$*" >&2; exit 1; }
 [[ -f "$APP_FILE" ]] || die "$APP_FILE not found; run this from the repo root."
 [[ -f "$SSH_KEY"  ]] || die "SSH key not found: $SSH_KEY"
 
+if [[ -z "$EXPECTED_HOSTKEY" ]]; then
+  die "EXPECTED_HOSTKEY is not set.
+  Read the ED25519 fingerprint from the Hetzner web console (NOT over the
+  network - that is what made the old check circular) and put it in the CONFIG
+  block above:
+      ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub"
+fi
+
 log "Verifying host key for ${SERVER_IP}"
 ACTUAL_HOSTKEY="$(ssh-keyscan -T 8 -t ed25519 "$SERVER_IP" 2>/dev/null \
                   | ssh-keygen -lf - 2>/dev/null | awk '{print $2}')"
@@ -69,8 +86,11 @@ if [[ "$ACTUAL_HOSTKEY" != "$EXPECTED_HOSTKEY" ]]; then
 fi
 log "Host key matches."
 
+# StrictHostKeyChecking=yes, not accept-new: a host whose key has CHANGED must
+# stop the deploy, not be adopted silently. accept-new only protects a host that
+# is entirely unknown, which is the one case that does not matter here.
 SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o ConnectTimeout=10
-          -o StrictHostKeyChecking=accept-new)
+          -o StrictHostKeyChecking=yes)
 TARGET="${DEPLOY_USER}@${SERVER_IP}"
 
 # ─── Remote deploy script ─────────────────────────────────────────────────────
