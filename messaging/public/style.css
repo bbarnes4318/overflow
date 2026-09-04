@@ -1,6 +1,6 @@
 /* CSS Reset & Variables */
 :root {
-  /* Overflow Calls slate palette */
+  /* NetEnroll slate palette */
   --bg-dark: #020617;
   --bg-sidebar: #0a0f1c;
   --bg-chat: #0d1424;
@@ -15,7 +15,7 @@
   --text-dark: #03211a;
   
   /* Brand Emerald Accent Colors */
-  --primary: hsl(160, 84%, 39%); /* Overflow emerald */
+  --primary: hsl(160, 84%, 39%); /* NetEnroll emerald */
   --primary-glow: rgba(16, 185, 129, 0.15);
   --primary-gradient: linear-gradient(135deg, hsl(160, 84%, 39%) 0%, hsl(161, 94%, 30%) 100%);
   

@@ -233,7 +233,7 @@ const PUBLIC_PATHS = [
   '/login.html',
   '/login.css',
   '/login.js',
-  '/overflow-calls-logo.svg',
+  '/netenroll-logo.svg',
   '/favicon.ico',
   '/api/auth/status',
   '/api/auth/signup',
@@ -1466,5 +1466,5 @@ app.get('*', (req, res) => {
 // Start Server
 const port = process.env.PORT || 3100;
 server.listen(port, () => {
-  console.log(`Overflow Calls Messaging server listening on port ${port}`);
+  console.log(`NetEnroll Messaging server listening on port ${port}`);
 });

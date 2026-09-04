@@ -8,18 +8,35 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
+const net = require('net');
 
 const SERVER = path.resolve(__dirname, '..', '..', 'server.js');
 
+/**
+ * Ask the OS for a free port instead of guessing one.
+ *
+ * This used to derive a port from the clock within a 200-port window. `node
+ * --test` runs test FILES in parallel, and several of them each boot a real
+ * server, so two files starting in the same millisecond picked the same port
+ * and one of them failed - intermittently, and in a different file each run.
+ * Binding :0 and reading back the assignment removes the guess.
+ */
 function findFreePort() {
-  // Ports are picked from a high range; a collision just fails the boot wait.
-  return 4700 + Number(process.hrtime.bigint() % 200n);
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.on('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
 }
 
 async function startServer({ label = 'api', env = {} } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `sms-server-${label}-`));
   const dbFile = path.join(dir, 'test.sqlite');
-  const port = findFreePort();
+  const port = await findFreePort();
 
   // The superadmin is seeded at boot from these, so the suite knows the
   // credentials without scraping them out of stdout.

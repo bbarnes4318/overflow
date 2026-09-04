@@ -2275,7 +2275,7 @@ function resetChatToWelcomeBox() {
         <div class="welcome-icon">
           <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="welcome-svg"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         </div>
-        <h3>Welcome to Overflow Calls Messaging</h3>
+        <h3>Welcome to NetEnroll Messaging</h3>
         <p>Select a contact from the sidebar or click "New Chat" to begin sending rate-limited messages securely.</p>
       </div>
     </div>

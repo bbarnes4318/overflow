@@ -11,17 +11,37 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
+const net = require('net');
 
 const SERVER = path.resolve(__dirname, '..', '..', 'server.js');
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sms-restart-'));
 const DB = path.join(dir, 'restart.sqlite');
-const PORT = 4690;
-const BASE = `http://127.0.0.1:${PORT}`;
+
+// Assigned by the OS on first boot and reused across the restart, so this file
+// cannot collide with the other suites that also spawn a server in parallel.
+let PORT = 0;
+let BASE = '';
 
 let child;
 let cookie = '';
 
+function reservePort() {
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.on('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+}
+
 async function boot() {
+  if (!PORT) {
+    PORT = await reservePort();
+    BASE = `http://127.0.0.1:${PORT}`;
+  }
   child = spawn(process.execPath, [SERVER], {
     env: {
       ...process.env,

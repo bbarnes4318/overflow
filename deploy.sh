@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# deploy.sh — publish overflow_calls_platform_app.html to the Hetzner box.
+# deploy.sh — publish netenroll_platform_app.html and the NetEnroll Messaging
+# service to the Hetzner box.
 #
 # STATUS: UNVERIFIED TEMPLATE. Nothing below was tested against the server —
 # SSH access was not available when this was generated. Review every value in
@@ -20,23 +21,25 @@ SSH_KEY="${HOME}/.ssh/id_ed25519"     # verified: matches the authorized key
 REPO_URL="git@github.com:bbarnes4318/overflow.git"   # <PLACEHOLDER> confirm repo
 BRANCH="main"
 
-REMOTE_DIR="/opt/overflow"               # <PLACEHOLDER> where the clone lives
-WEB_ROOT="/var/www/overflowcalls.com"    # <PLACEHOLDER> what the web server serves
-APP_FILE="overflow_calls_platform_app.html"
+REMOTE_DIR="/opt/netenroll"              # where the clone lives
+WEB_ROOT="/var/www/netenroll.com"        # what the static vhost serves
+APP_FILE="netenroll_platform_app.html"
 INDEX_NAME="index.html"                  # file is renamed to this in WEB_ROOT
 WEB_SERVICE="nginx"                      # <PLACEHOLDER> nginx | caddy | apache2
-HEALTH_URL="https://overflowcalls.com"   # <PLACEHOLDER> URL to verify after deploy
+HEALTH_URL="https://netenroll.com"       # URL to verify after deploy
+# The static site answers on the apex and www; both need a certificate.
+SITE_HOSTS=("netenroll.com" "www.netenroll.com")
 
 # ─── Messaging app ────────────────────────────────────────────────────────────
 # The Node service that lives in messaging/ inside this repo.
 MESSAGING_DIR="${REMOTE_DIR}/messaging"          # the app inside the clone
-MESSAGING_UNIT="overflow-messaging"              # systemd unit name
+MESSAGING_UNIT="netenroll-messaging"             # systemd unit name
 MESSAGING_PORT="3100"
-MESSAGING_HOST="messaging.overflowcalls.com"
+MESSAGING_HOST="messaging.netenroll.com"
 # The SQLite file lives OUTSIDE the clone on purpose: a deploy pulls (and on a
 # first run clones) over ${REMOTE_DIR}, so a database inside it would be one
 # bad checkout from gone.
-MESSAGING_STATE="/var/lib/overflow-messaging"
+MESSAGING_STATE="/var/lib/netenroll-messaging"
 CERTBOT_EMAIL=""                         # <PLACEHOLDER> set to receive expiry notices
 
 # ─── Host key ─────────────────────────────────────────────────────────────────
@@ -156,7 +159,7 @@ if [ -d "${MESSAGING_DIR}" ]; then
   # map is only valid in the http context.
   if [ "${WEB_SERVICE}" = "nginx" ]; then
     install -m 0644 "${REMOTE_DIR}/deploy/nginx-upgrade-map.conf" \
-                    /etc/nginx/conf.d/overflow-upgrade-map.conf
+                    /etc/nginx/conf.d/netenroll-upgrade-map.conf
 
     # certbot rewrites the vhost in place to add the TLS listener. Re-installing
     # the plain HTTP version on every deploy would undo that, so it is written
@@ -236,8 +239,8 @@ if [[ "$MSG_CODE" == "200" ]]; then
 else
   warn "https://${MESSAGING_HOST}/login returned HTTP $MSG_CODE."
   warn "If no certificate has been issued yet, run ON THE SERVER:"
-  warn "  certbot --nginx -d ${MESSAGING_HOST}${CERTBOT_EMAIL:+ -m ${CERTBOT_EMAIL} --agree-tos --no-eff-email}"
-  warn "certbot needs ${MESSAGING_HOST} to already resolve to ${SERVER_IP}."
+  warn "  certbot --nginx -d ${SITE_HOSTS[0]} -d ${SITE_HOSTS[1]} -d ${MESSAGING_HOST}${CERTBOT_EMAIL:+ -m ${CERTBOT_EMAIL} --agree-tos --no-eff-email}"
+  warn "certbot needs all three names to already resolve to ${SERVER_IP}."
 fi
 
 # The superadmin password is printed to the journal exactly once, on the first

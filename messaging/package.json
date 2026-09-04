@@ -1,7 +1,7 @@
 {
-  "name": "overflow-sms",
+  "name": "netenroll-messaging",
   "version": "1.0.0",
-  "description": "Overflow Calls Messaging - SMS gateway backend for Bulkvs and SQLite",
+  "description": "NetEnroll Messaging - SMS gateway backend for Bulkvs and SQLite",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

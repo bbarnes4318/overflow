@@ -1,6 +1,6 @@
-# Overflow Calls Messaging
+# NetEnroll Messaging
 
-SMS gateway and conversation dashboard for Overflow Calls. Node/Express with a
+SMS gateway and conversation dashboard for NetEnroll. Node/Express with a
 SQLite store, a per-DID paced send queue, and optional LLM message variation.
 
 ## Setup

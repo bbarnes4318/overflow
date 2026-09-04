@@ -1,44 +1,44 @@
-# Overflow Calls Messaging — SMS gateway and conversation dashboard.
+# NetEnroll Messaging — SMS gateway and conversation dashboard.
 #
-# Installed by deploy.sh to /etc/systemd/system/overflow-messaging.service.
+# Installed by deploy.sh to /etc/systemd/system/netenroll-messaging.service.
 #
 # SMS_DB_PATH deliberately points OUTSIDE the git clone. A deploy does a
-# `git pull --ff-only` (and a clone on first run) inside /opt/overflow; a
+# `git pull --ff-only` (and a clone on first run) inside /opt/netenroll; a
 # database living in there would be one bad checkout away from destruction.
 # /var/lib is where mutable service state belongs on a Debian/Ubuntu box.
 [Unit]
-Description=Overflow Calls Messaging
+Description=NetEnroll Messaging
 Documentation=https://github.com/bbarnes4318/overflow
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/overflow/messaging
+WorkingDirectory=/opt/netenroll/messaging
 ExecStart=/usr/bin/env node server.js
 Restart=always
 RestartSec=3
 
 Environment=NODE_ENV=production
 Environment=PORT=3100
-Environment=SMS_DB_PATH=/var/lib/overflow-messaging/database.sqlite
+Environment=SMS_DB_PATH=/var/lib/netenroll-messaging/database.sqlite
 
 # The superadmin password is NOT set here. On first boot with no users the app
 # generates one and prints it to the journal exactly once. Read it with:
-#   journalctl -u overflow-messaging | grep -A3 'Seeded superadmin'
+#   journalctl -u netenroll-messaging | grep -A3 'Seeded superadmin'
 # Carrier credentials are entered through Gateway Settings, not baked in.
-EnvironmentFile=-/etc/overflow-messaging.env
+EnvironmentFile=-/etc/netenroll-messaging.env
 
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=overflow-messaging
+SyslogIdentifier=netenroll-messaging
 
 # Modest hardening. The service needs to write only its own state directory.
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=true
-ReadWritePaths=/var/lib/overflow-messaging
+ReadWritePaths=/var/lib/netenroll-messaging
 
 [Install]
 WantedBy=multi-user.target
