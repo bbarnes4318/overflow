@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetEnroll | Inbound Insurance Calls — Pay $0 Until You Submit an Application</title>
-    <meta name="description" content="Inbound insurance calls for licensed Final Expense, Medicare, and ACA agents. $0 per call. Pay strictly when a policy application is submitted.">
+    <title>Final Expense Insurance Calls | NetEnroll</title>
+    <meta name="description" content="Final expense calls for licensed insurance agents. Connect with consumers seeking coverage and pay a fixed fee when an eligible application is submitted.">
+    <meta name="theme-color" content="#FFFFFF">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,6 +14,14 @@
             theme: {
                 extend: {
                     colors: {
+                        // Marketing palette. Light mode only on the public site.
+                        ink: '#111827',
+                        muted: '#667085',
+                        line: '#E5E7EB',
+                        soft: '#F7F9F8',
+                        mint: '#ECFDF5',
+                        brandgreen: '#11B981',
+                        deepgreen: '#078A61',
                         brand: {
                             50: '#ecfdf5',
                             100: '#d1fae5',
@@ -37,6 +46,72 @@
             }
         }
     </script>
+    <style>
+        /* ---- Public marketing site: light mode component layer ---- */
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #11B981; color: #fff;
+            font-weight: 600; font-size: 15px;
+            padding: 13px 26px; border-radius: 10px;
+            transition: background-color .18s ease, transform .18s ease;
+        }
+        .btn-primary:hover { background: #078A61; }
+        .btn-primary:active { transform: translateY(1px); }
+        .btn-primary:focus-visible { outline: 2px solid #078A61; outline-offset: 2px; }
+
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #fff; color: #111827; border: 1px solid #E5E7EB;
+            font-weight: 600; font-size: 15px;
+            padding: 12px 26px; border-radius: 10px;
+            transition: background-color .18s ease, border-color .18s ease;
+        }
+        .btn-secondary:hover { background: #F7F9F8; border-color: #D1D5DB; }
+        .btn-secondary:focus-visible { outline: 2px solid #078A61; outline-offset: 2px; }
+
+        .section-title {
+            font-size: clamp(1.6rem, 3.2vw, 2.15rem);
+            line-height: 1.2; font-weight: 700;
+            letter-spacing: -0.02em; color: #111827;
+        }
+
+        .shadow-card { box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px -12px rgba(16,24,40,.10); }
+
+        /* Connector between the hero flow steps */
+        .flow-arrow { height: 18px; position: relative; }
+        .flow-arrow::before {
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 6px;
+            width: 1px; background: #E5E7EB; transform: translateX(-50%);
+        }
+        .flow-arrow::after {
+            content: ''; position: absolute; left: 50%; bottom: 0;
+            width: 6px; height: 6px; border-right: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB;
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        /* Accordion: height transition without a layout library */
+        .faq-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .22s ease; }
+        .faq-panel > * { overflow: hidden; }
+        .faq-panel.faq-open { grid-template-rows: 1fr; }
+
+        /* Subtle entrance, and nothing at all for reduced-motion users */
+        .reveal { animation: reveal .5s ease both; }
+        @keyframes reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { animation: none; }
+            .faq-panel { transition: none; }
+        }
+
+        /* Mobile sticky CTA. Most traffic arrives from SMS. */
+        .mobile-cta {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+            background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
+            border-top: 1px solid #E5E7EB;
+            padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        }
+        @media (min-width: 768px) { .mobile-cta { display: none; } }
+    </style>
+
     <!-- React & Babel CDNs -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -85,7 +160,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500 selection:text-slate-950">
+<body class="bg-white text-ink min-h-screen antialiased selection:bg-brandgreen selection:text-white">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -146,32 +221,59 @@
             'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
         ];
 
+        // Final-expense only. Answers describe the flow this application actually
+        // implements; nothing here asserts a rate or rule that is not in
+        // INITIAL_DB_PRODUCTS or the onboarding steps below.
         const FAQS = [
             {
-                q: "How does billing work if a caller hangs up or is unqualified?",
-                a: "You pay $0. If a call drops after 30 seconds or lasts 45 minutes without a written policy, you owe nothing. Billing triggers strictly when you enter a verified policy application submission number into your portal."
+                q: "How does NetEnroll charge me?",
+                a: "NetEnroll uses a performance-based billing model. For the Final Expense program, the current rate is $125 per eligible submitted application."
             },
             {
-                q: "What products are available on NetEnroll?",
-                a: "We currently route inbound calls for Final Expense Life Insurance, Medicare (Advantage & Supplement), and ACA Health Insurance."
+                q: "Do I pay for every call?",
+                a: "No. Calls themselves are not the billable event. The fee is triggered when an eligible application is submitted."
             },
             {
-                q: "Do I need to be a licensed insurance agent?",
-                a: "Yes. NetEnroll is built exclusively for active, licensed insurance producers and agencies. We verify National Producer Number (NPN) credentials before we route any calls."
+                q: "Do I need an insurance license?",
+                a: "Yes. NetEnroll is designed for licensed insurance producers. Registration asks for your National Producer Number, and your account is matched to the states in which you are authorized to sell."
             },
             {
-                q: "How do you route calls to my state licenses?",
-                a: "Our telephony engine inspects the incoming consumer's area code and geolocation, matching them instantly with agents holding active licenses in that state."
+                q: "What happens when a consumer doesn't submit an application?",
+                a: "You are not charged for the call simply because you spoke with the consumer."
             },
             {
-                q: "Are there any setup fees or monthly software subscriptions?",
-                a: "None. You never pay a monthly subscription fee, seat fee, or line maintenance fee. You pay exclusively per submitted application."
+                q: "Are there monthly fees?",
+                a: "No. There is no monthly subscription and no separate charge for account access. Billing is limited to the per-application fee for the program you are enrolled in."
             },
             {
-                q: "How quickly can I begin receiving calls?",
-                a: "Registration takes less than 3 minutes. Once your NPN is verified and your phone line is set up, you can toggle your status to 'Available' and begin taking live calls immediately."
+                q: "How quickly can I start?",
+                a: "Registration is a short form: your contact details, your National Producer Number, the program you want, and a payment method. Once those steps are complete you can set your status to available and begin taking calls."
+            },
+            {
+                q: "How are calls routed?",
+                a: "Inbound calls are matched to an available agent licensed in the consumer's state and connected to the phone number on your account. Each call is recorded against your account for tracking."
+            },
+            {
+                q: "Can agencies have multiple agents?",
+                a: "Yes. An agency can have several producers on the platform, each with their own routing and their own call and application records, reported together at the agency level."
             }
         ];
+
+        // Pricing is read from the product catalogue, never hard-coded in copy.
+        const FINAL_EXPENSE_FEE = (INITIAL_DB_PRODUCTS.find(p => p.code === 'FINAL_EXPENSE') || {}).fee;
+
+        const CheckMark = () => (
+            <svg className="w-4 h-4 mt-0.5 shrink-0 text-brandgreen" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4.5 10.5l3.2 3.2 7.8-7.8" stroke="currentColor" strokeWidth="2"
+                      strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+        );
+
+        const PlusMark = () => (
+            <svg className="w-4 h-4 text-muted" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+        );
 
         function NetEnrollApp() {
             // Navigation States
@@ -182,6 +284,11 @@
             const [selectedVertical, setSelectedVertical] = useState('Final Expense Life Insurance');
             const [openFaq, setOpenFaq] = useState(0);
             const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+            // The public marketing site is light mode. The authenticated portals
+            // keep their existing dark surface, so chrome shared between them
+            // switches on this one flag rather than being duplicated.
+            const isPublic = currentTab === 'marketing';
 
             // Dynamic Database Products Registry
             const [dbProducts, setDbProducts] = useState(INITIAL_DB_PRODUCTS);
@@ -558,6 +665,15 @@
                 logAdminAuditAction('SECURITY_AUDIT_EXECUTED', 'SYSTEM_CORE', 'Automated security & reliability test suite completed.');
             };
 
+            // The single conversion entry point. Every marketing CTA routes here,
+            // into the existing registration flow - no demo request, no gate.
+            const startSignup = () => {
+                setSelectedVertical('Final Expense Life Insurance');
+                setOnboardingStep(1);
+                setCurrentTab('onboarding');
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            };
+
             // Calculated Metrics (Tenant Isolated)
             const agentCallLogs = callLogs.filter(c => authorizeTenantAccess(c.agentId));
             const agentApps = applications.filter(a => authorizeTenantAccess(a.agentId));
@@ -600,65 +716,86 @@
                         </div>
                     )}
 
-                    {/* HEADER */}
-                    <header className="border-b border-slate-800/80 bg-slate-950/80 sticky top-0 z-40 backdrop-blur-xl">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentTab('marketing')}>
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-500/20">
-                                    <i className="fa-solid fa-phone-arrow-up-right"></i>
-                                </div>
-                                <div>
-                                    <span className="font-black text-xl tracking-tight text-white flex items-center gap-1.5">
-                                        NET<span className="text-emerald-400">ENROLL</span>
-                                    </span>
-                                    <span className="block text-[10px] text-slate-400 font-mono tracking-widest uppercase -mt-1">
-                                        Pay-Per-Application
-                                    </span>
-                                </div>
-                            </div>
+                    {/* HEADER — light on the public site, dark inside the portals */}
+                    <header className={isPublic
+                        ? "sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-line"
+                        : "sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80"}>
+                        <div className="max-w-[1240px] mx-auto px-5 sm:px-6 h-[72px] flex items-center justify-between gap-4">
 
-                            <nav className="hidden lg:flex items-center gap-8 text-xs font-semibold tracking-wide text-slate-300">
-                                <button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">Final Expense</button>
-                                <button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">Medicare</button>
-                                <button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">ACA</button>
-                                <button onClick={() => scrollToSection('how-it-works')} className="hover:text-emerald-400 transition">How It Works</button>
-                                <button onClick={() => scrollToSection('faq')} className="hover:text-emerald-400 transition">FAQ</button>
-                                <button onClick={() => { setCurrentTab('dashboard'); setDashSubTab('messaging'); }} className="hover:text-emerald-400 transition">Messaging</button>
-                            </nav>
+                            <button onClick={() => setCurrentTab('marketing')} className="flex items-center gap-2.5 shrink-0" aria-label="NetEnroll home">
+                                <span className="w-8 h-8 rounded-lg bg-brandgreen flex items-center justify-center shrink-0">
+                                    <svg className="w-4 h-4 text-white" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                        <path d="M4 13.5L8 6l4 5 4-3.5" stroke="currentColor" strokeWidth="2"
+                                              strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                                <span className="text-left leading-none">
+                                    <span className={isPublic
+                                        ? "block text-[17px] font-bold tracking-[-0.01em] text-ink"
+                                        : "block text-[17px] font-bold tracking-[-0.01em] text-white"}>NETENROLL</span>
+                                    <span className="block mt-[3px] text-[9.5px] font-medium tracking-[0.14em] text-muted">PAY-PER-APPLICATION</span>
+                                </span>
+                            </button>
 
-                            <div className="hidden sm:flex items-center gap-3">
-                                <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); }} className={`px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 border ${currentTab === 'dashboard' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'}`}>
-                                    <i className="fa-solid fa-headset text-emerald-400"></i> Agent Portal
+                            {isPublic && (
+                                <nav className="hidden lg:flex items-center gap-8 text-[14px] font-medium text-muted">
+                                    <button onClick={() => scrollToSection('final-expense')} className="hover:text-ink transition-colors">Final Expense</button>
+                                    <button onClick={() => scrollToSection('how-it-works')} className="hover:text-ink transition-colors">How It Works</button>
+                                    <button onClick={() => scrollToSection('pricing')} className="hover:text-ink transition-colors">Pricing</button>
+                                    <button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">FAQ</button>
+                                </nav>
+                            )}
+
+                            <div className="hidden md:flex items-center gap-2.5 shrink-0">
+                                <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); }}
+                                        className={isPublic
+                                            ? "text-[14px] font-medium text-muted hover:text-ink transition-colors px-3 py-2"
+                                            : "text-[13px] font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2"}>
+                                    {isPublic ? 'Sign In' : 'Agent Portal'}
                                 </button>
-                                <button onClick={() => { setCurrentUserRole('ADMIN'); setCurrentTab('admin'); }} className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 border ${currentTab === 'admin' ? 'bg-purple-500/10 border-purple-500 text-purple-300' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'}`}>
-                                    <i className="fa-solid fa-shield-halved text-purple-400"></i> Admin
-                                </button>
-                                <button onClick={() => { setOnboardingStep(1); setCurrentTab('onboarding'); }} className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
+                                {!isPublic && (
+                                    <button onClick={() => { setCurrentUserRole('ADMIN'); setCurrentTab('admin'); }}
+                                            className="text-[13px] font-semibold text-slate-400 hover:text-slate-200 transition-colors px-3 py-2">
+                                        Admin
+                                    </button>
+                                )}
+                                <button onClick={startSignup} className={isPublic ? "btn-primary !text-[14px] !px-5 !py-2.5" : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition"}>
                                     Start Receiving Calls
                                 </button>
                             </div>
 
-                            <button onClick={() => setMobileNavOpen(!mobileNavOpen)} className="lg:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
-                                <i className={`fa-solid ${mobileNavOpen ? 'fa-xmark' : 'fa-bars'} text-lg`}></i>
+                            <button onClick={() => setMobileNavOpen(!mobileNavOpen)}
+                                    aria-label="Menu" aria-expanded={mobileNavOpen}
+                                    className={isPublic
+                                        ? "md:hidden p-2 -mr-2 text-ink"
+                                        : "md:hidden p-2 -mr-2 text-slate-300"}>
+                                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    {mobileNavOpen
+                                        ? <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                        : <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />}
+                                </svg>
                             </button>
                         </div>
 
                         {mobileNavOpen && (
-                            <div className="lg:hidden bg-slate-950 border-b border-slate-800 px-6 py-6 space-y-4">
-                                <div className="flex flex-col gap-3 text-sm font-medium text-slate-300">
-                                    <button onClick={() => scrollToSection('verticals')} className="text-left py-2 hover:text-emerald-400">Final Expense</button>
-                                    <button onClick={() => scrollToSection('verticals')} className="text-left py-2 hover:text-emerald-400">Medicare</button>
-                                    <button onClick={() => scrollToSection('verticals')} className="text-left py-2 hover:text-emerald-400">ACA Health Insurance</button>
-                                    <button onClick={() => scrollToSection('how-it-works')} className="text-left py-2 hover:text-emerald-400">How It Works</button>
-                                    <button onClick={() => scrollToSection('faq')} className="text-left py-2 hover:text-emerald-400">FAQ</button>
-                                    <button onClick={() => { setCurrentTab('dashboard'); setDashSubTab('messaging'); setMobileNavOpen(false); }} className="text-left py-2 hover:text-emerald-400">Messaging</button>
-                                </div>
-                                <div className="pt-4 border-t border-slate-800/80 flex flex-col gap-3">
-                                    <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); setMobileNavOpen(false); }} className="w-full bg-slate-900 text-slate-200 font-bold py-3 rounded-xl text-xs border border-slate-800">
-                                        Agent Dashboard Console
+                            <div className={isPublic
+                                ? "md:hidden border-t border-line bg-white px-5 py-5"
+                                : "md:hidden border-t border-slate-800 bg-slate-950 px-5 py-5"}>
+                                {isPublic && (
+                                    <nav className="flex flex-col gap-1 text-[15px] font-medium text-muted">
+                                        {[['final-expense', 'Final Expense'], ['how-it-works', 'How It Works'], ['pricing', 'Pricing'], ['faq', 'FAQ']].map(([id, label]) => (
+                                            <button key={id} onClick={() => { scrollToSection(id); setMobileNavOpen(false); }}
+                                                    className="text-left py-2.5 hover:text-ink transition-colors">{label}</button>
+                                        ))}
+                                    </nav>
+                                )}
+                                <div className="mt-4 pt-4 border-t border-line flex flex-col gap-2.5">
+                                    <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); setMobileNavOpen(false); }}
+                                            className="btn-secondary w-full">
+                                        {isPublic ? 'Sign In' : 'Agent Portal'}
                                     </button>
-                                    <button onClick={() => { setOnboardingStep(1); setCurrentTab('onboarding'); setMobileNavOpen(false); }} className="w-full bg-emerald-500 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg shadow-emerald-500/20">
-                                        Start Receiving Calls — $0 Risk
+                                    <button onClick={() => { startSignup(); setMobileNavOpen(false); }} className="btn-primary w-full">
+                                        Start Receiving Calls
                                     </button>
                                 </div>
                             </div>
@@ -666,227 +803,390 @@
                     </header>
 
                     {/* MAIN CONTENT */}
-                    <main className="flex-grow">
+                    <main className={isPublic ? "flex-grow bg-white" : "flex-grow bg-slate-950 text-slate-100"}>
                         
-                        {/* 1. PUBLIC MARKETING WEBSITE */}
+                        {/* ============================================================
+                            PUBLIC MARKETING SITE — light mode only.
+                            The authenticated portals below keep their own dark
+                            surface; this is the only public-facing surface.
+                           ============================================================ */}
                         {currentTab === 'marketing' && (
-                            <div className="space-y-28 pb-24">
-                                
-                                {/* HERO */}
-                                <section className="relative pt-16 lg:pt-24 pb-12 px-4 hero-grid overflow-hidden">
-                                    <div className="max-w-6xl mx-auto text-center space-y-8 relative z-10">
-                                        
-                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold font-mono">
-                                            <span className="w-2 h-2 rounded-full bg-emerald-400 pulse-green"></span>
-                                            100% PAY-PER-SUBMITTED-APPLICATION MODEL
-                                        </div>
+                            <div className="bg-white text-ink">
 
-                                        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] max-w-4xl mx-auto">
-                                            Inbound Insurance Calls.<br/>
-                                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                                                Pay $0 Until You Submit an Application.
-                                            </span>
-                                        </h1>
+                                {/* ---------------- HERO ---------------- */}
+                                <section className="px-5 sm:px-6 pt-9 pb-14 sm:pt-14 lg:pt-20 lg:pb-20">
+                                    <div className="max-w-[1180px] mx-auto grid lg:grid-cols-[1.08fr_0.92fr] gap-10 lg:gap-14 items-center">
 
-                                        <p className="text-slate-300 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed font-normal">
-                                            NetEnroll connects licensed insurance producers with qualified inbound callers for Final Expense, Medicare, and ACA. There are no per-call charges and no monthly subscriptions, and you pay only when a policy application is written.
-                                        </p>
+                                        <div className="reveal">
+                                            <h1 className="text-[1.85rem] leading-[1.16] sm:text-[2.6rem] lg:text-[3.05rem] lg:leading-[1.09] font-bold tracking-[-0.02em] text-ink">
+                                                Final Expense Calls.<br />
+                                                <span className="text-brandgreen">Pay When You Submit an Application.</span>
+                                            </h1>
 
-                                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                                            <button onClick={() => { setOnboardingStep(1); setCurrentTab('onboarding'); }} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-8 py-4 rounded-xl text-sm transition shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2">
-                                                <span>Start Receiving Calls — $0 Risk</span>
-                                                <i className="fa-solid fa-arrow-right text-xs"></i>
-                                            </button>
-                                            <button onClick={() => scrollToSection('verticals')} className="w-full sm:w-auto bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-bold px-8 py-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
-                                                <i className="fa-solid fa-list-check text-slate-400"></i>
-                                                <span>View Pay-Per-App Rates</span>
-                                            </button>
-                                        </div>
-                                        
-                                        <p className="text-[11px] text-slate-500 font-mono">No setup fees • No monthly subscriptions • Direct state license matching</p>
+                                            <p className="mt-6 text-base sm:text-lg leading-relaxed text-muted max-w-xl">
+                                                Get connected with consumers looking for final expense coverage and pay a
+                                                fixed fee only when a completed application is submitted.
+                                            </p>
 
-                                        {/* TELEPHONY FLOW GRAPHIC */}
-                                        <div className="pt-12 max-w-4xl mx-auto">
-                                            <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 shadow-2xl relative">
-                                                <div className="text-xs font-mono text-slate-400 uppercase tracking-widest text-left mb-6 flex items-center justify-between">
-                                                    <span>Inbound Call & Billing Lifecycle</span>
-                                                    <span className="text-emerald-400 font-bold">$0 Call Risk Guarantee</span>
-                                                </div>
+                                            <p className="mt-5 text-[15px] font-semibold text-ink">
+                                                <span className="text-deepgreen">${FINAL_EXPENSE_FEE}</span> per submitted application.
+                                            </p>
 
-                                                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-2 relative items-center">
-                                                    <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center space-y-2">
-                                                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-800 text-emerald-400 flex items-center justify-center font-bold">
-                                                            <i className="fa-solid fa-phone-incoming"></i>
-                                                        </div>
-                                                        <div className="text-xs font-bold text-white">1. Inbound Consumer</div>
-                                                        <div className="text-[10px] text-slate-400 font-mono">$0 Cost</div>
-                                                    </div>
+                                            <p className="mt-3 text-sm text-muted">
+                                                No monthly subscription. No per-minute billing. No long-term contract.
+                                            </p>
 
-                                                    <div className="hidden sm:block text-slate-600 text-center"><i className="fa-solid fa-chevron-right"></i></div>
-
-                                                    <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center space-y-2">
-                                                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-800 text-cyan-400 flex items-center justify-center font-bold">
-                                                            <i className="fa-solid fa-headset"></i>
-                                                        </div>
-                                                        <div className="text-xs font-bold text-white">2. Licensed Agent</div>
-                                                        <div className="text-[10px] text-slate-400 font-mono">$0 Cost</div>
-                                                    </div>
-
-                                                    <div className="hidden sm:block text-slate-600 text-center"><i className="fa-solid fa-chevron-right"></i></div>
-
-                                                    <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center space-y-2">
-                                                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-800 text-teal-400 flex items-center justify-center font-bold">
-                                                            <i className="fa-solid fa-file-circle-check"></i>
-                                                        </div>
-                                                        <div className="text-xs font-bold text-white">3. Submit Policy App</div>
-                                                        <div className="text-[10px] text-slate-400 font-mono">Carrier Logged</div>
-                                                    </div>
-
-                                                    <div className="hidden sm:block text-slate-600 text-center"><i className="fa-solid fa-chevron-right"></i></div>
-
-                                                    <div className="bg-emerald-950/40 border border-emerald-500/40 p-4 rounded-2xl text-center space-y-2">
-                                                        <div className="w-10 h-10 mx-auto rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-                                                            <i className="fa-solid fa-credit-card"></i>
-                                                        </div>
-                                                        <div className="text-xs font-black text-emerald-400">4. Billing Event</div>
-                                                        <div className="text-[10px] text-slate-300 font-mono">Flat Fee Charge</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </section>
-
-                                {/* COMMERCIAL COMPARISON */}
-                                <section className="max-w-6xl mx-auto px-4">
-                                    <div className="text-center space-y-4 mb-12">
-                                        <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-                                            Traditional Calls vs. NetEnroll
-                                        </h2>
-                                        <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
-                                            Stop losing marketing budget on dropped connections, uncooperative callers, or non-qualifying prospects.
-                                        </p>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 space-y-6">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-mono text-slate-400 uppercase">Traditional Vendor Model</span>
-                                                <span className="bg-slate-800 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded">High Agent Risk</span>
+                                            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                                                <button onClick={startSignup} className="btn-primary">
+                                                    Start Receiving Calls
+                                                </button>
+                                                <button onClick={() => scrollToSection('pricing')} className="btn-secondary">
+                                                    See Pricing
+                                                </button>
                                             </div>
 
-                                            <div className="space-y-3 text-xs text-slate-300">
-                                                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex justify-between">
-                                                    <span>Pay $45–$85 for the raw phone connection</span>
-                                                    <strong className="text-red-400">You Pay</strong>
-                                                </div>
-                                                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex justify-between">
-                                                    <span>Caller hangs up or disqualifies</span>
-                                                    <strong className="text-red-400">No Refund</strong>
-                                                </div>
-                                                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex justify-between">
-                                                    <span>Unwritten call sessions</span>
-                                                    <strong className="text-red-400">Total Loss</strong>
-                                                </div>
-                                            </div>
+                                            <p className="mt-6 text-[13px] text-muted">
+                                                Built for licensed final expense agents and agencies.
+                                            </p>
                                         </div>
 
-                                        <div className="glass-card border-2 border-emerald-500/60 rounded-3xl p-8 space-y-6 glow-emerald">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-mono text-emerald-400 font-bold uppercase">NetEnroll Model</span>
-                                                <span className="bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded">Zero Call Risk</span>
-                                            </div>
+                                        {/* Value visual: the economics, not a dashboard */}
+                                        <div className="reveal lg:justify-self-end w-full max-w-[420px] mx-auto lg:mx-0">
+                                            <div className="rounded-2xl border border-line bg-white shadow-card overflow-hidden">
+                                                <div className="px-6 py-4 border-b border-line flex items-center justify-between">
+                                                    <span className="text-[13px] font-semibold tracking-[0.14em] text-ink">NETENROLL</span>
+                                                    <span className="text-[11px] font-medium tracking-[0.12em] text-brandgreen">FINAL EXPENSE</span>
+                                                </div>
 
-                                            <div className="space-y-3 text-xs text-slate-200">
-                                                <div className="p-3 rounded-xl bg-slate-950/80 border border-emerald-500/20 flex justify-between">
-                                                    <span>Receive live inbound calls</span>
-                                                    <strong className="text-emerald-400">$0 Charge</strong>
-                                                </div>
-                                                <div className="p-3 rounded-xl bg-slate-950/80 border border-emerald-500/20 flex justify-between">
-                                                    <span>Qualify, pitch, & present policy</span>
-                                                    <strong className="text-emerald-400">$0 Charge</strong>
-                                                </div>
-                                                <div className="p-3 rounded-xl bg-slate-950/80 border border-emerald-500/20 flex justify-between font-bold text-white">
-                                                    <span>Submit policy application to carrier</span>
-                                                    <strong className="text-emerald-400">Pay Flat Fee</strong>
+                                                <div className="p-6 space-y-3">
+                                                    <div className="rounded-xl border border-line bg-white px-4 py-3.5">
+                                                        <div className="text-[11px] font-semibold tracking-[0.1em] text-muted">INCOMING CALL</div>
+                                                        <div className="mt-1 text-sm text-ink">Consumer looking for final expense coverage</div>
+                                                    </div>
+
+                                                    <div className="flow-arrow" aria-hidden="true"></div>
+
+                                                    <div className="rounded-xl border border-line bg-white px-4 py-3.5">
+                                                        <div className="text-sm font-medium text-ink">Agent connected</div>
+                                                    </div>
+
+                                                    <div className="flow-arrow" aria-hidden="true"></div>
+
+                                                    <div className="rounded-xl border border-line bg-white px-4 py-3.5">
+                                                        <div className="text-sm font-medium text-ink">Application submitted</div>
+                                                    </div>
+
+                                                    <div className="rounded-xl bg-mint border border-brandgreen/20 px-4 py-5 text-center">
+                                                        <div className="text-[2rem] leading-none font-bold text-deepgreen">${FINAL_EXPENSE_FEE}</div>
+                                                        <div className="mt-1.5 text-[12px] font-medium tracking-[0.08em] text-deepgreen/80">APPLICATION FEE</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </section>
 
-                                {/* PRODUCTS / VERTICALS */}
-                                <section id="verticals" className="max-w-6xl mx-auto px-4 space-y-12">
-                                    <div className="text-center space-y-4">
-                                        <h2 className="text-3xl sm:text-4xl font-black text-white">Program Rate Schedule</h2>
-                                        <p className="text-slate-400 max-w-xl mx-auto text-sm">
-                                            Fixed, predictable application fees across all individual insurance programs.
+                                {/* ---------------- TRUST STRIP ---------------- */}
+                                <section className="border-y border-line bg-soft">
+                                    <div className="max-w-[1180px] mx-auto px-5 sm:px-6 py-6">
+                                        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
+                                            {['Live final expense calls', 'License matching', 'Call tracking', 'Application tracking'].map(item => (
+                                                <li key={item} className="flex items-center gap-2.5 text-[13px] font-medium text-ink">
+                                                    <CheckMark />
+                                                    <span>{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </section>
+
+                                {/* ---------------- THE PROBLEM ---------------- */}
+                                <section id="final-expense" className="px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[1180px] mx-auto">
+                                        <div className="max-w-2xl">
+                                            <h2 className="section-title">Stop Paying for Calls That Go Nowhere.</h2>
+                                            <p className="mt-5 text-base sm:text-[17px] leading-relaxed text-muted">
+                                                Traditional pay-per-call programs charge you the moment a consumer reaches
+                                                your phone. A short conversation, a bad fit, a hang-up, or an unqualified
+                                                prospect can still cost you money.
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-12 grid md:grid-cols-2 gap-6 items-start">
+                                            {/* Traditional */}
+                                            <div className="rounded-2xl border border-line bg-white p-7">
+                                                <h3 className="text-lg font-semibold text-ink">Traditional Pay-Per-Call</h3>
+                                                <dl className="mt-6 divide-y divide-line">
+                                                    {[
+                                                        ['Consumer calls', 'You pay'],
+                                                        ['Poor fit', 'You pay'],
+                                                        ['Consumer hangs up', 'You pay'],
+                                                        ['No application', 'You still paid']
+                                                    ].map(([left, right]) => (
+                                                        <div key={left} className="flex items-center justify-between gap-4 py-3.5">
+                                                            <dt className="text-sm text-muted">{left}</dt>
+                                                            <dd className="text-sm font-medium text-ink">{right}</dd>
+                                                        </div>
+                                                    ))}
+                                                </dl>
+                                            </div>
+
+                                            {/* NetEnroll — emphasised */}
+                                            <div className="rounded-2xl border-2 border-brandgreen bg-white p-7 shadow-card">
+                                                <h3 className="text-lg font-semibold text-ink">NetEnroll</h3>
+                                                <dl className="mt-6 divide-y divide-line">
+                                                    {[
+                                                        ['Consumer calls', '$0'],
+                                                        ['You speak with the consumer', '$0'],
+                                                        ["Consumer doesn't move forward", '$0'],
+                                                        ['Application submitted', `$${FINAL_EXPENSE_FEE}`]
+                                                    ].map(([left, right], i, arr) => (
+                                                        <div key={left} className="flex items-center justify-between gap-4 py-3.5">
+                                                            <dt className="text-sm text-muted">{left}</dt>
+                                                            <dd className={i === arr.length - 1
+                                                                ? 'text-sm font-bold text-deepgreen'
+                                                                : 'text-sm font-medium text-brandgreen'}>{right}</dd>
+                                                        </div>
+                                                    ))}
+                                                </dl>
+                                                <p className="mt-6 text-sm text-muted">Less wasted marketing spend.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* ---------------- HOW IT WORKS ---------------- */}
+                                <section id="how-it-works" className="border-y border-line bg-soft px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[1180px] mx-auto">
+                                        <h2 className="section-title max-w-2xl">A Simpler Way to Buy Final Expense Opportunities.</h2>
+
+                                        <ol className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            {[
+                                                ['01', 'Get Connected', 'Receive live final expense calls from consumers seeking coverage.'],
+                                                ['02', 'Talk to the Consumer', 'Handle the conversation the way you normally would.'],
+                                                ['03', 'Submit the Application', 'When the consumer moves forward, submit the completed application.'],
+                                                ['04', 'Pay the Flat Fee', `A fixed $${FINAL_EXPENSE_FEE} fee is charged for the eligible submitted application.`]
+                                            ].map(([num, title, body]) => (
+                                                <li key={num} className="rounded-2xl border border-line bg-white p-6">
+                                                    <span className="text-[13px] font-semibold text-brandgreen tracking-[0.1em]">{num}</span>
+                                                    <h3 className="mt-3 text-base font-semibold text-ink">{title}</h3>
+                                                    <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+                                                </li>
+                                            ))}
+                                        </ol>
+
+                                        <p className="mt-10 text-sm text-muted">
+                                            Calls are routed to you and every call and application is tracked in your account.
                                         </p>
                                     </div>
+                                </section>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                        {dbProducts.map((prod) => (
-                                            <div key={prod.id} className="bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition rounded-3xl p-8 flex flex-col justify-between space-y-8">
-                                                <div className="space-y-6">
+                                {/* ---------------- PRICING ---------------- */}
+                                <section id="pricing" className="px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[1180px] mx-auto">
+                                        <div className="max-w-2xl">
+                                            <h2 className="section-title">Simple Pricing. No Guesswork.</h2>
+                                            <p className="mt-5 text-base sm:text-[17px] text-muted">
+                                                One fixed fee for each eligible submitted application.
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-12 rounded-2xl border border-line bg-white shadow-card overflow-hidden">
+                                            <div className="grid lg:grid-cols-[minmax(0,320px)_1fr]">
+                                                <div className="bg-mint p-8 sm:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-brandgreen/15">
+                                                    <div className="text-[3.25rem] leading-none font-bold text-deepgreen">${FINAL_EXPENSE_FEE}</div>
+                                                    <div className="mt-2 text-sm font-medium text-deepgreen/80">per submitted application</div>
+                                                    <div className="mt-6 text-[13px] font-semibold tracking-[0.1em] text-deepgreen/70">FINAL EXPENSE</div>
+                                                </div>
+
+                                                <div className="p-8 sm:p-10 grid sm:grid-cols-2 gap-8">
                                                     <div>
-                                                        <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded">
-                                                            Inbound Live Call
-                                                        </span>
-                                                        <h3 className="text-2xl font-black text-white mt-3">{prod.name}</h3>
-                                                        <p className="text-xs text-slate-400 mt-1">{prod.tagline}</p>
+                                                        <h3 className="text-sm font-semibold text-ink">You don't pay for</h3>
+                                                        <ul className="mt-4 space-y-3">
+                                                            {['Receiving a call', 'Call duration', "A consumer who doesn't move forward", 'Monthly software access'].map(t => (
+                                                                <li key={t} className="flex items-start gap-2.5 text-sm text-muted">
+                                                                    <CheckMark /> <span>{t}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
                                                     </div>
-
-                                                    <div className="border-y border-slate-800/80 py-4">
-                                                        <div className="flex items-baseline gap-1">
-                                                            <span className="text-4xl font-black text-white">${prod.fee}</span>
-                                                            <span className="text-slate-400 text-xs font-semibold">/ submitted app</span>
-                                                        </div>
-                                                        <div className="text-[11px] text-emerald-400 font-mono mt-1">$0 fee if no application submitted</div>
-                                                    </div>
-
-                                                    <ul className="space-y-3 text-xs text-slate-300">
-                                                        {prod.features.map((f, i) => (
-                                                            <li key={i} className="flex items-center gap-2.5">
-                                                                <i className="fa-solid fa-check text-emerald-400"></i>
-                                                                <span>{f}</span>
+                                                    <div>
+                                                        <h3 className="text-sm font-semibold text-ink">You pay when</h3>
+                                                        <ul className="mt-4 space-y-3">
+                                                            <li className="flex items-start gap-2.5 text-sm text-muted">
+                                                                <CheckMark /> <span>An eligible application is submitted</span>
                                                             </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-
-                                                <button onClick={() => { setSelectedVertical(prod.name); setOnboardingStep(3); setCurrentTab('onboarding'); }} className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
-                                                    Start {prod.name} Calls
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-
-                                {/* FAQ SECTION */}
-                                <section id="faq" className="max-w-4xl mx-auto px-4 space-y-8">
-                                    <div className="text-center space-y-3">
-                                        <h2 className="text-3xl font-black text-white">Frequently Asked Questions</h2>
-                                        <p className="text-slate-400 text-sm">Direct answers to common producer questions.</p>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        {FAQS.map((faq, idx) => (
-                                            <div key={idx} className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden transition">
-                                                <button onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)} className="w-full text-left p-6 font-bold text-sm text-white flex items-center justify-between gap-4">
-                                                    <span>{faq.q}</span>
-                                                    <i className={`fa-solid ${openFaq === idx ? 'fa-chevron-up text-emerald-400' : 'fa-chevron-down text-slate-500'}`}></i>
-                                                </button>
-                                                {openFaq === idx && (
-                                                    <div className="px-6 pb-6 text-xs text-slate-300 leading-relaxed border-t border-slate-800/60 pt-4">
-                                                        {faq.a}
+                                                        </ul>
+                                                        <button onClick={startSignup} className="btn-primary mt-8 w-full sm:w-auto">
+                                                            Start Receiving Calls
+                                                        </button>
                                                     </div>
-                                                )}
+                                                </div>
                                             </div>
-                                        ))}
+                                        </div>
+
+                                        <p className="mt-5 text-[13px] text-muted">
+                                            No setup fee. No monthly subscription. No long-term contract.
+                                        </p>
                                     </div>
                                 </section>
 
+                                {/* ---------------- ECONOMIC VALUE ---------------- */}
+                                <section className="border-y border-line bg-soft px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[1180px] mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                                        <div>
+                                            <h2 className="section-title">Your Marketing Budget Should Work Harder.</h2>
+                                            <p className="mt-5 text-base sm:text-[17px] leading-relaxed text-muted">
+                                                With a traditional pay-per-call model, every conversation consumes your
+                                                marketing budget.
+                                            </p>
+                                            <p className="mt-4 text-base sm:text-[17px] leading-relaxed text-muted">
+                                                With NetEnroll, you keep your budget focused on consumers who actually
+                                                move forward.
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <div className="rounded-2xl border border-line bg-white p-6">
+                                                <div className="text-[13px] font-semibold tracking-[0.1em] text-muted">TRADITIONAL</div>
+                                                <div className="mt-3 flex items-center gap-3 text-sm text-ink">
+                                                    <span className="font-medium">5 calls</span>
+                                                    <span className="text-line">→</span>
+                                                    <span className="font-semibold">5 charges</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="rounded-2xl border-2 border-brandgreen bg-white p-6 shadow-card">
+                                                <div className="text-[13px] font-semibold tracking-[0.1em] text-brandgreen">NETENROLL</div>
+                                                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-ink">
+                                                    <span className="font-medium">5 calls</span>
+                                                    <span className="text-line">→</span>
+                                                    <span className="font-medium">1 submitted application</span>
+                                                    <span className="text-line">→</span>
+                                                    <span className="font-semibold text-deepgreen">1 charge</span>
+                                                </div>
+                                            </div>
+
+                                            <p className="text-xs leading-relaxed text-muted">
+                                                Illustration only. Actual results vary by agent, market, consumer demand,
+                                                and sales performance.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* ---------------- AGENTS + AGENCIES ---------------- */}
+                                <section className="px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[1180px] mx-auto grid md:grid-cols-2 gap-6">
+                                        <div className="rounded-2xl border border-line bg-white p-8 flex flex-col">
+                                            <h3 className="text-xl font-semibold text-ink">For Individual Agents</h3>
+                                            <p className="mt-4 text-sm leading-relaxed text-muted">
+                                                You're focused on selling, not sorting through endless lead sources.
+                                            </p>
+                                            <p className="mt-3 text-sm leading-relaxed text-muted">
+                                                Get calls routed to you and keep your marketing spend tied to the action
+                                                that matters.
+                                            </p>
+                                            <button onClick={startSignup} className="btn-primary mt-8 self-start">
+                                                Start as an Agent
+                                            </button>
+                                        </div>
+
+                                        <div className="rounded-2xl border border-line bg-white p-8 flex flex-col">
+                                            <h3 className="text-xl font-semibold text-ink">For Agencies</h3>
+                                            <p className="mt-4 text-sm leading-relaxed text-muted">
+                                                Give your producers another source of final expense opportunities without
+                                                forcing every agent onto a traditional pay-per-call budget.
+                                            </p>
+                                            <ul className="mt-6 space-y-2.5">
+                                                {['Agent routing', 'State and licensing matching', 'Call tracking', 'Application tracking', 'Performance reporting'].map(t => (
+                                                    <li key={t} className="flex items-start gap-2.5 text-sm text-muted">
+                                                        <CheckMark /> <span>{t}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <button onClick={() => scrollToSection('faq')} className="btn-secondary mt-8 self-start">
+                                                Talk to Us
+                                            </button>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* ---------------- TRACKING ---------------- */}
+                                <section className="border-y border-line bg-soft px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[1180px] mx-auto">
+                                        <div className="max-w-2xl">
+                                            <h2 className="section-title">Everything You Need to Track Your Business.</h2>
+                                            <p className="mt-5 text-base sm:text-[17px] leading-relaxed text-muted">
+                                                Every call and application is tracked inside your account so you can see
+                                                what is happening across your business.
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-12 rounded-2xl border border-line bg-white shadow-card p-2">
+                                            <div className="grid grid-cols-2 lg:grid-cols-5 divide-y lg:divide-y-0 divide-x-0 lg:divide-x divide-line">
+                                                {['Calls', 'Applications', 'Agents', 'Conversion Rate', 'Revenue'].map(label => (
+                                                    <div key={label} className="px-6 py-7 text-center">
+                                                        <div className="text-[13px] font-medium text-muted">{label}</div>
+                                                        <div className="mt-3 h-1.5 rounded-full bg-line overflow-hidden">
+                                                            <div className="h-full w-1/2 rounded-full bg-brandgreen/40"></div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <p className="mt-8 text-sm text-muted">
+                                            Built for licensed insurance professionals. Designed for agents who want a
+                                            more predictable way to acquire final expense opportunities.
+                                        </p>
+                                    </div>
+                                </section>
+
+                                {/* ---------------- FAQ ---------------- */}
+                                <section id="faq" className="px-5 sm:px-6 py-20 lg:py-24">
+                                    <div className="max-w-[820px] mx-auto">
+                                        <h2 className="section-title">Frequently Asked Questions</h2>
+
+                                        <div className="mt-10 rounded-2xl border border-line bg-white divide-y divide-line overflow-hidden">
+                                            {FAQS.map((faq, idx) => (
+                                                <div key={idx}>
+                                                    <button
+                                                        onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
+                                                        aria-expanded={openFaq === idx}
+                                                        className="w-full text-left px-6 py-5 flex items-start justify-between gap-5 hover:bg-soft transition-colors">
+                                                        <span className="text-[15px] font-medium text-ink">{faq.q}</span>
+                                                        <span className={`mt-0.5 shrink-0 transition-transform duration-200 ${openFaq === idx ? 'rotate-45' : ''}`}>
+                                                            <PlusMark />
+                                                        </span>
+                                                    </button>
+                                                    <div className={`faq-panel ${openFaq === idx ? 'faq-open' : ''}`}>
+                                                        <p className="px-6 pb-5 text-sm leading-relaxed text-muted">{faq.a}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* ---------------- FINAL CTA ---------------- */}
+                                <section className="px-5 sm:px-6 pb-24">
+                                    <div className="max-w-[1180px] mx-auto rounded-3xl bg-mint border border-brandgreen/20 px-6 sm:px-12 py-16 text-center">
+                                        <h2 className="text-2xl sm:text-[2.1rem] leading-tight font-bold tracking-[-0.02em] text-ink max-w-2xl mx-auto">
+                                            Ready to Try a Better Way to Buy Final Expense Opportunities?
+                                        </h2>
+                                        <p className="mt-5 text-base leading-relaxed text-muted max-w-xl mx-auto">
+                                            Get started with NetEnroll and connect your marketing spend to submitted
+                                            applications instead of paying for every call.
+                                        </p>
+                                        <button onClick={startSignup} className="btn-primary mt-8">
+                                            Start Receiving Calls
+                                        </button>
+                                        <p className="mt-5 text-[13px] text-muted">
+                                            No long-term contract. Simple pricing. Built for licensed agents.
+                                        </p>
+                                    </div>
+                                </section>
                             </div>
                         )}
 
@@ -1969,56 +2269,76 @@
                         </div>
                     )}
 
-                    {/* FOOTER */}
-                    <footer className="border-t border-slate-800 bg-slate-950 py-12 text-xs text-slate-500">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black">
-                                            <i className="fa-solid fa-phone-arrow-up-right text-xs"></i>
-                                        </div>
-                                        <span className="font-black text-white text-base tracking-tight">NET<span className="text-emerald-400">ENROLL</span></span>
-                                    </div>
-                                    <p className="text-slate-400 text-xs leading-relaxed">
-                                        Performance insurance telephony. Licensed insurance agents pay strictly per submitted policy application.
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <div className="text-slate-200 font-bold uppercase font-mono text-[11px] mb-3">Products</div>
-                                    <ul className="space-y-2 text-slate-400">
-                                        <li><button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">Final Expense Inbound</button></li>
-                                        <li><button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">Medicare Advantage & Supp</button></li>
-                                        <li><button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">ACA Health Insurance</button></li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <div className="text-slate-200 font-bold uppercase font-mono text-[11px] mb-3">Company</div>
-                                    <ul className="space-y-2 text-slate-400">
-                                        <li><button onClick={() => scrollToSection('how-it-works')} className="hover:text-emerald-400 transition">How It Works</button></li>
-                                        <li><button onClick={() => scrollToSection('faq')} className="hover:text-emerald-400 transition">Frequently Asked Questions</button></li>
-                                        <li><a href="https://netenroll.com" target="_blank" rel="noopener" className="hover:text-emerald-400 transition">NetEnroll.com</a></li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <div className="text-slate-200 font-bold uppercase font-mono text-[11px] mb-3">Legal & Compliance</div>
-                                    <ul className="space-y-2 text-slate-400">
-                                        <li className="hover:text-slate-300 cursor-pointer">TCPA & CMS Compliance</li>
-                                        <li className="hover:text-slate-300 cursor-pointer">Privacy Policy</li>
-                                        <li className="hover:text-slate-300 cursor-pointer">Terms of Service</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                                <div>© 2026 NetEnroll Inc. All rights reserved. | <a href="https://netenroll.com" className="hover:underline text-slate-400">netenroll.com</a></div>
-                                <div className="font-mono text-[10px] text-slate-600 font-bold">PRODUCTION SHIP READY v1.2.5</div>
-                            </div>
+                    {/* Mobile sticky CTA. Most traffic arrives from SMS on a phone,
+                        so the primary action stays reachable without scrolling back. */}
+                    {isPublic && (
+                        <div className="mobile-cta">
+                            <button onClick={startSignup} className="btn-primary w-full">
+                                Start Receiving Calls
+                            </button>
                         </div>
-                    </footer>
+                    )}
+
+                    {/* FOOTER */}
+                    {isPublic ? (
+                        <footer className="border-t border-line bg-white">
+                            <div className="max-w-[1180px] mx-auto px-5 sm:px-6 py-14">
+                                <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+                                    <div>
+                                        <div className="flex items-center gap-2.5">
+                                            <span className="w-7 h-7 rounded-lg bg-brandgreen flex items-center justify-center">
+                                                <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                                    <path d="M4 13.5L8 6l4 5 4-3.5" stroke="currentColor" strokeWidth="2"
+                                                          strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </span>
+                                            <span className="text-[15px] font-bold tracking-[-0.01em] text-ink">NETENROLL</span>
+                                        </div>
+                                        <p className="mt-4 text-sm leading-relaxed text-muted max-w-xs">
+                                            Performance-based insurance call distribution for licensed agents.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-[13px] font-semibold text-ink">Products</h3>
+                                        <ul className="mt-4 space-y-2.5 text-sm text-muted">
+                                            <li><button onClick={() => scrollToSection('final-expense')} className="hover:text-ink transition-colors">Final Expense</button></li>
+                                        </ul>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-[13px] font-semibold text-ink">Company</h3>
+                                        <ul className="mt-4 space-y-2.5 text-sm text-muted">
+                                            <li><button onClick={() => scrollToSection('how-it-works')} className="hover:text-ink transition-colors">How It Works</button></li>
+                                            <li><button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">FAQ</button></li>
+                                            <li><button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">Contact</button></li>
+                                        </ul>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-[13px] font-semibold text-ink">Legal</h3>
+                                        <ul className="mt-4 space-y-2.5 text-sm text-muted">
+                                            <li><span className="text-muted/70">Terms of Service</span></li>
+                                            <li><span className="text-muted/70">Privacy Policy</span></li>
+                                            <li><span className="text-muted/70">TCPA &amp; CMS Compliance</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className="mt-12 pt-7 border-t border-line flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                                    <p className="text-[13px] text-muted">© 2026 NetEnroll Inc. All rights reserved.</p>
+                                    <p className="text-[13px] text-muted">netenroll.com</p>
+                                </div>
+                            </div>
+                        </footer>
+                    ) : (
+                        <footer className="border-t border-slate-800 bg-slate-950 py-8 text-xs text-slate-500">
+                            <div className="max-w-7xl mx-auto px-5 sm:px-6 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+                                <span>© 2026 NetEnroll Inc.</span>
+                                <button onClick={() => setCurrentTab('marketing')} className="hover:text-slate-300 transition-colors text-left">Back to netenroll.com</button>
+                            </div>
+                        </footer>
+                    )}
 
                 </div>
             );
