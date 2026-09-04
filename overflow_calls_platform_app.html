@@ -605,6 +605,7 @@
                                 <button onClick={() => scrollToSection('verticals')} className="hover:text-emerald-400 transition">ACA</button>
                                 <button onClick={() => scrollToSection('how-it-works')} className="hover:text-emerald-400 transition">How It Works</button>
                                 <button onClick={() => scrollToSection('faq')} className="hover:text-emerald-400 transition">FAQ</button>
+                                <button onClick={() => { setCurrentTab('dashboard'); setDashSubTab('messaging'); }} className="hover:text-emerald-400 transition">Messaging</button>
                             </nav>
 
                             <div className="hidden sm:flex items-center gap-3">
@@ -632,6 +633,7 @@
                                     <button onClick={() => scrollToSection('verticals')} className="text-left py-2 hover:text-emerald-400">ACA Health Insurance</button>
                                     <button onClick={() => scrollToSection('how-it-works')} className="text-left py-2 hover:text-emerald-400">How It Works</button>
                                     <button onClick={() => scrollToSection('faq')} className="text-left py-2 hover:text-emerald-400">FAQ</button>
+                                    <button onClick={() => { setCurrentTab('dashboard'); setDashSubTab('messaging'); setMobileNavOpen(false); }} className="text-left py-2 hover:text-emerald-400">Messaging</button>
                                 </div>
                                 <div className="pt-4 border-t border-slate-800/80 flex flex-col gap-3">
                                     <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); setMobileNavOpen(false); }} className="w-full bg-slate-900 text-slate-200 font-bold py-3 rounded-xl text-xs border border-slate-800">
@@ -1141,7 +1143,8 @@
                                         { id: 'applications', label: 'Submitted Applications', icon: 'fa-file-circle-check' },
                                         { id: 'billing', label: 'Billing & Ledger', icon: 'fa-credit-card' },
                                         { id: 'programs', label: 'Active Programs', icon: 'fa-layer-group' },
-                                        { id: 'account', label: 'Account Profile', icon: 'fa-user-gear' }
+                                        { id: 'account', label: 'Account Profile', icon: 'fa-user-gear' },
+                                        { id: 'messaging', label: 'Messaging', icon: 'fa-comment-sms' }
                                     ].map(t => (
                                         <button key={t.id} onClick={() => setDashSubTab(t.id)} className={`px-4 py-3 rounded-t-xl transition flex items-center gap-2 border-b-2 whitespace-nowrap ${dashSubTab === t.id ? 'border-emerald-400 text-emerald-400 bg-slate-900/60 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
                                             <i className={`fa-solid ${t.icon}`}></i>
@@ -1177,6 +1180,29 @@
                                                 </button>
                                             </div>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* MESSAGING - the SMS console, embedded live */}
+                                {dashSubTab === 'messaging' && (
+                                    <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+                                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+                                            <div className="flex items-center gap-3">
+                                                <i className="fa-solid fa-comment-sms text-emerald-400"></i>
+                                                <span className="text-sm font-bold text-white">Overflow Calls Messaging</span>
+                                            </div>
+                                            <a href="https://messaging.overflowcalls.com" target="_blank" rel="noopener noreferrer"
+                                               className="text-[10px] font-mono uppercase tracking-widest text-slate-400 hover:text-emerald-400 transition flex items-center gap-2">
+                                                <span>Open in new tab</span>
+                                                <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                                            </a>
+                                        </div>
+                                        <iframe
+                                            src="https://messaging.overflowcalls.com"
+                                            title="Overflow Calls Messaging"
+                                            className="w-full block border-0 bg-slate-950"
+                                            style={{ height: 'calc(100vh - 220px)', minHeight: '720px' }}
+                                        ></iframe>
                                     </div>
                                 )}
 
@@ -1540,7 +1566,8 @@
                                         { id: 'programs', label: 'Program Config & Rates', icon: 'fa-sliders' },
                                         { id: 'applications', label: `Applications (${adminTotalApps})`, icon: 'fa-receipt' },
                                         { id: 'calls', label: `Call Stream (${adminTotalCalls})`, icon: 'fa-phone' },
-                                        { id: 'audit', label: `Audit Trail (${auditLogs.length})`, icon: 'fa-file-shield' }
+                                        { id: 'audit', label: `Audit Trail (${auditLogs.length})`, icon: 'fa-file-shield' },
+                                        { id: 'messaging', label: 'Messaging', icon: 'fa-comment-sms' }
                                     ].map(t => (
                                         <button key={t.id} onClick={() => setAdminSubTab(t.id)} className={`px-4 py-3 rounded-t-xl transition flex items-center gap-2 border-b-2 whitespace-nowrap ${adminSubTab === t.id ? 'border-purple-400 text-purple-300 bg-slate-900/80 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
                                             <i className={`fa-solid ${t.icon}`}></i>
@@ -1577,6 +1604,29 @@
                                                 </div>
                                             ))}
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* MESSAGING - the SMS console, embedded live */}
+                                {adminSubTab === 'messaging' && (
+                                    <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+                                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+                                            <div className="flex items-center gap-3">
+                                                <i className="fa-solid fa-comment-sms text-purple-300"></i>
+                                                <span className="text-sm font-bold text-white">Overflow Calls Messaging</span>
+                                            </div>
+                                            <a href="https://messaging.overflowcalls.com" target="_blank" rel="noopener noreferrer"
+                                               className="text-[10px] font-mono uppercase tracking-widest text-slate-400 hover:text-purple-300 transition flex items-center gap-2">
+                                                <span>Open in new tab</span>
+                                                <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                                            </a>
+                                        </div>
+                                        <iframe
+                                            src="https://messaging.overflowcalls.com"
+                                            title="Overflow Calls Messaging"
+                                            className="w-full block border-0 bg-slate-950"
+                                            style={{ height: 'calc(100vh - 220px)', minHeight: '720px' }}
+                                        ></iframe>
                                     </div>
                                 )}
 
