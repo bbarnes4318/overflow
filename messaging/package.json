@@ -1,0 +1,29 @@
+{
+  "name": "overflow-sms",
+  "version": "1.0.0",
+  "description": "Overflow Calls Messaging - SMS gateway backend for Bulkvs and SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "lint": "node --check server.js && node --check database.js && node --check queue.js && node --check public/lib/classification.js",
+    "test:unit": "node tests/run.js unit",
+    "test:integration": "node tests/run.js integration",
+    "test": "node tests/run.js",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "better-sqlite3": "^11.8.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

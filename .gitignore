@@ -1,0 +1,29 @@
+# Secrets and local config — never commit
+messaging/.env
+.env
+
+# Dependencies
+messaging/node_modules
+node_modules/
+
+# Local databases
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+
+# SSH / deploy keys
+id_ed25519
+id_ed25519.pub
+*.pem
+server_ip.txt
+
+# Build and test artifacts
+*.log
+**/test-results/
+**/playwright-report/
+**/screenshots/
+
+# Editor
+.idea/
+.vscode/

@@ -1,0 +1,27 @@
+.env
+id_ed25519
+server_ip.txt
+node_modules/
+dist/
+.idea/
+.vscode/
+*.log
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.pyc
+__pycache__/
+
+# Test and CI artifacts
+**/screenshots/
+**/test-results/
+**/playwright-report/
+test-results/
+playwright-report/
+app.tar.gz
+
+# Exported customer data. Contains phone numbers and message bodies -
+# never commit these.
+*.csv
+*.xlsx
