@@ -694,7 +694,7 @@
 
   <!-- Settings Modal -->
   <div class="modal" id="settings-modal">
-    <div class="modal-content">
+    <div class="modal-content modal-wide">
       <div class="modal-header">
         <h2>Gateway Settings</h2>
         <button class="modal-close" id="settings-close">&times;</button>
@@ -726,11 +726,17 @@
           <small class="form-help">Randomises the gap. A perfectly regular cadence is itself a signal that the traffic is automated.</small>
         </div>
 
-        <div class="form-group">
-          <label for="setting-daily-cap">Daily cap per number</label>
-          <input type="number" id="setting-daily-cap" min="1" max="5000" value="300">
-          <small class="form-help">Once a number hits this, its remaining messages wait for tomorrow rather than moving to another number.</small>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="setting-daily-cap">Daily cap per number</label>
+            <input type="number" id="setting-daily-cap" min="1" max="5000" value="300">
+          </div>
+          <div class="form-group">
+            <label for="setting-concurrency">Numbers sending at once</label>
+            <input type="number" id="setting-concurrency" min="1" max="20" value="3">
+          </div>
         </div>
+        <small class="form-help">The cap is per number: once one hits it, its remaining messages wait for tomorrow rather than moving to another number. Concurrency is how many sends may be in flight together, each still respecting its own number's gap.</small>
 
         <div class="form-group checkbox-row">
           <label><input type="checkbox" id="setting-warmup" checked> Warm up new numbers</label>
@@ -753,11 +759,7 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="setting-concurrency">Numbers sending at once</label>
-          <input type="number" id="setting-concurrency" min="1" max="20" value="3">
-          <small class="form-help">How many sends may be in flight together. Each still respects its own number's gap.</small>
-        </div>
+
 
         <div class="settings-divider">Message Variation</div>
 
@@ -812,11 +814,6 @@
           <input type="password" id="setting-fractel-password">
         </div>
         
-        <button type="submit" class="btn-primary btn-block">Save Configuration</button>
-        <button type="button" id="btn-logout" class="btn-danger btn-block" style="margin-top: 10px;">Sign Out</button>
-        <div class="settings-status" id="settings-status"></div>
-      </form>
-
       <!-- Inbound Webhook Instructions -->
       <div class="panel-section webhook-info-card" style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
         <h3>Inbound Webhook Config</h3>
@@ -828,6 +825,17 @@
           </button>
         </div>
       </div>
+
+        <div class="settings-status" id="settings-status"></div>
+      </form>
+
+      <!-- Outside the scrolling form so Save stays reachable from any position.
+           The form attribute keeps the submit wired to it. -->
+      <div class="settings-actions">
+        <button type="submit" form="settings-form" class="btn-primary">Save Configuration</button>
+        <button type="button" id="btn-logout" class="btn-danger">Sign Out</button>
+      </div>
+
     </div>
   </div>
 

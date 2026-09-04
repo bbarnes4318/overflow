@@ -1839,7 +1839,14 @@ body {
   backdrop-filter: blur(12px);
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* flex-start + margin:auto on the child, NOT align-items:center. Centring a
+     flex child taller than the container overflows it equally in BOTH
+     directions, and the part above the top edge cannot be scrolled back to.
+     This is what pushed Gateway Settings off the screen top and bottom. */
+  align-items: flex-start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 16px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -1861,6 +1868,71 @@ body {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   transform: scale(0.96);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Centres while it fits, then sits at the top and scrolls once it does not. */
+  margin: auto;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Gateway Settings carries four sections and sixteen fields. At 400px that is
+   a very tall single column; the extra width lets related fields pair up. */
+.modal-content.modal-wide {
+  max-width: 660px;
+  padding: 0;
+}
+
+.modal-content.modal-wide .modal-header {
+  padding: 20px 24px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+/* The scrolling region. The header above and actions below stay put. */
+.modal-content.modal-wide .settings-form {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 20px 24px 4px;
+  gap: 14px;
+}
+
+/* Save and Sign Out stay reachable without scrolling to the bottom. */
+.modal-content.modal-wide .settings-actions {
+  flex-shrink: 0;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-radius: 0 0 8px 8px;
+}
+
+.modal-content.modal-wide .settings-actions .btn-primary { flex: 1; }
+.modal-content.modal-wide .settings-actions .btn-danger {
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+/* Pair related fields instead of stacking all sixteen. */
+.modal-content.modal-wide .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.modal-content.modal-wide .settings-divider:first-child { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .modal { padding: 12px; }
+  .modal-content { max-height: calc(100vh - 24px); }
+  .modal-content.modal-wide .form-grid { grid-template-columns: 1fr; }
+  .modal-content.modal-wide .settings-actions { flex-direction: column; align-items: stretch; }
+  .modal-content.modal-wide .settings-actions .btn-danger { width: 100%; }
 }
 
 .modal.open .modal-content {
