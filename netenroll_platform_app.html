@@ -312,16 +312,18 @@
             </svg>
         );
 
-        // The wordmark. Intrinsic width/height are the real pixel dimensions of
-        // each file so the browser reserves the right box before the image
-        // loads; CSS sets the height and the aspect ratio does the rest.
-        // The two files are trimmed to their ink, so they are not quite the
-        // same ratio - hence per-variant dimensions rather than one constant.
+        // The wordmark. Both cuts are written onto the same canvas, so one pair
+        // of intrinsic dimensions is correct for either - the browser reserves
+        // the right box before the file loads and the header does not jump.
+        // These must match the PNGs; they are 918x179 today.
+        const WORDMARK_W = 918;
+        const WORDMARK_H = 179;
+
         const Wordmark = ({ dark = false, className = 'h-[26px] w-auto' }) => (
             <img
-                src={dark ? 'netenroll-logo-dark.png' : 'netenroll-logo.png'}
-                width={dark ? 560 : 918}
-                height={dark ? 112 : 179}
+                src={(dark ? 'netenroll-logo-dark.png' : 'netenroll-logo.png') + '?v=2'}
+                width={WORDMARK_W}
+                height={WORDMARK_H}
                 alt="NetEnroll"
                 className={className}
             />
