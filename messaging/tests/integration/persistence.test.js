@@ -23,7 +23,14 @@ let cookie = '';
 
 async function boot() {
   child = spawn(process.execPath, [SERVER], {
-    env: { ...process.env, SMS_DB_PATH: DB, PORT: String(PORT), NODE_ENV: 'test' },
+    env: {
+      ...process.env,
+      SMS_DB_PATH: DB,
+      PORT: String(PORT),
+      NODE_ENV: 'test',
+      SUPERADMIN_USERNAME: 'root-admin',
+      SUPERADMIN_PASSWORD: 'superadmin-test-password'
+    },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   const logs = [];
@@ -69,11 +76,20 @@ test.after(async () => {
 
 test('state survives a full server restart', async () => {
   await boot();
-  await req('POST', '/api/auth/signup', { username: 'restart', password: 'restart-pass-123' });
+
+  // Sign in as the seeded superadmin, stand up a tenant that owns the DID the
+  // webhook posts to, then act as that tenant's owner for the rest of the test.
+  await req('POST', '/api/auth/login',
+    { username: 'root-admin', password: 'superadmin-test-password' });
+  const tenant = (await req('POST', '/api/tenants', { name: 'Restart Tenant' })).json;
+  await req('POST', `/api/tenants/${tenant.id}/dids`, { did: '5555550100' });
+  await req('POST', `/api/tenants/${tenant.id}/users`,
+    { username: 'restart', password: 'restart-pass-123', role: 'owner' });
+  await req('POST', '/api/auth/login', { username: 'restart', password: 'restart-pass-123' });
 
   // Build state: an opt-out, an appointment and a delivered reminder.
   const optOut = (await req('POST', '/api/conversations', { phone_number: '+15557770001', name: 'Gone' })).json;
-  await req('POST', '/webhook/inbound', { From: '+15557770001', To: '8653456051', Message: 'STOP' });
+  await req('POST', '/webhook/inbound', { From: '+15557770001', To: '5555550100', Message: 'STOP' });
 
   const booked = (await req('POST', '/api/conversations', { phone_number: '+15557770002', name: 'Booked' })).json;
   const when = new Date(Date.now() + 3600000).toISOString();
@@ -114,7 +130,7 @@ test('state survives a full server restart', async () => {
 
   // A later inbound message must NOT lift the opt-out.
   await req('POST', '/webhook/inbound',
-    { From: '+15557770001', To: '8653456051', Message: 'hey are you still there?' });
+    { From: '+15557770001', To: '5555550100', Message: 'hey are you still there?' });
 
   list = (await req('GET', '/api/conversations')).json;
   const stillBlocked = list.find(c => c.id === optOut.id);

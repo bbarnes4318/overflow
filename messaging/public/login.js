@@ -9,38 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSubmit = document.getElementById('btn-submit');
   const errorMsg = document.getElementById('error-msg');
 
-  let isSignupMode = false;
+  // There is no signup path any more. The platform superadmin is seeded when
+  // the server first starts, and every other account is created by a
+  // superadmin against a tenant that already exists, so this page only ever
+  // signs in. The flag is kept so the submit handler below stays unchanged.
+  const isSignupMode = false;
 
-  // Check auth status on load
-  checkAuthStatus();
-
-  async function checkAuthStatus() {
-    try {
-      const res = await fetch('/api/auth/status');
-      const data = await res.json();
-      
-      if (!data.has_admin) {
-        // First run setup: force Administrator account creation
-        isSignupMode = true;
-        formTitle.textContent = 'Setup Administrator';
-        formSubtitle.textContent = 'Create the initial gateway administrator account';
-        confirmPasswordGroup.style.display = 'block';
-        confirmPasswordInput.required = true;
-        btnSubmit.querySelector('span').textContent = 'Create Admin Account';
-      } else {
-        // Normal login mode
-        isSignupMode = false;
-        formTitle.textContent = 'Sign in';
-        formSubtitle.textContent = 'Sign in to access your dashboard';
-        confirmPasswordGroup.style.display = 'none';
-        confirmPasswordInput.required = false;
-        btnSubmit.querySelector('span').textContent = 'Sign In';
-      }
-    } catch (err) {
-      console.error('Failed to fetch authentication status:', err);
-      showError('Unable to connect to authentication service.');
-    }
-  }
+  formTitle.textContent = 'Sign in';
+  formSubtitle.textContent = 'Sign in to access your dashboard';
+  confirmPasswordGroup.style.display = 'none';
+  confirmPasswordInput.required = false;
+  btnSubmit.querySelector('span').textContent = 'Sign In';
 
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -78,7 +78,9 @@ function normalizeDid(value) {
 class Pacer {
   /**
    * @param {object} deps
-   *   deps.getSettings   () => settings object
+   *   deps.getSettings   (did) => settings object for that DID's tenant.
+   *                      Called with no argument for platform-wide values
+   *                      (maxConcurrent), which have no tenant.
    *   deps.getDidSummary () => { [did]: {firstSendDay, sentToday, day} }
    */
   constructor(deps) {
@@ -86,8 +88,9 @@ class Pacer {
     this.getDidSummary = deps.getDidSummary || (() => ({}));
     this.state = new Map();
     this.seeded = false;
-    this.settingsCache = null;
-    this.settingsCachedAt = 0;
+    // Cached per DID: two tenants may pace their numbers differently, so one
+    // shared cache entry would leak the first caller's limits to everyone.
+    this.settingsCache = new Map();
   }
 
   /**
@@ -123,16 +126,18 @@ class Pacer {
     console.log(`[pacing] seeded ${this.state.size} DID(s) from send history.`);
   }
 
-  config() {
+  config(did) {
     // The worker calls this many times a second; re-reading settings from
     // SQLite every time is wasteful and a two-second staleness is harmless.
+    const key = did ? normalizeDid(did) : '__global__';
     const now = Date.now();
-    if (this.settingsCache && now - this.settingsCachedAt < 2000) return this.settingsCache;
+    const cached = this.settingsCache.get(key);
+    if (cached && now - cached.at < 2000) return cached.cfg;
 
-    const settings = this.getSettings() || {};
-    const value = key => (settings[key] === undefined || settings[key] === '' ? DEFAULTS[key] : settings[key]);
+    const settings = (did ? this.getSettings(did) : this.getSettings()) || {};
+    const value = k => (settings[k] === undefined || settings[k] === '' ? DEFAULTS[k] : settings[k]);
 
-    this.settingsCache = {
+    const cfg = {
       enabled: String(value('pacing_enabled')) === '1',
       minGapMs: Math.max(0, num(value('did_min_gap_ms'), 12000)),
       jitterPct: Math.min(0.9, Math.max(0, num(value('did_jitter_pct'), 0.4))),
@@ -146,12 +151,12 @@ class Pacer {
       quietEnd: Math.min(24, Math.max(1, num(value('quiet_end_hour'), 20))),
       maxConcurrent: Math.max(1, Math.min(20, num(value('max_concurrent_sends'), 3)))
     };
-    this.settingsCachedAt = now;
-    return this.settingsCache;
+    this.settingsCache.set(key, { cfg, at: now });
+    return cfg;
   }
 
   invalidateConfig() {
-    this.settingsCache = null;
+    this.settingsCache.clear();
   }
 
   didState(did, at) {
@@ -229,7 +234,8 @@ class Pacer {
    * @returns {{ok: true}} or {{ok: false, reason: string, retryInMs: number, detail: string}}
    */
   evaluate(msg, at) {
-    const cfg = this.config();
+    // Paced on the overrides of whichever tenant owns the sending number.
+    const cfg = this.config(msg.from_number);
     const now = at || new Date();
     if (!cfg.enabled) return { ok: true };
 
@@ -286,7 +292,7 @@ class Pacer {
    * so the cadence is irregular rather than a metronome.
    */
   recordSend(did, at) {
-    const cfg = this.config();
+    const cfg = this.config(did);
     const now = at || new Date();
     const entry = this.didState(did, now);
     entry.sentToday++;
@@ -305,7 +311,7 @@ class Pacer {
    * the whole pool.
    */
   recordOutcome(did, success, at) {
-    const cfg = this.config();
+    const cfg = this.config(did);
     const now = at || new Date();
     const entry = this.didState(did, now);
 
@@ -336,24 +342,35 @@ class Pacer {
     return true;
   }
 
-  /** Per-DID view for the status endpoint. */
-  snapshot(at) {
-    const cfg = this.config();
+  /**
+   * Per-DID view for the status endpoint.
+   *
+   * `only` restricts the result to a set of DIDs, so the endpoint can show a
+   * tenant its own numbers and nobody else's. Each entry is evaluated against
+   * its own DID's config, since limits differ per tenant.
+   */
+  snapshot(at, only = null) {
     const now = at || new Date();
     this.seed(now);
     const nowMs = now.getTime();
-    return Array.from(this.state.values()).map(entry => ({
-      did: entry.did,
-      sent_today: entry.sentToday,
-      daily_allowance: this.dailyAllowance(entry, cfg, now),
-      warming_up: cfg.warmupEnabled && this.dailyAllowance(entry, cfg, now) < cfg.dailyCap,
-      first_send_day: entry.firstSendDay,
-      last_sent_at: entry.lastSentAt,
-      next_allowed_in_ms: Math.max(0, entry.nextAllowedAt - nowMs),
-      paused: entry.pausedUntil > nowMs,
-      paused_for_ms: Math.max(0, entry.pausedUntil - nowMs),
-      pause_reason: entry.pausedUntil > nowMs ? entry.pauseReason : null
-    }));
+    const allowed = only ? new Set(Array.from(only, normalizeDid)) : null;
+    return Array.from(this.state.values())
+      .filter(entry => !allowed || allowed.has(entry.did))
+      .map(entry => {
+        const cfg = this.config(entry.did);
+        return {
+          did: entry.did,
+          sent_today: entry.sentToday,
+          daily_allowance: this.dailyAllowance(entry, cfg, now),
+          warming_up: cfg.warmupEnabled && this.dailyAllowance(entry, cfg, now) < cfg.dailyCap,
+          first_send_day: entry.firstSendDay,
+          last_sent_at: entry.lastSentAt,
+          next_allowed_in_ms: Math.max(0, entry.nextAllowedAt - nowMs),
+          paused: entry.pausedUntil > nowMs,
+          paused_for_ms: Math.max(0, entry.pausedUntil - nowMs),
+          pause_reason: entry.pausedUntil > nowMs ? entry.pauseReason : null
+        };
+      });
   }
 }
 

@@ -4,19 +4,19 @@ const test = require('node:test');
 const assert = require('node:assert');
 const variation = require('../../variation');
 
-const SOURCE = 'Hi [Name], this is Jimmy with Life Assurance about the $250,000 policy you asked about. Call 8653456051. Reply STOP to opt out.';
+const SOURCE = 'Hi [Name], this is Jimmy with Life Assurance about the $250,000 policy you asked about. Call 5555550100. Reply STOP to opt out.';
 
 // A rewrite is only acceptable if it is demonstrably the same message. These
 // tests pin the specific ways a rewrite can be wrong, because every one of them
 // is a compliance or accuracy problem rather than a style problem.
 
 test('a faithful rewrite is accepted', () => {
-  const variant = 'Hi [Name], Jimmy here from Life Assurance regarding the $250,000 policy you enquired about. Call 8653456051. Reply STOP to opt out.';
+  const variant = 'Hi [Name], Jimmy here from Life Assurance regarding the $250,000 policy you enquired about. Call 5555550100. Reply STOP to opt out.';
   assert.strictEqual(variation.rejectionReason(SOURCE, variant), null);
 });
 
 test('a changed dollar amount is rejected', () => {
-  const variant = 'Hi [Name], Jimmy here from Life Assurance regarding the $500,000 policy you enquired about. Call 8653456051. Reply STOP to opt out.';
+  const variant = 'Hi [Name], Jimmy here from Life Assurance regarding the $500,000 policy you enquired about. Call 5555550100. Reply STOP to opt out.';
   assert.match(variation.rejectionReason(SOURCE, variant), /numbers, links, or contact details/);
 });
 
@@ -26,26 +26,26 @@ test('a changed phone number is rejected', () => {
 });
 
 test('dropping the opt-out disclosure is rejected', () => {
-  const variant = 'Hi [Name], Jimmy here from Life Assurance regarding the $250,000 policy you enquired about. Call 8653456051.';
+  const variant = 'Hi [Name], Jimmy here from Life Assurance regarding the $250,000 policy you enquired about. Call 5555550100.';
   assert.match(variation.rejectionReason(SOURCE, variant), /opt-out/);
 });
 
 test('losing or inventing a merge placeholder is rejected', () => {
-  const dropped = 'Hi there, Jimmy here from Life Assurance regarding the $250,000 policy you enquired about. Call 8653456051. Reply STOP to opt out.';
+  const dropped = 'Hi there, Jimmy here from Life Assurance regarding the $250,000 policy you enquired about. Call 5555550100. Reply STOP to opt out.';
   assert.match(variation.rejectionReason(SOURCE, dropped), /placeholders/);
 
-  const invented = 'Hi [Name] in [City], Jimmy from Life Assurance regarding the $250,000 policy. Call 8653456051. Reply STOP to opt out.';
+  const invented = 'Hi [Name] in [City], Jimmy from Life Assurance regarding the $250,000 policy. Call 5555550100. Reply STOP to opt out.';
   assert.ok(variation.rejectionReason(SOURCE, invented));
 });
 
 test('a variant that adds spam-trigger content is rejected', () => {
-  const variant = 'Hi [Name], GUARANTEED FREE $250,000 policy - act now!!! Call 8653456051. Reply STOP to opt out.';
+  const variant = 'Hi [Name], GUARANTEED FREE $250,000 policy - act now!!! Call 5555550100. Reply STOP to opt out.';
   assert.ok(variation.rejectionReason(SOURCE, variant));
 });
 
 test('a runaway-length variant is rejected', () => {
   const variant = 'Hi [Name], ' + 'padding '.repeat(40) +
-    'the $250,000 policy. Call 8653456051. Reply STOP to opt out.';
+    'the $250,000 policy. Call 5555550100. Reply STOP to opt out.';
   assert.match(String(variation.rejectionReason(SOURCE, variant)), /runaway length|segment/);
 });
 
@@ -69,8 +69,8 @@ test('an empty or identical variant is rejected', () => {
 });
 
 test('token extraction survives punctuation and case differences', () => {
-  const a = variation.extractTokens('Call 865-345-6051 or visit Example.com for $1,000.');
-  const b = variation.extractTokens('Visit example.COM or call 8653456051 about $1,000.');
+  const a = variation.extractTokens('Call 555-555-0100 or visit Example.com for $1,000.');
+  const b = variation.extractTokens('Visit example.COM or call 5555550100 about $1,000.');
   assert.deepStrictEqual(a, b);
 });
 
@@ -81,7 +81,7 @@ test('a URL swapped for a lookalike domain is rejected', () => {
 });
 
 test('curly quotes are folded to ASCII so a good rewrite is not lost to UCS-2', () => {
-  const curly = 'Hi [Name], Jimmy here — I’m following up on the $250,000 policy you “asked” about. Call 8653456051. Reply STOP to opt out.';
+  const curly = 'Hi [Name], Jimmy here — I’m following up on the $250,000 policy you “asked” about. Call 5555550100. Reply STOP to opt out.';
   const folded = variation.normalizeTypography(curly);
   assert.ok(!/[‘’“”–—]/.test(folded), 'expected no typographic characters to survive');
   assert.match(folded, /I'm/);

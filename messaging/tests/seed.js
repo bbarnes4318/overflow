@@ -23,37 +23,46 @@ const db = require('../database');
 db.initDatabase();
 const raw = db.db;
 
+// Everything is seeded inside one tenant, which owns the sending number.
+// A conversation with no tenant cannot exist, and a tenant with no DID
+// cannot send.
+const SEED_DID = '5555550100';
+const tenant = db.getTenantBySlug('seed-tenant') || db.createTenant('Seed Tenant', 'seed-tenant');
+const tenantId = tenant.id;
+db.assignDidToTenant(tenantId, SEED_DID);
+
 // Deterministic timestamps relative to now so "overdue" and "due soon" are stable.
 const iso = offsetMinutes =>
   new Date(Date.now() + offsetMinutes * 60000).toISOString().slice(0, 19).replace('T', ' ');
 
 function conversation(phone, name, { stage = 'Stage 1', city = 'Orlando' } = {}) {
-  const conv = db.getOrCreateConversation(phone, name, city);
-  raw.prepare('UPDATE conversations SET stage = ? WHERE id = ?').run(stage, conv.id);
+  const conv = db.getOrCreateConversation(tenantId, phone, name, city);
+  raw.prepare('UPDATE conversations SET stage = ? WHERE id = ? AND tenant_id = ?')
+    .run(stage, conv.id, tenantId);
   return conv.id;
 }
 
 function outbound(id, body, { status = 'sent', minutesAgo = 120, delivered = false } = {}) {
   const created = iso(-minutesAgo);
   const msgId = raw.prepare(`
-    INSERT INTO messages (conversation_id, direction, from_number, to_number, body, status, created_at)
-    VALUES (?, 'outbound', '8653456051', (SELECT phone_number FROM conversations WHERE id = ?), ?, ?, ?)
-  `).run(id, id, body, status, created).lastInsertRowid;
+    INSERT INTO messages (tenant_id, conversation_id, direction, from_number, to_number, body, status, created_at)
+    VALUES (?, ?, 'outbound', ?, (SELECT phone_number FROM conversations WHERE id = ?), ?, ?, ?)
+  `).run(tenantId, id, SEED_DID, id, body, status, created).lastInsertRowid;
   if (delivered) {
     raw.prepare("UPDATE messages SET delivered_at = ?, carrier_status = 'DELIVRD' WHERE id = ?")
       .run(iso(-minutesAgo + 1), msgId);
   }
-  raw.prepare('UPDATE conversations SET last_message_text = ?, last_message_at = ? WHERE id = ?')
-    .run(body, created, id);
+  raw.prepare('UPDATE conversations SET last_message_text = ?, last_message_at = ? WHERE id = ? AND tenant_id = ?')
+    .run(body, created, id, tenantId);
   return msgId;
 }
 
 // Routed through insertMessage so classification and suppression fire for real.
 function inbound(id, body, minutesAgo = 60) {
   const conv = raw.prepare('SELECT phone_number FROM conversations WHERE id = ?').get(id);
-  const inserted = db.insertMessage({
+  const inserted = db.insertMessage(tenantId, {
     conversation_id: id, direction: 'inbound',
-    from_number: conv.phone_number, to_number: '8653456051',
+    from_number: conv.phone_number, to_number: SEED_DID,
     body, status: 'received'
   });
   raw.prepare('UPDATE messages SET created_at = ? WHERE id = ?').run(iso(-minutesAgo), inserted.id);
@@ -79,29 +88,29 @@ inbound(grace, '?', 20);
 const kenji = conversation('+13125550110', 'Kenji Watanabe');
 outbound(kenji, OPENER, { delivered: true });
 inbound(kenji, 'Sounds good, book me in', 300);
-db.setConversationDisposition(kenji, 'appointment', iso(-180), 'overdue on purpose');
+db.setConversationDisposition(tenantId, kenji, 'appointment', iso(-180), 'overdue on purpose');
 
 const dana = conversation('+14155550111', 'Dana Whitfield');
 outbound(dana, OPENER, { delivered: true });
 inbound(dana, 'Tomorrow works', 200);
-db.setConversationDisposition(dana, 'appointment', iso(12), 'due within the hour');
+db.setConversationDisposition(tenantId, dana, 'appointment', iso(12), 'due within the hour');
 
 const marcus = conversation('+17025550112', 'Marcus Bell');
 outbound(marcus, OPENER, { delivered: true });
 inbound(marcus, 'Send me the details', 400);
-db.setConversationDisposition(marcus, 'appointment', iso(60 * 26), 'tomorrow');
+db.setConversationDisposition(tenantId, marcus, 'appointment', iso(60 * 26), 'tomorrow');
 
 // ---- Hot Leads: follow-ups ---------------------------------------------
 const nia = conversation('+13055550120', 'Nia Adeyemi');
 outbound(nia, OPENER, { delivered: true });
 inbound(nia, 'Maybe next month, call me in June', 500);
-db.setConversationDisposition(nia, 'follow_up', iso(60 * 72), 'call back in June');
+db.setConversationDisposition(tenantId, nia, 'follow_up', iso(60 * 72), 'call back in June');
 
 // ---- Customers ---------------------------------------------------------
 const carlos = conversation('+12025550130', 'Carlos Mendez');
 outbound(carlos, OPENER, { delivered: true });
 inbound(carlos, 'We signed up, thanks!', 600);
-db.setConversationDisposition(carlos, 'customer');
+db.setConversationDisposition(tenantId, carlos, 'customer');
 
 // ---- Closed > No (business rejection, NOT an opt-out) ------------------
 const tom = conversation('+14045550140', 'Tom Beckett');
@@ -116,7 +125,7 @@ inbound(sandra, 'not interested', 800);
 const ed = conversation('+13035550150', 'Ed Novak');
 outbound(ed, OPENER, { delivered: true });
 inbound(ed, 'I rent, I do not own the place', 900);
-db.setConversationDisposition(ed, 'unqualified', null, 'renter');
+db.setConversationDisposition(tenantId, ed, 'unqualified', null, 'renter');
 
 // ---- Closed > Opted Out (legal suppression) ----------------------------
 const dwayne = conversation('+16175550160', 'Dwayne Ortiz');

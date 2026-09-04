@@ -102,34 +102,27 @@ function fail(res, status, publicMessage, err) {
   return res.status(status).json({ error: publicMessage });
 }
 
-// Auth status (public check)
+// Auth status (public check). The superadmin is seeded at boot, so an install
+// is always "configured" - the login page never offers a signup form.
 app.get('/api/auth/status', (req, res) => {
   try {
-    const userCount = db.countUsers();
-    res.json({ has_admin: userCount > 0 });
+    res.json({ has_admin: db.countUsers() > 0 });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Admin signup (first time setup)
+// Self-service signup is deliberately gone.
+//
+// On a single-tenant install "first user becomes admin" was reasonable. On a
+// multi-tenant one it hands the platform to whoever loads the page first, and
+// every account created that way would have no tenant. Accounts are created by
+// a superadmin (POST /api/tenants, POST /api/tenants/:id/users) against a
+// tenant that already exists.
 app.post('/api/auth/signup', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
-  }
-  try {
-    const userCount = db.countUsers();
-    if (userCount > 0) {
-      return res.status(403).json({ error: 'Administrator already configured' });
-    }
-    db.createUser(username, password);
-    const session = db.createSession(username);
-    res.setHeader('Set-Cookie', sessionCookie(req, session.token, 7 * 24 * 60 * 60));
-    res.json({ success: true, username: session.username });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.status(410).json({
+    error: 'Self-service signup is disabled. Ask a platform administrator for an account.'
+  });
 });
 
 /**
@@ -184,9 +177,27 @@ app.post('/api/auth/login', (req, res) => {
       recordFailedLogin(req);
       return res.status(401).json({ error: 'Invalid username or password' });
     }
-    const session = db.createSession(user.username);
+
+    // A suspended tenant cannot be logged into at all. Checked here rather than
+    // per-route so there is one place it can be got wrong.
+    if (user.role !== 'superadmin') {
+      const tenant = db.getTenantById(user.tenant_id);
+      if (!tenant || tenant.status !== 'active') {
+        recordFailedLogin(req);
+        return res.status(403).json({ error: 'This account is not active.' });
+      }
+    }
+
+    // The session opens on the user's own tenant. A superadmin starts with none
+    // and picks one via /api/tenants/switch.
+    const session = db.createSession(user.username, user.tenant_id || null);
     res.setHeader('Set-Cookie', sessionCookie(req, session.token, 7 * 24 * 60 * 60));
-    res.json({ success: true, username: session.username });
+    res.json({
+      success: true,
+      username: session.username,
+      role: user.role,
+      tenant_id: user.tenant_id || null
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -245,8 +256,36 @@ app.use((req, res, next) => {
   }
 
   req.user = session;
+  req.sessionToken = token;
+  // The single place a request's tenant is decided. Handlers read req.tenantId
+  // and never derive it from anything the client sent.
+  req.tenantId = session.tenant_id || null;
+  req.isSuperadmin = session.role === 'superadmin';
   next();
 });
+
+/**
+ * Guard for every route that touches tenant-owned data.
+ *
+ * A superadmin who has not chosen a tenant yet has no tenantId, and gets a
+ * clear 409 rather than a confusing empty result set.
+ */
+function requireTenantContext(req, res) {
+  if (req.tenantId) return true;
+  res.status(409).json({
+    error: req.isSuperadmin
+      ? 'Select a tenant first (POST /api/tenants/switch).'
+      : 'This account is not attached to a tenant.',
+    needs_tenant: true
+  });
+  return false;
+}
+
+function requireSuperadmin(req, res) {
+  if (req.isSuperadmin) return true;
+  res.status(403).json({ error: 'Superadmin only' });
+  return false;
+}
 
 // Serve main static assets with strict no-cache headers
 app.use(express.static(path.resolve(__dirname, 'public'), {
@@ -259,8 +298,33 @@ app.use(express.static(path.resolve(__dirname, 'public'), {
   }
 }));
 
-// Store WebSocket clients
-const clients = new Set();
+/**
+ * WebSocket clients, bucketed by tenant.
+ *
+ * This used to be one flat Set, which meant every connected browser received
+ * every message event on the platform - each inbound reply, each status change,
+ * for every tenant. A Map of tenant to socket set makes the delivery boundary
+ * the same boundary as the data.
+ */
+const clientsByTenant = new Map();
+
+function registerClient(tenantId, ws) {
+  if (!clientsByTenant.has(tenantId)) clientsByTenant.set(tenantId, new Set());
+  clientsByTenant.get(tenantId).add(ws);
+}
+
+function unregisterClient(tenantId, ws) {
+  const bucket = clientsByTenant.get(tenantId);
+  if (!bucket) return;
+  bucket.delete(ws);
+  if (bucket.size === 0) clientsByTenant.delete(tenantId);
+}
+
+function totalClients() {
+  let n = 0;
+  for (const bucket of clientsByTenant.values()) n += bucket.size;
+  return n;
+}
 
 wss.on('connection', (ws, req) => {
   const token = getCookie(req.headers.cookie, 'session_token');
@@ -269,47 +333,214 @@ wss.on('connection', (ws, req) => {
     ws.close(4001, 'Unauthorized');
     return;
   }
+  // The handshake resolves the tenant the same way HTTP does. A socket with no
+  // tenant (a superadmin who has not switched yet) is refused rather than
+  // parked in a bucket where it might catch another tenant's traffic.
+  const tenantId = session.tenant_id;
+  if (!tenantId) {
+    ws.close(4003, 'No tenant selected');
+    return;
+  }
 
-  clients.add(ws);
-  console.log('Client connected. Total clients:', clients.size);
-  
+  ws.tenantId = tenantId;
+  registerClient(tenantId, ws);
+  console.log(`Client connected (tenant ${tenantId}). Total clients:`, totalClients());
+
   // Send current queue status upon connection
   ws.send(JSON.stringify({
     type: 'queue_status',
-    data: db.getQueueStats()
+    data: db.getQueueStats(tenantId)
   }));
 
   ws.on('close', () => {
-    clients.delete(ws);
-    console.log('Client disconnected. Total clients:', clients.size);
+    unregisterClient(tenantId, ws);
+    console.log('Client disconnected. Total clients:', totalClients());
   });
 });
 
-// Broadcast to all WebSocket clients
-function broadcast(type, data) {
+/** Broadcast to one tenant's sockets only. */
+function broadcast(tenantId, type, data) {
+  if (!tenantId) return;
+  const bucket = clientsByTenant.get(Number(tenantId));
+  if (!bucket) return;
   const payload = JSON.stringify({ type, data });
-  clients.forEach(client => {
+  bucket.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(payload);
     }
   });
 }
 
-// Listen for message status changes in the queue worker
+/** The two events almost every mutation emits. */
+function broadcastQueueStatus(tenantId) {
+  if (!tenantId) return;
+  broadcast(tenantId, 'queue_status', db.getQueueStats(tenantId));
+}
+
+// Listen for message status changes in the queue worker. The worker is global,
+// so the event carries the tenant of the message it concerns.
 queueWorker.on('messageStatusChanged', (msgEvent) => {
-  broadcast('message_status', msgEvent);
-  broadcast('queue_status', db.getQueueStats());
+  const tenantId = msgEvent && msgEvent.tenant_id;
+  if (!tenantId) return;
+  broadcast(tenantId, 'message_status', msgEvent);
+  broadcastQueueStatus(tenantId);
+});
+
+/* ==================================================================
+ * Tenant administration (superadmin only)
+ * ================================================================== */
+
+/** Who am I, and which tenant am I acting as. Drives the sidebar header. */
+app.get('/api/me', (req, res) => {
+  try {
+    const tenant = req.tenantId ? db.getTenantById(req.tenantId) : null;
+    res.json({
+      username: req.user.username,
+      role: req.user.role,
+      tenant_id: req.tenantId,
+      tenant_name: tenant ? tenant.name : null,
+      tenant_slug: tenant ? tenant.slug : null,
+      is_superadmin: req.isSuperadmin,
+      // Only a superadmin gets the list; everyone else sees their own tenant.
+      tenants: req.isSuperadmin ? db.getTenants() : (tenant ? [tenant] : [])
+    });
+  } catch (err) {
+    fail(res, 500, 'Could not load session context', err);
+  }
+});
+
+app.get('/api/tenants', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  try {
+    res.json(db.getTenants());
+  } catch (err) {
+    fail(res, 500, 'Could not list tenants', err);
+  }
+});
+
+app.post('/api/tenants', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const { name, slug } = req.body || {};
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  try {
+    res.status(201).json(db.createTenant(name, slug || null));
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+/** Point this superadmin's session at a tenant. */
+app.post('/api/tenants/switch', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const { tenant_id } = req.body || {};
+  try {
+    const session = db.setSessionTenant(req.sessionToken, tenant_id);
+    if (!session) return res.status(404).json({ error: 'Session not found' });
+    const tenant = db.getTenantById(session.tenant_id);
+    res.json({ success: true, tenant_id: session.tenant_id, tenant_name: tenant && tenant.name });
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+app.post('/api/tenants/:id/users', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const tenantId = parseInt(req.params.id, 10);
+  const { username, password, role } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ error: 'username and password are required' });
+  }
+  if (role && !['owner', 'agent'].includes(role)) {
+    return res.status(400).json({ error: "role must be 'owner' or 'agent'" });
+  }
+  try {
+    db.createUser(username, password, { tenantId, role: role || 'agent' });
+    res.status(201).json({ success: true, username: String(username).trim().toLowerCase() });
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+/* --- DID ownership (superadmin only) --- */
+
+app.get('/api/tenants/:id/dids', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  try {
+    res.json(db.getTenantDids(parseInt(req.params.id, 10)));
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+app.post('/api/tenants/:id/dids', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const { did, enabled } = req.body || {};
+  if (!did) return res.status(400).json({ error: 'did is required' });
+  try {
+    res.status(201).json(db.assignDidToTenant(parseInt(req.params.id, 10), did, {
+      enabled: enabled !== false
+    }));
+  } catch (err) {
+    fail(res, 409, err.message, err);
+  }
+});
+
+app.delete('/api/tenants/:id/dids/:did', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  try {
+    db.removeDidFromTenant(parseInt(req.params.id, 10), req.params.did);
+    res.json({ success: true });
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+/* --- The one cross-tenant list: litigators and DNC numbers --- */
+
+app.get('/api/global-suppression', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  try {
+    res.json(db.getGlobalSuppression());
+  } catch (err) {
+    fail(res, 500, 'Could not load the global list', err);
+  }
+});
+
+app.post('/api/global-suppression', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const { phone_number, reason, detail } = req.body || {};
+  if (!phone_number) return res.status(400).json({ error: 'phone_number is required' });
+  try {
+    res.status(201).json(db.addGlobalSuppression(phone_number, {
+      reason: reason || 'dnc',
+      detail: detail || null,
+      actor: req.user.username
+    }));
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+app.delete('/api/global-suppression/:phone', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  try {
+    db.removeGlobalSuppression(req.params.phone);
+    res.json({ success: true });
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
 });
 
 // REST API Endpoints
 
 // 1. Get all conversations
 app.get('/api/conversations', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
     // The list view needs a fraction of each row. Sending the full record for
     // every contact was megabytes of JSON parsed on each load for fields the
     // sidebar never renders.
-    const list = db.getConversationsForList();
+    const list = db.getConversationsForList(req.tenantId);
     res.json(list);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -318,12 +549,13 @@ app.get('/api/conversations', (req, res) => {
 
 // 2. Create new conversation
 app.post('/api/conversations', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const { phone_number, name, city, zip } = req.body;
   if (!phone_number) {
     return res.status(400).json({ error: 'Phone number is required' });
   }
   try {
-    const conv = db.getOrCreateConversation(phone_number, name, city || null, zip || null);
+    const conv = db.getOrCreateConversation(req.tenantId, phone_number, name, city || null, zip || null);
     res.status(201).json(conv);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -332,12 +564,17 @@ app.post('/api/conversations', (req, res) => {
 
 // 2.5. Delete conversation
 app.delete('/api/conversations/:id', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseInt(req.params.id, 10);
   try {
-    db.deleteConversation(convId);
-    // Broadcast updates
-    broadcast('conversation_deleted', { id: convId });
-    broadcast('queue_status', db.getQueueStats());
+    // Ownership is verified before the delete, so another tenant's id is a 404
+    // rather than a silent no-op reported as success.
+    if (!db.getConversationById(req.tenantId, convId)) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+    db.deleteConversation(req.tenantId, convId);
+    broadcast(req.tenantId, 'conversation_deleted', { id: convId });
+    broadcastQueueStatus(req.tenantId);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -346,11 +583,15 @@ app.delete('/api/conversations/:id', (req, res) => {
 
 // 3. Get messages for a conversation (and mark conversation read)
 app.get('/api/conversations/:id/messages', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseInt(req.params.id, 10);
   try {
-    db.markConversationRead(convId);
-    broadcast('conversation_read', { id: convId });
-    const messages = db.getMessages(convId);
+    if (!db.getConversationById(req.tenantId, convId)) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+    db.markConversationRead(req.tenantId, convId);
+    broadcast(req.tenantId, 'conversation_read', { id: convId });
+    const messages = db.getMessages(req.tenantId, convId);
     res.json(messages);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -359,10 +600,14 @@ app.get('/api/conversations/:id/messages', (req, res) => {
 
 // 3.5. Mark conversation read explicitly
 app.post('/api/conversations/:id/read', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseInt(req.params.id, 10);
   try {
-    db.markConversationRead(convId);
-    broadcast('conversation_read', { id: convId });
+    if (!db.getConversationById(req.tenantId, convId)) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+    db.markConversationRead(req.tenantId, convId);
+    broadcast(req.tenantId, 'conversation_read', { id: convId });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -371,6 +616,7 @@ app.post('/api/conversations/:id/read', (req, res) => {
 
 // 3.6. Set / clear a lead disposition
 app.post('/api/conversations/:id/disposition', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseConversationId(req.params.id);
   if (convId === null) {
     return res.status(400).json({ error: 'Invalid conversation id' });
@@ -400,6 +646,7 @@ app.post('/api/conversations/:id/disposition', (req, res) => {
 
   try {
     const updated = db.setConversationDisposition(
+      req.tenantId,
       convId,
       disposition || null,
       utcSchedule,
@@ -410,7 +657,7 @@ app.post('/api/conversations/:id/disposition', (req, res) => {
       return res.status(404).json({ error: 'Conversation not found' });
     }
 
-    broadcast('conversation_disposition', updated);
+    broadcast(req.tenantId, 'conversation_disposition', updated);
     res.json(updated);
   } catch (err) {
     return fail(res, 400, err.message, err);
@@ -420,6 +667,7 @@ app.post('/api/conversations/:id/disposition', (req, res) => {
 // 3.6b. Explicit re-opt-in. Deliberately separate from disposition changes so
 // that clearing a disposition can never resurrect a suppressed contact.
 app.post('/api/conversations/:id/opt-in', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseConversationId(req.params.id);
   if (convId === null) {
     return res.status(400).json({ error: 'Invalid conversation id' });
@@ -432,11 +680,11 @@ app.post('/api/conversations/:id/opt-in', (req, res) => {
 
   try {
     const actor = (req.user && req.user.username) || 'unknown';
-    const updated = db.recordOptIn(convId, actor);
+    const updated = db.recordOptIn(req.tenantId, convId, actor);
     if (!updated) {
       return res.status(404).json({ error: 'Conversation not found' });
     }
-    broadcast('conversation_disposition', updated);
+    broadcast(req.tenantId, 'conversation_disposition', updated);
     res.json(updated);
   } catch (err) {
     return fail(res, 400, err.message, err);
@@ -445,12 +693,13 @@ app.post('/api/conversations/:id/opt-in', (req, res) => {
 
 // Notes API
 app.get('/api/conversations/:id/notes', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const paramId = req.params.id;
   const phoneNumber = req.query.phone_number || null;
   let convId = parseConversationId(paramId);
 
   try {
-    const notes = db.getNotesForTarget({ conversationId: convId, phoneNumber });
+    const notes = db.getNotesForTarget(req.tenantId, { conversationId: convId, phoneNumber });
     res.json(notes);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -458,6 +707,7 @@ app.get('/api/conversations/:id/notes', (req, res) => {
 });
 
 app.post('/api/conversations/:id/notes', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const paramId = req.params.id;
   const { note_text, phone_number } = req.body;
   let convId = parseConversationId(paramId);
@@ -467,26 +717,34 @@ app.post('/api/conversations/:id/notes', (req, res) => {
   }
 
   try {
-    const newNote = db.addNoteForTarget({
+    const newNote = db.addNoteForTarget(req.tenantId, {
       conversationId: convId,
       phoneNumber: phone_number || null,
       noteText: note_text
     });
-    broadcast('note_created', { conversation_id: convId, note: newNote });
+    broadcast(req.tenantId, 'note_created', { conversation_id: convId, note: newNote });
     res.json(newNote);
   } catch (err) {
+    // A conversation belonging to another tenant reads as not found.
+    if (/does not belong to tenant/.test(err.message)) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
 
 app.delete('/api/notes/:noteId', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const noteId = parseInt(req.params.noteId, 10);
   if (isNaN(noteId)) {
     return res.status(400).json({ error: 'Invalid note id' });
   }
   try {
-    db.deleteNote(noteId);
-    broadcast('note_deleted', { note_id: noteId });
+    const result = db.deleteNote(req.tenantId, noteId);
+    if (!result.changes) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+    broadcast(req.tenantId, 'note_deleted', { note_id: noteId });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -495,6 +753,7 @@ app.delete('/api/notes/:noteId', (req, res) => {
 
 // 3.6c. Manually suppress a contact.
 app.post('/api/conversations/:id/opt-out', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseConversationId(req.params.id);
   if (convId === null) {
     return res.status(400).json({ error: 'Invalid conversation id' });
@@ -504,13 +763,13 @@ app.post('/api/conversations/:id/opt-out', (req, res) => {
     const actor = (req.user && req.user.username) || 'unknown';
     const kind = req.body.kind === 'wrong_number' ? 'wrong_number' : 'opt_out';
     const updated = kind === 'wrong_number'
-      ? db.recordWrongNumber(convId, { source: 'manual', text: req.body.reason || null, actor })
-      : db.recordOptOut(convId, { source: 'manual', text: req.body.reason || null, actor });
+      ? db.recordWrongNumber(req.tenantId, convId, { source: 'manual', text: req.body.reason || null, actor })
+      : db.recordOptOut(req.tenantId, convId, { source: 'manual', text: req.body.reason || null, actor });
 
     if (!updated) {
       return res.status(404).json({ error: 'Conversation not found' });
     }
-    broadcast('conversation_disposition', updated);
+    broadcast(req.tenantId, 'conversation_disposition', updated);
     res.json(updated);
   } catch (err) {
     return fail(res, 400, err.message, err);
@@ -520,14 +779,16 @@ app.post('/api/conversations/:id/opt-out', (req, res) => {
 // 3.6e. Reminder state. Persisted server-side so a reminder fires once per
 // tier and survives page refreshes and server restarts.
 app.get('/api/reminders', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
-    res.json({ notified: db.getNotifiedReminders() });
+    res.json({ notified: db.getNotifiedReminders(req.tenantId) });
   } catch (err) {
     return fail(res, 500, 'Could not load reminder state', err);
   }
 });
 
 app.post('/api/reminders/ack', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseConversationId(req.body.conversation_id);
   const { scheduled_at, tier } = req.body;
 
@@ -539,7 +800,10 @@ app.post('/api/reminders/ack', (req, res) => {
   }
 
   try {
-    db.acknowledgeReminder(convId, scheduled_at, tier);
+    const ok = db.acknowledgeReminder(req.tenantId, convId, scheduled_at, tier);
+    if (ok === null) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
     res.json({ success: true });
   } catch (err) {
     return fail(res, 500, 'Could not record reminder', err);
@@ -548,8 +812,9 @@ app.post('/api/reminders/ack', (req, res) => {
 
 // 3.6d. Run the historical suppression backfill on demand.
 app.post('/api/admin/backfill-suppression', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
-    const summary = db.backfillSuppression({ dryRun: req.body.dry_run === true });
+    const summary = db.backfillSuppression(req.tenantId, { dryRun: req.body.dry_run === true });
     console.log('[backfill] summary:', JSON.stringify(summary));
     res.json(summary);
   } catch (err) {
@@ -559,6 +824,7 @@ app.post('/api/admin/backfill-suppression', (req, res) => {
 
 // 3.7. Performance stats for a date range
 app.get('/api/stats', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const { from, to, start, end, tz_offset } = req.query;
 
   if (!isIsoDate(from) || !isIsoDate(to)) {
@@ -587,7 +853,7 @@ app.get('/api/stats', (req, res) => {
   }
 
   try {
-    res.json(db.getStats(from, to, options));
+    res.json(db.getStats(req.tenantId, from, to, options));
   } catch (err) {
     return fail(res, 500, 'Could not load stats', err);
   }
@@ -595,6 +861,7 @@ app.get('/api/stats', (req, res) => {
 
 // 4. Queue a message (Outbound)
 app.post('/api/conversations/:id/messages', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const convId = parseConversationId(req.params.id);
   if (convId === null) {
     return res.status(400).json({ error: 'Invalid conversation id' });
@@ -614,7 +881,7 @@ app.post('/api/conversations/:id/messages', (req, res) => {
   try {
     // Look the conversation up directly. This used to load every conversation
     // and scan the array, so a single send read all ~9,400 rows.
-    const conv = db.getConversationById(convId);
+    const conv = db.getConversationById(req.tenantId, convId);
     if (!conv) {
       return res.status(404).json({ error: 'Conversation not found' });
     }
@@ -622,9 +889,9 @@ app.post('/api/conversations/:id/messages', (req, res) => {
     // Hard suppression blocks even a deliberate one-to-one send. Business
     // dispositions (No / Unqualified / Customer) do not — a human may still
     // reply to someone they marked as a customer.
-    const block = db.getSuppressionBlock(conv, { scope: 'individual' });
+    const block = db.getSuppressionBlock(req.tenantId, conv, { scope: 'individual' });
     if (block) {
-      db.logSuppressionEvent(convId, conv.phone_number, 'blocked_send', block.reason,
+      db.logSuppressionEvent(req.tenantId, convId, conv.phone_number, 'blocked_send', block.reason,
                              'individual send rejected', req.user && req.user.username);
       return res.status(409).json({
         error: `Cannot message this contact: ${block.label}.`,
@@ -634,8 +901,9 @@ app.post('/api/conversations/:id/messages', (req, res) => {
       });
     }
 
-    // Sticky rotation: reuses this contact's pinned DID, or claims the next one.
-    const fromNum = db.resolveSenderNumber(convId, from_number);
+    // Sticky rotation: reuses this contact's pinned DID, or claims the next one
+    // from this tenant's own pool.
+    const fromNum = db.resolveSenderNumber(req.tenantId, convId, from_number);
 
     const msgData = {
       conversation_id: convId,
@@ -648,11 +916,11 @@ app.post('/api/conversations/:id/messages', (req, res) => {
       scheduled_at: scheduled_at || null
     };
 
-    const inserted = db.insertMessage(msgData);
-    
+    const inserted = db.insertMessage(req.tenantId, msgData);
+
     // Broadcast message creation
-    broadcast('message_new', inserted);
-    broadcast('queue_status', db.getQueueStats());
+    broadcast(req.tenantId, 'message_new', inserted);
+    broadcastQueueStatus(req.tenantId);
 
     // Proactively kick the queue worker in case it's waiting
     queueWorker.processNext();
@@ -670,12 +938,14 @@ app.post('/api/conversations/:id/messages', (req, res) => {
  * caller gets a single-entry pool holding the original template, which is the
  * behaviour the system had before variation existed.
  */
-async function buildVariantPool(template, conversationIds) {
+async function buildVariantPool(tenantId, template, conversationIds) {
   try {
-    return await variation.buildPool(template, db.getSettings(), {
+    // The Anthropic key is global, but the widths come from this tenant's own
+    // contacts - measuring another tenant's names would size the template wrong.
+    return await variation.buildPool(template, db.getEffectiveSettings(tenantId), {
       // Segment checks run against merged text, so they need the real widths
       // of the names and cities this campaign will substitute.
-      placeholderWidths: db.getPlaceholderWidths(conversationIds)
+      placeholderWidths: db.getPlaceholderWidths(tenantId, conversationIds)
     });
   } catch (err) {
     console.error('[variation] pool generation failed, sending template unchanged:', err.message);
@@ -700,6 +970,7 @@ function summarizeVariation(variants) {
 
 // 4.5. Bulk Upload Leads & Campaign Sending
 app.post('/api/leads/upload', async (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const { leads, message_template, from_number } = req.body;
   if (!leads || !Array.isArray(leads)) {
     return res.status(400).json({ error: 'Leads array is required' });
@@ -713,24 +984,24 @@ app.post('/api/leads/upload', async (req, res) => {
 
   try {
     const variants = message_template
-      ? await buildVariantPool(message_template)
+      ? await buildVariantPool(req.tenantId, message_template)
       : { pool: null, enabled: false, stats: null };
 
-    const result = db.bulkImportLeads(leads, message_template || null, from_number || null, {
+    const result = db.bulkImportLeads(req.tenantId, leads, message_template || null, from_number || null, {
       variantPool: variants.pool
     });
 
     // Broadcast new messages via WebSockets if any
     if (result.messages.length > 0) {
       result.messages.forEach(msg => {
-        broadcast('message_new', msg);
+        broadcast(req.tenantId, 'message_new', msg);
       });
       // Wake up queue worker
       queueWorker.processNext();
     }
-    
+
     // Update queue stats on dashboard
-    broadcast('queue_status', db.getQueueStats());
+    broadcastQueueStatus(req.tenantId);
 
     // Structured summary: `messages` and `skipped` are the raw arrays, the
     // rest are the audited counts. imported_count is deliberately gone —
@@ -744,6 +1015,7 @@ app.post('/api/leads/upload', async (req, res) => {
 
 // 4.6. Send Bulk Message to Selected Conversations
 app.post('/api/conversations/bulk-message', async (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const { conversation_ids, message_text, from_number } = req.body;
   if (!conversation_ids || !Array.isArray(conversation_ids)) {
     return res.status(400).json({ error: 'conversation_ids array is required' });
@@ -759,22 +1031,23 @@ app.post('/api/conversations/bulk-message', async (req, res) => {
   }
 
   try {
-    const variants = await buildVariantPool(message_text, conversation_ids);
+    const variants = await buildVariantPool(req.tenantId, message_text, conversation_ids);
+    // Ids belonging to another tenant simply are not found and are skipped.
     const { messages, skipped } = db.sendBulkMessages(
-      conversation_ids, message_text, from_number || null, { variantPool: variants.pool }
+      req.tenantId, conversation_ids, message_text, from_number || null, { variantPool: variants.pool }
     );
 
     // Broadcast new messages via WebSockets if any
     if (messages.length > 0) {
       messages.forEach(msg => {
-        broadcast('message_new', msg);
+        broadcast(req.tenantId, 'message_new', msg);
       });
       // Wake up queue worker
       queueWorker.processNext();
     }
-    
+
     // Update queue stats on dashboard
-    broadcast('queue_status', db.getQueueStats());
+    broadcastQueueStatus(req.tenantId);
 
     res.json({
       success: true,
@@ -793,6 +1066,7 @@ app.post('/api/conversations/bulk-message', async (req, res) => {
 
 // 4.7. Send Bulk Message to Specific Stages (Campaigns)
 app.post('/api/campaigns', async (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const { stages, message_text, from_number } = req.body;
   if (!stages || !Array.isArray(stages) || stages.length === 0) {
     return res.status(400).json({ error: 'stages array is required' });
@@ -802,11 +1076,11 @@ app.post('/api/campaigns', async (req, res) => {
   }
 
   try {
-    // Find all conversations in target stages
+    // Find all conversations in target stages, within this tenant.
     const placeholders = stages.map(() => '?').join(',');
     const conversations = db.db.prepare(`
-      SELECT id FROM conversations WHERE stage IN (${placeholders})
-    `).all(...stages);
+      SELECT id FROM conversations WHERE tenant_id = ? AND stage IN (${placeholders})
+    `).all(req.tenantId, ...stages);
 
     const conversationIds = conversations.map(c => c.id);
     if (conversationIds.length === 0) {
@@ -817,22 +1091,22 @@ app.post('/api/campaigns', async (req, res) => {
       });
     }
 
-    const variants = await buildVariantPool(message_text, conversationIds);
+    const variants = await buildVariantPool(req.tenantId, message_text, conversationIds);
     const { messages, skipped } = db.sendBulkMessages(
-      conversationIds, message_text, from_number || null, { variantPool: variants.pool }
+      req.tenantId, conversationIds, message_text, from_number || null, { variantPool: variants.pool }
     );
 
     // Broadcast new messages via WebSockets if any
     if (messages.length > 0) {
       messages.forEach(msg => {
-        broadcast('message_new', msg);
+        broadcast(req.tenantId, 'message_new', msg);
       });
       // Wake up queue worker
       queueWorker.processNext();
     }
-    
+
     // Update queue stats on dashboard
-    broadcast('queue_status', db.getQueueStats());
+    broadcastQueueStatus(req.tenantId);
 
     res.json({
       success: true,
@@ -863,8 +1137,10 @@ app.post('/api/messages/lint', (req, res) => {
   if (text.length > MAX_MESSAGE_LENGTH) {
     return res.status(400).json({ error: `Message exceeds ${MAX_MESSAGE_LENGTH} characters` });
   }
+  if (!requireTenantContext(req, res)) return;
   try {
-    const settings = db.getSettings();
+    // brand_terms is a per-tenant list, so the lint runs on this tenant's brand.
+    const settings = db.getEffectiveSettings(req.tenantId);
     const result = contentLint.lint(text, {
       // One-to-one replies do not need the disclosure repeated; a bulk or
       // first-touch send does.
@@ -879,8 +1155,10 @@ app.post('/api/messages/lint', (req, res) => {
 
 // 5. Get current settings
 app.get('/api/settings', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
-    const settings = db.getSettings();
+    // Global defaults with this tenant's overrides applied.
+    const settings = db.getEffectiveSettings(req.tenantId);
     // The Anthropic key is never echoed back. The UI needs to know whether one
     // is set, not what it is. (The carrier credentials in this response predate
     // this change and are left as-is rather than silently breaking the settings
@@ -894,9 +1172,10 @@ app.get('/api/settings', (req, res) => {
 
 // 5.5. Get recent queue activity messages
 app.get('/api/queue/recent', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
     const limit = parseInt(req.query.limit, 10) || 10;
-    const recent = db.getRecentMessages(limit);
+    const recent = db.getRecentMessages(req.tenantId, limit);
     res.json(recent);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -966,6 +1245,7 @@ async function configureFractelWebhook(settings, hostUrl) {
 
 // 6. Update settings
 app.post('/api/settings', async (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
     const incoming = { ...req.body };
 
@@ -977,7 +1257,23 @@ app.post('/api/settings', async (req, res) => {
     }
     delete incoming.anthropic_api_key_set;
 
-    const updated = db.updateSettings(incoming);
+    // Carrier credentials and the LLM key are platform-wide and only a
+    // superadmin may change them; everything else is written per tenant.
+    const globalKeys = {};
+    const tenantKeys = {};
+    for (const [key, value] of Object.entries(incoming)) {
+      if (db.GLOBAL_ONLY_SETTINGS.has(key)) globalKeys[key] = value;
+      else tenantKeys[key] = value;
+    }
+    if (Object.keys(globalKeys).length && !req.isSuperadmin) {
+      return res.status(403).json({
+        error: 'Carrier and API credentials are platform-wide and can only be changed by a superadmin.',
+        rejected_keys: Object.keys(globalKeys)
+      });
+    }
+    if (Object.keys(globalKeys).length) db.updateSettings(globalKeys);
+    db.updateTenantSettings(req.tenantId, tenantKeys);
+    const updated = db.getEffectiveSettings(req.tenantId);
 
     // Pacing settings are cached in the worker; drop the cache so a change to
     // the gap, cap, or quiet hours takes effect on the next send rather than
@@ -1005,8 +1301,9 @@ app.post('/api/settings', async (req, res) => {
 
 // 7. Get queue status
 app.get('/api/queue/status', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
-    const stats = db.getQueueStats();
+    const stats = db.getQueueStats(req.tenantId);
     res.json(stats);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1017,8 +1314,11 @@ app.get('/api/queue/status', (req, res) => {
 // current allowance is, whether it is warming up or paused on a failure spike.
 // This is the view that tells you why a queue is draining slowly.
 app.get('/api/pacing/status', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   try {
-    res.json(queueWorker.pacingStatus());
+    // Only this tenant's own numbers.
+    const dids = db.getTenantDids(req.tenantId).map(row => row.did);
+    res.json(queueWorker.pacingStatus(dids));
   } catch (err) {
     fail(res, 500, 'Could not read pacing status', err);
   }
@@ -1026,9 +1326,14 @@ app.get('/api/pacing/status', (req, res) => {
 
 // 7.6. Clear a failure-spike pause on one number.
 app.post('/api/pacing/resume', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
   const { did } = req.body || {};
   if (!did) return res.status(400).json({ error: 'did is required' });
   try {
+    // A tenant may only resume a number it owns.
+    if (db.resolveTenantForDid(did) !== req.tenantId) {
+      return res.status(404).json({ error: 'No pacing state for that number' });
+    }
     const resumed = queueWorker.resumeDid(did);
     if (!resumed) return res.status(404).json({ error: 'No pacing state for that number' });
     console.log(`[pacing] DID ${did} manually resumed by ${req.user && req.user.username}`);
@@ -1066,32 +1371,34 @@ app.post('/webhook/inbound', (req, res) => {
       const status = statMatch ? statMatch[1] : '';
       const errCode = errMatch ? errMatch[1] : '';
 
-      // Find original message by RefId
-      const targetMsg = db.db.prepare('SELECT * FROM messages WHERE ref_id = ?').get(RefId);
-      if (targetMsg) {
+      // A receipt arrives with nothing but a ref_id, so the message row is
+      // where its tenant is discovered. Every write below is scoped to it.
+      const targetMsg = db.getMessageByRefId(RefId);
+      if (targetMsg && targetMsg.tenant_id) {
+        const tenantId = targetMsg.tenant_id;
         if (status === 'DELIVRD') {
           // Real handset confirmation. Without this the stats can only report
           // carrier acceptance, which is not the same thing.
-          db.recordDelivery(targetMsg.id, status);
+          db.recordDelivery(tenantId, targetMsg.id, status);
           console.log(`[dlr] message ${targetMsg.id} confirmed delivered.`);
-          broadcast('message_status', {
+          broadcast(tenantId, 'message_status', {
             id: targetMsg.id,
             status: 'sent',
             delivered: true,
             conversation_id: targetMsg.conversation_id
           });
         } else if (status === 'UNDELIV' || status === 'REJECTD' || status === 'EXPIRED') {
-          db.recordCarrierStatus(targetMsg.id, status);
+          db.recordCarrierStatus(tenantId, targetMsg.id, status);
           const errorDetail = `Carrier delivery failed: ${status} (err: ${errCode || 'unknown'})`;
-          db.updateMessageStatus(targetMsg.id, 'failed', RefId, errorDetail);
-          
-          broadcast('message_status', {
+          db.updateMessageStatus(tenantId, targetMsg.id, 'failed', RefId, errorDetail);
+
+          broadcast(tenantId, 'message_status', {
             id: targetMsg.id,
             status: 'failed',
             error_message: errorDetail,
             conversation_id: targetMsg.conversation_id
           });
-          broadcast('queue_status', db.getQueueStats());
+          broadcastQueueStatus(tenantId);
         }
       }
       return res.status(200).send('OK');
@@ -1099,18 +1406,28 @@ app.post('/webhook/inbound', (req, res) => {
 
     // Get target number
     const toNum = (Array.isArray(To) ? To[0] : To) || '';
-    
-    // Create/get conversation for sender
-    // Normalize From number to database format
-    const conv = db.getOrCreateConversation(From);
+    const inboundDid = (toNum || '').replace(/[^\d]/g, '').replace(/^1(?=\d{10}$)/, '');
+
+    // THE ROUTING DECISION. The number they texted identifies the tenant, and
+    // it is resolved before any conversation is touched - otherwise an inbound
+    // to an unknown number would create a contact belonging to nobody.
+    const tenantId = db.resolveTenantForDid(inboundDid);
+    if (!tenantId) {
+      // 200, not an error: the carrier retries on anything else, and there is
+      // nothing to retry into. Logged loudly because it means a DID is live at
+      // the carrier but not registered here.
+      console.warn(`[webhook] inbound to unrouted DID '${toNum}' from ${From} - ignored. ` +
+                   'Assign the number to a tenant in tenant_dids to accept its replies.');
+      return res.status(200).send('OK');
+    }
+
+    // Create/get conversation for sender, inside the resolved tenant.
+    const conv = db.getOrCreateConversation(tenantId, From);
 
     // Pin the conversation to whichever of our DIDs they texted, so our reply
     // goes back from the number already showing in their thread.
     if (!conv.assigned_did) {
-      const inboundDid = (toNum || '').replace(/[^\d]/g, '').replace(/^1(?=\d{10}$)/, '');
-      if (db.getFractelDidPool().includes(inboundDid)) {
-        db.setConversationDid(conv.id, inboundDid);
-      }
+      db.setConversationDid(tenantId, conv.id, inboundDid);
     }
 
     const msgData = {
@@ -1124,11 +1441,11 @@ app.post('/webhook/inbound', (req, res) => {
     };
 
     // Insert message into database
-    const inserted = db.insertMessage(msgData);
+    const inserted = db.insertMessage(tenantId, msgData);
 
-    // Broadcast new message via websocket
-    broadcast('message_new', inserted);
-    
+    // Broadcast new message via websocket, to that tenant only
+    broadcast(tenantId, 'message_new', inserted);
+
     // Send 200 OK as requested by Bulkvs
     res.status(200).send('OK');
   } catch (err) {

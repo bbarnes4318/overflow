@@ -5,7 +5,7 @@ const assert = require('node:assert');
 const { freshDb, seedConversation, seedMessage } = require('../helpers/testdb');
 
 const ctx = freshDb('analytics');
-const { db, raw } = ctx;
+const { tenantId, db, raw } = ctx;
 test.after(() => ctx.cleanup());
 
 const IN_RANGE_A = '2026-07-10';
@@ -15,33 +15,33 @@ const FROM = '2026-07-01';
 const TO = '2026-07-31';
 
 // Deterministic fixture built directly in SQL so nothing depends on app paths.
-const alice = seedConversation(raw, { phone: '+15554440001', name: 'Alice', createdAt: `${IN_RANGE_A} 08:00:00` });
-const bob = seedConversation(raw, { phone: '+15554440002', name: 'Bob', createdAt: `${IN_RANGE_A} 08:00:00` });
-const cara = seedConversation(raw, { phone: '+15554440003', name: 'Cara', createdAt: `${IN_RANGE_B} 08:00:00` });
-const old = seedConversation(raw, { phone: '+15554440004', name: 'Old', createdAt: `${OUTSIDE} 08:00:00` });
+const alice = seedConversation(raw, { tenantId, phone: '+15554440001', name: 'Alice', createdAt: `${IN_RANGE_A} 08:00:00` });
+const bob = seedConversation(raw, { tenantId, phone: '+15554440002', name: 'Bob', createdAt: `${IN_RANGE_A} 08:00:00` });
+const cara = seedConversation(raw, { tenantId, phone: '+15554440003', name: 'Cara', createdAt: `${IN_RANGE_B} 08:00:00` });
+const old = seedConversation(raw, { tenantId, phone: '+15554440004', name: 'Old', createdAt: `${OUTSIDE} 08:00:00` });
 
 // Outbound: 3 accepted (1 with a real DLR), 1 failed, 1 queued — plus 1 outside the range.
-seedMessage(raw, { conversationId: alice, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_A} 09:00:00`, deliveredAt: `${IN_RANGE_A} 09:00:30` });
-seedMessage(raw, { conversationId: bob, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_A} 09:00:00` });
-seedMessage(raw, { conversationId: cara, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_B} 09:00:00` });
-seedMessage(raw, { conversationId: alice, direction: 'outbound', status: 'failed', createdAt: `${IN_RANGE_A} 10:00:00` });
-seedMessage(raw, { conversationId: bob, direction: 'outbound', status: 'queued', createdAt: `${IN_RANGE_B} 09:00:00` });
-seedMessage(raw, { conversationId: old, direction: 'outbound', status: 'sent', createdAt: `${OUTSIDE} 09:00:00` });
+seedMessage(raw, { tenantId, conversationId: alice, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_A} 09:00:00`, deliveredAt: `${IN_RANGE_A} 09:00:30` });
+seedMessage(raw, { tenantId, conversationId: bob, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_A} 09:00:00` });
+seedMessage(raw, { tenantId, conversationId: cara, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_B} 09:00:00` });
+seedMessage(raw, { tenantId, conversationId: alice, direction: 'outbound', status: 'failed', createdAt: `${IN_RANGE_A} 10:00:00` });
+seedMessage(raw, { tenantId, conversationId: bob, direction: 'outbound', status: 'queued', createdAt: `${IN_RANGE_B} 09:00:00` });
+seedMessage(raw, { tenantId, conversationId: old, direction: 'outbound', status: 'sent', createdAt: `${OUTSIDE} 09:00:00` });
 
 // Inbound: Alice replies positively TWICE (the inflation trap), Bob opts out,
 // Cara asks a question, and one reply sits outside the range.
-seedMessage(raw, { conversationId: alice, direction: 'inbound', body: 'Yes what time works?', createdAt: `${IN_RANGE_A} 09:30:00` });
-seedMessage(raw, { conversationId: alice, direction: 'inbound', body: 'still interested!', createdAt: `${IN_RANGE_A} 11:00:00` });
-seedMessage(raw, { conversationId: bob, direction: 'inbound', body: 'STOP', createdAt: `${IN_RANGE_A} 09:45:00` });
-seedMessage(raw, { conversationId: cara, direction: 'inbound', body: 'how much?', createdAt: `${IN_RANGE_B} 14:00:00` });
-seedMessage(raw, { conversationId: old, direction: 'inbound', body: 'ignore me', createdAt: `${OUTSIDE} 09:30:00` });
+seedMessage(raw, { tenantId, conversationId: alice, direction: 'inbound', body: 'Yes what time works?', createdAt: `${IN_RANGE_A} 09:30:00` });
+seedMessage(raw, { tenantId, conversationId: alice, direction: 'inbound', body: 'still interested!', createdAt: `${IN_RANGE_A} 11:00:00` });
+seedMessage(raw, { tenantId, conversationId: bob, direction: 'inbound', body: 'STOP', createdAt: `${IN_RANGE_A} 09:45:00` });
+seedMessage(raw, { tenantId, conversationId: cara, direction: 'inbound', body: 'how much?', createdAt: `${IN_RANGE_B} 14:00:00` });
+seedMessage(raw, { tenantId, conversationId: old, direction: 'inbound', body: 'ignore me', createdAt: `${OUTSIDE} 09:30:00` });
 
 raw.prepare("UPDATE conversations SET disposition='appointment', disposition_at=? WHERE id=?").run(`${IN_RANGE_A} 12:00:00`, alice);
 raw.prepare("UPDATE conversations SET disposition='customer', disposition_at=? WHERE id=?").run(`${IN_RANGE_B} 12:00:00`, cara);
 raw.prepare("UPDATE conversations SET disposition='no', disposition_at=? WHERE id=?").run(`${OUTSIDE} 12:00:00`, old);
 raw.prepare("UPDATE conversations SET opted_out=1, opted_out_at=? WHERE id=?").run(`${IN_RANGE_A} 09:45:00`, bob);
 
-const stats = db.getStats(FROM, TO);
+const stats = db.getStats(tenantId, FROM, TO);
 
 test('outbound counts exclude messages outside the range', () => {
   assert.strictEqual(stats.sent.attempted, 5);
@@ -85,7 +85,7 @@ test('opt-outs are counted separately from ordinary negatives', () => {
 // Temporary fixtures are removed in `finally` so a failed assertion cannot
 // leak rows into the shared dataset the later tests assert against.
 function withTempConversation(phone, build, assertions) {
-  const id = seedConversation(raw, { phone, createdAt: `${IN_RANGE_A} 08:00:00` });
+  const id = seedConversation(raw, { tenantId, phone, createdAt: `${IN_RANGE_A} 08:00:00` });
   try {
     build(id);
     assertions(id);
@@ -97,11 +97,11 @@ function withTempConversation(phone, build, assertions) {
 
 test('a contact is ranked by their strongest signal', () => {
   withTempConversation('+15554449999', id => {
-    seedMessage(raw, { conversationId: id, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_A} 09:00:00` });
-    seedMessage(raw, { conversationId: id, direction: 'inbound', body: 'sounds great', createdAt: `${IN_RANGE_A} 09:10:00` });
-    seedMessage(raw, { conversationId: id, direction: 'inbound', body: 'actually STOP', createdAt: `${IN_RANGE_A} 09:20:00` });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'outbound', status: 'sent', createdAt: `${IN_RANGE_A} 09:00:00` });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'inbound', body: 'sounds great', createdAt: `${IN_RANGE_A} 09:10:00` });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'inbound', body: 'actually STOP', createdAt: `${IN_RANGE_A} 09:20:00` });
   }, () => {
-    const s = db.getStats(FROM, TO);
+    const s = db.getStats(tenantId, FROM, TO);
     assert.strictEqual(s.responses.opt_out_contacts, 2, 'the opt-out outranks their earlier positive');
     assert.strictEqual(s.responses.positive_contacts, 2, 'and they are not also counted as positive');
   });
@@ -161,16 +161,16 @@ test('peak reply hour is the hour with the most inbound messages', () => {
 });
 
 test('date boundaries are inclusive on both ends', () => {
-  const single = db.getStats(IN_RANGE_A, IN_RANGE_A);
+  const single = db.getStats(tenantId, IN_RANGE_A, IN_RANGE_A);
   assert.strictEqual(single.daily.length, 1);
   assert.strictEqual(single.sent.attempted, 3);
 
-  const justBefore = db.getStats('2026-07-01', '2026-07-09');
+  const justBefore = db.getStats(tenantId, '2026-07-01', '2026-07-09');
   assert.strictEqual(justBefore.sent.attempted, 0, 'the day before the first message is empty');
 });
 
 test('an empty range returns clean zeros, not nulls', () => {
-  const empty = db.getStats('2020-01-01', '2020-01-02');
+  const empty = db.getStats(tenantId, '2020-01-01', '2020-01-02');
   assert.strictEqual(empty.sent.attempted, 0);
   assert.strictEqual(empty.sent.delivered, 0);
   assert.strictEqual(empty.sent.acceptance_rate, 0);
@@ -186,9 +186,9 @@ test('an empty range returns clean zeros, not nulls', () => {
 
 test('an inbound reply with no preceding outbound does not poison the average', () => {
   withTempConversation('+15554448888', id => {
-    seedMessage(raw, { conversationId: id, direction: 'inbound', body: 'unsolicited', createdAt: `${IN_RANGE_A} 09:00:00` });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'inbound', body: 'unsolicited', createdAt: `${IN_RANGE_A} 09:00:00` });
   }, () => {
-    const s = db.getStats(FROM, TO);
+    const s = db.getStats(tenantId, FROM, TO);
     assert.ok(s.avg_reply_minutes > 0 && Number.isFinite(s.avg_reply_minutes),
       'the NULL gap is excluded rather than producing NaN');
   });
@@ -201,15 +201,15 @@ test('a local day range counts messages by the users day, not the UTC day', () =
   // THEIR Jul 5. Under the old date(created_at) filter it also landed on Jul 5,
   // but 02:30 UTC on Jul 6 is 22:30 on Jul 5 locally and used to be lost.
   withTempConversation('+15554447777', id => {
-    seedMessage(raw, { conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-05 22:30:00' });
-    seedMessage(raw, { conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-06 02:30:00' });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-05 22:30:00' });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-06 02:30:00' });
   }, () => {
     // UTC-only view of "Jul 5": misses the 02:30 UTC message entirely.
-    const utcDay = db.getStats('2026-07-05', '2026-07-05');
+    const utcDay = db.getStats(tenantId, '2026-07-05', '2026-07-05');
     assert.strictEqual(utcDay.sent.attempted, 1, 'UTC day sees only one of the two');
 
     // The same day for a UTC-4 user runs 04:00 Jul 5 -> 04:00 Jul 6 UTC.
-    const localDay = db.getStats('2026-07-05', '2026-07-05', {
+    const localDay = db.getStats(tenantId, '2026-07-05', '2026-07-05', {
       startUtc: '2026-07-05 04:00:00',
       endUtc: '2026-07-06 04:00:00',
       tzOffsetMinutes: -240
@@ -222,9 +222,9 @@ test('a local day range counts messages by the users day, not the UTC day', () =
 test('the daily series is bucketed in the viewers timezone', () => {
   withTempConversation('+15554446666', id => {
     // 01:00 UTC on Jul 8 == 21:00 on Jul 7 for a UTC-4 user.
-    seedMessage(raw, { conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-08 01:00:00' });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-08 01:00:00' });
   }, () => {
-    const local = db.getStats('2026-07-07', '2026-07-08', {
+    const local = db.getStats(tenantId, '2026-07-07', '2026-07-08', {
       startUtc: '2026-07-07 04:00:00',
       endUtc: '2026-07-09 04:00:00',
       tzOffsetMinutes: -240
@@ -236,12 +236,12 @@ test('the daily series is bucketed in the viewers timezone', () => {
 
 test('the range is half-open so a boundary message is counted exactly once', () => {
   withTempConversation('+15554445555', id => {
-    seedMessage(raw, { conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-06 04:00:00' });
+    seedMessage(raw, { tenantId, conversationId: id, direction: 'outbound', status: 'sent', createdAt: '2026-07-06 04:00:00' });
   }, () => {
-    const first = db.getStats('2026-07-05', '2026-07-05', {
+    const first = db.getStats(tenantId, '2026-07-05', '2026-07-05', {
       startUtc: '2026-07-05 04:00:00', endUtc: '2026-07-06 04:00:00', tzOffsetMinutes: -240
     });
-    const second = db.getStats('2026-07-06', '2026-07-06', {
+    const second = db.getStats(tenantId, '2026-07-06', '2026-07-06', {
       startUtc: '2026-07-06 04:00:00', endUtc: '2026-07-07 04:00:00', tzOffsetMinutes: -240
     });
     assert.strictEqual(first.sent.attempted + second.sent.attempted, 1,

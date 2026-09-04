@@ -23,7 +23,7 @@ function makePacer(overrides, summary) {
   });
 }
 
-const MSG = { from_number: '8653456051', to_number: '2125550100' };
+const MSG = { from_number: '5555550100', to_number: '2125550100' };
 
 test('a fresh DID may send immediately', () => {
   const pacer = makePacer();
@@ -34,7 +34,7 @@ test('the per-DID gap blocks the same number but not a different one', () => {
   const pacer = makePacer();
   const now = new Date('2026-06-01T15:00:00Z');
 
-  pacer.recordSend('8653456051', now);
+  pacer.recordSend('5555550100', now);
 
   const same = pacer.evaluate(MSG, new Date(now.getTime() + 1000));
   assert.strictEqual(same.ok, false);
@@ -50,7 +50,7 @@ test('the per-DID gap blocks the same number but not a different one', () => {
 test('the gap clears once it has elapsed', () => {
   const pacer = makePacer();
   const now = new Date('2026-06-01T15:00:00Z');
-  pacer.recordSend('8653456051', now);
+  pacer.recordSend('5555550100', now);
   assert.strictEqual(pacer.evaluate(MSG, new Date(now.getTime() + 10001)).ok, true);
 });
 
@@ -71,7 +71,7 @@ test('jitter keeps the cadence irregular around the configured gap', () => {
 test('the daily cap blocks and reports the wait until midnight', () => {
   const pacer = makePacer({ did_daily_cap: '3' });
   const now = new Date();
-  for (let i = 0; i < 3; i++) pacer.recordSend('8653456051', now);
+  for (let i = 0; i < 3; i++) pacer.recordSend('5555550100', now);
 
   const verdict = pacer.evaluate(MSG, now);
   assert.strictEqual(verdict.ok, false);
@@ -82,7 +82,7 @@ test('the daily cap blocks and reports the wait until midnight', () => {
 test('warm-up holds a brand new number to the first rung of the ladder', () => {
   const pacer = makePacer({ did_warmup_enabled: '1', did_daily_cap: '500' });
   const now = new Date();
-  for (let i = 0; i < WARMUP_LADDER[0]; i++) pacer.recordSend('8653456051', now);
+  for (let i = 0; i < WARMUP_LADDER[0]; i++) pacer.recordSend('5555550100', now);
 
   const verdict = pacer.evaluate(MSG, now);
   assert.strictEqual(verdict.reason, BLOCK.DAILY_CAP);
@@ -93,10 +93,10 @@ test('an established number is not held back by the warm-up ladder', () => {
   // The gap is zeroed so this asserts about the allowance only, not the cadence.
   const pacer = makePacer(
     { did_warmup_enabled: '1', did_daily_cap: '500', did_min_gap_ms: '0' },
-    { '8653456051': { firstSendDay: OLD_DAY, sentToday: 0, day: 'never' } }
+    { '5555550100': { firstSendDay: OLD_DAY, sentToday: 0, day: 'never' } }
   );
   const now = new Date();
-  for (let i = 0; i < WARMUP_LADDER[0] + 5; i++) pacer.recordSend('8653456051', now);
+  for (let i = 0; i < WARMUP_LADDER[0] + 5; i++) pacer.recordSend('5555550100', now);
   assert.strictEqual(pacer.evaluate(MSG, now).ok, true);
 });
 
@@ -104,7 +104,7 @@ test('seeding from send history survives a restart mid-day', () => {
   const today = new Date().toLocaleDateString('en-CA');
   const pacer = makePacer(
     { did_daily_cap: '10' },
-    { '8653456051': { firstSendDay: OLD_DAY, sentToday: 10, day: today } }
+    { '5555550100': { firstSendDay: OLD_DAY, sentToday: 10, day: today } }
   );
   // Without seeding, a restart would hand this number a fresh allowance.
   const verdict = pacer.evaluate(MSG, new Date());
@@ -114,7 +114,7 @@ test('seeding from send history survives a restart mid-day', () => {
 test('yesterday\'s count does not carry into today', () => {
   const pacer = makePacer(
     { did_daily_cap: '10' },
-    { '8653456051': { firstSendDay: OLD_DAY, sentToday: 10, day: '1999-01-01' } }
+    { '5555550100': { firstSendDay: OLD_DAY, sentToday: 10, day: '1999-01-01' } }
   );
   assert.strictEqual(pacer.evaluate(MSG, new Date()).ok, true);
 });
@@ -123,11 +123,11 @@ test('a failure spike pauses the number, and only after enough samples', () => {
   const pacer = makePacer({ did_failure_min_samples: '4', did_failure_threshold: '0.5' });
   const now = new Date();
 
-  assert.strictEqual(pacer.recordOutcome('8653456051', false, now), null, 'too few samples to judge');
-  assert.strictEqual(pacer.recordOutcome('8653456051', false, now), null);
-  assert.strictEqual(pacer.recordOutcome('8653456051', false, now), null);
+  assert.strictEqual(pacer.recordOutcome('5555550100', false, now), null, 'too few samples to judge');
+  assert.strictEqual(pacer.recordOutcome('5555550100', false, now), null);
+  assert.strictEqual(pacer.recordOutcome('5555550100', false, now), null);
 
-  const paused = pacer.recordOutcome('8653456051', false, now);
+  const paused = pacer.recordOutcome('5555550100', false, now);
   assert.ok(paused, 'expected a pause once the sample size was reached');
 
   const verdict = pacer.evaluate(MSG, now);
@@ -138,7 +138,7 @@ test('a healthy number is never paused', () => {
   const pacer = makePacer({ did_failure_min_samples: '4' });
   const now = new Date();
   for (let i = 0; i < 12; i++) {
-    assert.strictEqual(pacer.recordOutcome('8653456051', true, now), null);
+    assert.strictEqual(pacer.recordOutcome('5555550100', true, now), null);
   }
   assert.strictEqual(pacer.evaluate(MSG, now).ok, true);
 });
@@ -146,10 +146,10 @@ test('a healthy number is never paused', () => {
 test('resume clears a pause', () => {
   const pacer = makePacer({ did_failure_min_samples: '3', did_failure_threshold: '0.5' });
   const now = new Date();
-  for (let i = 0; i < 3; i++) pacer.recordOutcome('8653456051', false, now);
+  for (let i = 0; i < 3; i++) pacer.recordOutcome('5555550100', false, now);
   assert.strictEqual(pacer.evaluate(MSG, now).reason, BLOCK.PAUSED);
 
-  assert.strictEqual(pacer.resume('8653456051'), true);
+  assert.strictEqual(pacer.resume('5555550100'), true);
   assert.strictEqual(pacer.evaluate(MSG, now).ok, true);
 });
 
@@ -158,21 +158,21 @@ test('quiet hours block a recipient whose local time is outside the window', () 
 
   // 08:00 UTC is 03:00 or 04:00 in New York depending on DST - either way,
   // comfortably before the window opens.
-  const early = pacer.evaluate({ from_number: '8653456051', to_number: '2125550100' },
+  const early = pacer.evaluate({ from_number: '5555550100', to_number: '2125550100' },
     new Date('2026-06-01T08:00:00Z'));
   assert.strictEqual(early.ok, false);
   assert.strictEqual(early.reason, BLOCK.QUIET_HOURS);
   assert.ok(early.retryInMs > 0);
 
   // 17:00 UTC is 13:00 in New York - inside the window.
-  const midday = pacer.evaluate({ from_number: '8653456051', to_number: '2125550100' },
+  const midday = pacer.evaluate({ from_number: '5555550100', to_number: '2125550100' },
     new Date('2026-06-01T17:00:00Z'));
   assert.strictEqual(midday.ok, true);
 });
 
 test('an unknown area code falls back to requiring the window in both coasts', () => {
   const pacer = makePacer({ quiet_hours_enabled: '1', quiet_start_hour: '9', quiet_end_hour: '20' });
-  const unknown = { from_number: '8653456051', to_number: '0000000000' };
+  const unknown = { from_number: '5555550100', to_number: '0000000000' };
 
   // 16:00 UTC is 12:00 Eastern (inside) but 09:00 Pacific (just inside too).
   assert.strictEqual(pacer.evaluate(unknown, new Date('2026-06-01T16:00:00Z')).ok, true);
@@ -187,24 +187,24 @@ test('an unknown area code falls back to requiring the window in both coasts', (
 test('pacing can be turned off entirely', () => {
   const pacer = makePacer({ pacing_enabled: '0', did_daily_cap: '1' });
   const now = new Date();
-  for (let i = 0; i < 50; i++) pacer.recordSend('8653456051', now);
+  for (let i = 0; i < 50; i++) pacer.recordSend('5555550100', now);
   assert.deepStrictEqual(pacer.evaluate(MSG, now), { ok: true });
 });
 
 test('DID identity is normalised across formats', () => {
   const pacer = makePacer();
   const now = new Date('2026-06-01T15:00:00Z');
-  pacer.recordSend('+1 (865) 345-6051', now);
-  const verdict = pacer.evaluate({ from_number: '8653456051', to_number: '2125550100' },
+  pacer.recordSend('+1 (555) 555-0100', now);
+  const verdict = pacer.evaluate({ from_number: '5555550100', to_number: '2125550100' },
     new Date(now.getTime() + 1000));
   assert.strictEqual(verdict.reason, BLOCK.MIN_GAP);
 });
 
 test('snapshot reports what an operator needs to diagnose a slow queue', () => {
   const pacer = makePacer({ did_warmup_enabled: '1', did_daily_cap: '500' });
-  pacer.recordSend('8653456051', new Date());
+  pacer.recordSend('5555550100', new Date());
   const [row] = pacer.snapshot();
-  assert.strictEqual(row.did, '8653456051');
+  assert.strictEqual(row.did, '5555550100');
   assert.strictEqual(row.sent_today, 1);
   assert.strictEqual(row.warming_up, true);
   assert.strictEqual(row.paused, false);

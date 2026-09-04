@@ -19,6 +19,13 @@
       <div class="sidebar-header">
         <div class="logo">
           <img src="overflow-calls-logo.svg" alt="Overflow Calls Messaging" class="logo-img">
+          <!-- Which tenant this session is acting as. The switcher is rendered
+               only for a superadmin; everyone else sees a plain label. -->
+          <div class="tenant-bar" id="tenant-bar" hidden>
+            <span class="tenant-label" id="tenant-name"></span>
+            <select class="tenant-switcher" id="tenant-switcher" hidden
+                    title="Act as a different tenant"></select>
+          </div>
           <div class="logo-actions">
             <button type="button" id="btn-open-stats" class="btn-map-link" title="Open performance stats">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
@@ -881,5 +888,6 @@
   <script src="lib/area_codes.js?v=fresh-2026"></script>
   <script src="app_v2.js?v=fresh-2026"></script>
   <script src="app.js?v=fresh-2026"></script>
+  <script src="tenant.js?v=fresh-2026"></script>
 </body>
 </html>

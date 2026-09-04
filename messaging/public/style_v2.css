@@ -105,6 +105,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* Wraps so the tenant bar drops onto its own line beneath the mark and the
+     action buttons, rather than competing with them for width. */
+  flex-wrap: wrap;
   padding-bottom: 14px;
   margin-bottom: 2px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -115,6 +118,52 @@ body {
   max-width: 100%;
   object-fit: contain;
   display: block;
+}
+
+.tenant-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* The .logo row is flex/nowrap, so the bar has to claim a full-width basis to
+     wrap onto its own line instead of squeezing in beside the logo mark. */
+  flex: 0 0 100%;
+  min-width: 0;
+  order: 10;
+  margin-top: 8px;
+}
+
+.tenant-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-glow);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 5px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.tenant-switcher {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-main);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 3px 6px;
+  cursor: pointer;
+}
+
+.tenant-switcher:focus {
+  outline: none;
+  border-color: var(--border-focus);
 }
 
 .logo-actions {

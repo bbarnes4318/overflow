@@ -26,7 +26,7 @@ async function makeConversation(phone, name) {
 }
 
 async function inbound(phone, body) {
-  const res = await srv.post('/webhook/inbound', { From: phone, To: '8653456051', Message: body }, { auth: false });
+  const res = await srv.post('/webhook/inbound', { From: phone, To: '5555550100', Message: body }, { auth: false });
   assert.strictEqual(res.status, 200);
 }
 
@@ -42,9 +42,19 @@ test('protected API routes reject unauthenticated requests', async () => {
   await srv.login();
 });
 
-test('a second signup is refused once an admin exists', async () => {
+test('self-service signup is disabled outright', async () => {
+  // Not "an admin already exists" - the route is gone for good. On a
+  // multi-tenant install first-user-becomes-admin would hand the platform to
+  // whoever loaded the page first, and would create a user with no tenant.
   const res = await srv.post('/api/auth/signup', { username: 'intruder', password: 'x' }, { auth: false });
-  assert.strictEqual(res.status, 403);
+  assert.strictEqual(res.status, 410);
+  assert.match(res.json.error, /signup is disabled/i);
+
+  // And the credentials genuinely do not work.
+  const login = await srv.post('/api/auth/login',
+    { username: 'intruder', password: 'x' }, { auth: false });
+  assert.strictEqual(login.status, 401);
+  await srv.login();
 });
 
 test('login with a bad password fails', async () => {

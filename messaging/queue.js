@@ -116,7 +116,15 @@ class QueueWorker extends EventEmitter {
     this.inFlight = new Set();
     this.ticking = false;
     this.pacer = new Pacer({
-      getSettings: () => db.getSettings(),
+      // A DID resolves to exactly one tenant, so pacing a number means pacing
+      // it on that tenant's overrides. An unowned number (or a call with no DID
+      // at all, for platform-wide values like max concurrency) falls back to
+      // the global defaults.
+      getSettings: (did) => {
+        if (!did) return db.getSettings();
+        const tenantId = db.resolveTenantForDid(did);
+        return tenantId ? db.getEffectiveSettings(tenantId) : db.getSettings();
+      },
       getDidSummary: () => db.getDidSendSummary()
     });
   }
@@ -213,6 +221,7 @@ class QueueWorker extends EventEmitter {
           this.emit('messageStatusChanged', {
             id: msg.id,
             status: 'failed',
+            tenant_id: msg.tenant_id,
             error_message: `Blocked before send: ${block.label}`,
             conversation_id: msg.conversation_id
           });
@@ -242,10 +251,11 @@ class QueueWorker extends EventEmitter {
    */
   dispatch(msg) {
     this.inFlight.add(msg.id);
-    db.updateMessageStatus(msg.id, 'sending');
+    db.updateMessageStatus(msg.tenant_id, msg.id, 'sending');
     this.emit('messageStatusChanged', {
       id: msg.id,
       status: 'sending',
+      tenant_id: msg.tenant_id,
       conversation_id: msg.conversation_id
     });
 
@@ -258,10 +268,11 @@ class QueueWorker extends EventEmitter {
       .catch(err => {
         console.error(`Queue worker error processing message ${msg.id}:`, err);
         try {
-          db.updateMessageStatus(msg.id, 'failed', null, err.message || 'Internal error');
+          db.updateMessageStatus(msg.tenant_id, msg.id, 'failed', null, err.message || 'Internal error');
           this.emit('messageStatusChanged', {
             id: msg.id,
             status: 'failed',
+            tenant_id: msg.tenant_id,
             error_message: err.message || 'Internal error',
             conversation_id: msg.conversation_id
           });
@@ -276,7 +287,11 @@ class QueueWorker extends EventEmitter {
   }
 
   async send(msg) {
-    const settings = db.getSettings();
+    // Carrier credentials are platform-wide: one carrier account serves every
+    // tenant. Only the per-tenant knobs (sender defaults) come from the tenant.
+    const settings = msg.tenant_id
+      ? db.getEffectiveSettings(msg.tenant_id)
+      : db.getSettings();
 
     // Normalize phone numbers for routing decision
     let cleanFrom = (msg.from_number || '').replace(/[^\d]/g, '');
@@ -284,17 +299,10 @@ class QueueWorker extends EventEmitter {
       cleanFrom = cleanFrom.substring(1);
     }
 
-    const fractelDidsStr = settings.fractel_enabled_dids || '';
-    const fractelDids = fractelDidsStr.split(',').map(d => {
-      let cd = d.trim().replace(/[^\d]/g, '');
-      if (cd.length === 11 && cd.startsWith('1')) {
-        cd = cd.substring(1);
-      }
-      return cd;
-    }).filter(Boolean);
-
-    const isFractel = fractelDids.includes(cleanFrom) ||
-                     (cleanFrom === (settings.fractel_sender_number || '').replace(/[^\d]/g, '').replace(/^1/, ''));
+    // Routing is decided by ownership, not by a CSV setting: if the number is
+    // registered in tenant_dids it is a FracTEL DID.
+    const isFractel = !!db.resolveTenantForDid(cleanFrom) ||
+                     (!!cleanFrom && cleanFrom === (settings.fractel_sender_number || '').replace(/[^\d]/g, '').replace(/^1/, ''));
 
     let isSuccess = false;
     let refId = '';
@@ -436,18 +444,20 @@ class QueueWorker extends EventEmitter {
     }
 
     if (isSuccess) {
-      db.updateMessageStatus(msg.id, 'sent', refId);
+      db.updateMessageStatus(msg.tenant_id, msg.id, 'sent', refId);
       this.emit('messageStatusChanged', {
         id: msg.id,
         status: 'sent',
+        tenant_id: msg.tenant_id,
         ref_id: refId,
         conversation_id: msg.conversation_id
       });
     } else {
-      db.updateMessageStatus(msg.id, 'failed', null, errorMsg);
+      db.updateMessageStatus(msg.tenant_id, msg.id, 'failed', null, errorMsg);
       this.emit('messageStatusChanged', {
         id: msg.id,
         status: 'failed',
+        tenant_id: msg.tenant_id,
         error_message: errorMsg,
         conversation_id: msg.conversation_id
       });
@@ -455,11 +465,13 @@ class QueueWorker extends EventEmitter {
   }
 
   /** Per-DID pacing view for the status endpoint. */
-  pacingStatus() {
+  pacingStatus(dids = null) {
     return {
       config: this.pacer.config(),
       in_flight: this.inFlight.size,
-      dids: this.pacer.snapshot()
+      // Filtered to the caller's own numbers; pacing state is operational data
+      // about a tenant's DIDs and does not cross the boundary either.
+      dids: this.pacer.snapshot(null, dids)
     };
   }
 

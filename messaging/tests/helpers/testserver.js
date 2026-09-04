@@ -21,12 +21,19 @@ async function startServer({ label = 'api', env = {} } = {}) {
   const dbFile = path.join(dir, 'test.sqlite');
   const port = findFreePort();
 
+  // The superadmin is seeded at boot from these, so the suite knows the
+  // credentials without scraping them out of stdout.
+  const SUPERADMIN_USERNAME = 'root-admin';
+  const SUPERADMIN_PASSWORD = 'superadmin-test-password';
+
   const child = spawn(process.execPath, [SERVER], {
     env: {
       ...process.env,
       SMS_DB_PATH: dbFile,
       PORT: String(port),
       NODE_ENV: 'test',
+      SUPERADMIN_USERNAME,
+      SUPERADMIN_PASSWORD,
       ...env
     },
     stdio: ['ignore', 'pipe', 'pipe']
@@ -89,9 +96,59 @@ async function startServer({ label = 'api', env = {} } = {}) {
     get: (url, opts) => request('GET', url, undefined, opts),
     post: (url, body, opts) => request('POST', url, body, opts),
     del: (url, opts) => request('DELETE', url, undefined, opts),
-    async signup(username = 'tester', password = 'test-password-123') {
-      return request('POST', '/api/auth/signup', { username, password }, { auth: false });
+    superadmin: { username: SUPERADMIN_USERNAME, password: SUPERADMIN_PASSWORD },
+
+    /** Sign in as the seeded platform superadmin. */
+    async loginSuperadmin() {
+      return request('POST', '/api/auth/login',
+        { username: SUPERADMIN_USERNAME, password: SUPERADMIN_PASSWORD }, { auth: false });
     },
+
+    /**
+     * The standard test setup: sign in as superadmin, create a tenant, create
+     * an owner inside it, then sign in as that owner.
+     *
+     * Replaces the old signup() helper. Self-service signup is gone: accounts
+     * only exist inside a tenant, and only a superadmin creates them.
+     */
+    async signup(username = 'tester', password = 'test-password-123',
+                 { tenantName = 'Test Tenant', dids = ['5555550100'] } = {}) {
+      const admin = await request('POST', '/api/auth/login',
+        { username: SUPERADMIN_USERNAME, password: SUPERADMIN_PASSWORD }, { auth: false });
+      if (admin.status !== 200) return admin;
+
+      const tenant = await request('POST', '/api/tenants', { name: tenantName });
+      if (tenant.status !== 201) return tenant;
+      const tenantId = tenant.json.id;
+
+      for (const did of dids) {
+        await request('POST', `/api/tenants/${tenantId}/dids`, { did });
+      }
+
+      const created = await request('POST', `/api/tenants/${tenantId}/users`,
+        { username, password, role: 'owner' });
+      if (created.status !== 201) return created;
+
+      const login = await request('POST', '/api/auth/login', { username, password }, { auth: false });
+      return { ...login, tenantId, tenantName };
+    },
+
+    /** Create an additional tenant with its own owner, as superadmin. */
+    async createTenantWithOwner(tenantName, username, password = 'test-password-123', dids = []) {
+      const saved = cookie;
+      cookie = '';
+      await request('POST', '/api/auth/login',
+        { username: SUPERADMIN_USERNAME, password: SUPERADMIN_PASSWORD }, { auth: false });
+      const tenant = await request('POST', '/api/tenants', { name: tenantName });
+      const tenantId = tenant.json.id;
+      for (const did of dids) {
+        await request('POST', `/api/tenants/${tenantId}/dids`, { did });
+      }
+      await request('POST', `/api/tenants/${tenantId}/users`, { username, password, role: 'owner' });
+      cookie = saved;
+      return { tenantId, username, password };
+    },
+
     async login(username = 'tester', password = 'test-password-123') {
       return request('POST', '/api/auth/login', { username, password }, { auth: false });
     },

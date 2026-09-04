@@ -52,8 +52,14 @@ test('migrations create a complete schema on a fresh database', () => {
 
     const tables = db.db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map(t => t.name);
     ['conversations', 'messages', 'settings', 'users', 'sessions',
-     'suppression_events', 'reminder_state'].forEach(t =>
+     'suppression_events', 'reminder_state',
+     'tenants', 'tenant_dids', 'tenant_settings', 'global_suppression'].forEach(t =>
       assert.ok(tables.includes(t), `table ${t} must exist`));
+
+    // Every tenant-owned table carries the column the scoped queries filter on.
+    ['conversations', 'messages', 'notes', 'suppression_events', 'reminder_state', 'users']
+      .forEach(t => assert.ok(columnsOf(db.db, t).includes('tenant_id'),
+        `${t}.tenant_id must exist`));
 
     db.db.close();
   } finally {
@@ -109,6 +115,21 @@ test('migrations upgrade a legacy database that predates the new columns', () =>
     assert.strictEqual(conv.stage, 'Stage 2', 'existing stage preserved');
     assert.strictEqual(conv.opted_out, 0, 'new flag defaults to 0, not null');
 
+    // The pre-tenancy row is adopted by a Default tenant rather than left with
+    // a NULL that every scoped query would silently drop.
+    assert.ok(conv.tenant_id, 'a legacy conversation is assigned to a tenant');
+    const legacyTenant = db.getTenantById(conv.tenant_id);
+    assert.strictEqual(legacyTenant.slug, 'default');
+    assert.strictEqual(
+      db.db.prepare('SELECT tenant_id FROM messages WHERE conversation_id = ?').get(conv.id).tenant_id,
+      conv.tenant_id, 'its messages come with it');
+
+    // The old phone_number UNIQUE constraint is gone, so a second tenant may
+    // hold the same contact. This is the constraint swap the rebuild exists for.
+    const other = db.createTenant('Second Tenant');
+    const twin = db.getOrCreateConversation(other.id, '+15559990001', 'Same Number');
+    assert.notStrictEqual(twin.id, conv.id, 'two tenants, two rows, one number');
+
     db.db.close();
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -120,8 +141,9 @@ test('running migrations repeatedly is safe and changes nothing', () => {
   try {
     const db = loadDbModule(file);
     db.initDatabase();
-    db.getOrCreateConversation('+15559990002', 'Repeat');
-    db.setConversationDisposition(
+    const tenantId = db.createTenant('Repeat Tenant').id;
+    db.getOrCreateConversation(tenantId, '+15559990002', 'Repeat');
+    db.setConversationDisposition(tenantId, 
       db.db.prepare('SELECT id FROM conversations WHERE phone_number = ?').get('+15559990002').id,
       'no'
     );
@@ -157,13 +179,15 @@ test('backfill finds historical opt-outs anywhere in the message history', () =>
     const db = loadDbModule(file);
     db.initDatabase();
     const raw = db.db;
+    const tenantId = db.createTenant('Backfill Tenant').id;
 
     const mk = (phone, bodies) => {
-      const id = raw.prepare('INSERT INTO conversations (phone_number) VALUES (?)').run(phone).lastInsertRowid;
+      const id = raw.prepare('INSERT INTO conversations (tenant_id, phone_number) VALUES (?, ?)')
+                    .run(tenantId, phone).lastInsertRowid;
       bodies.forEach((body, i) => {
-        raw.prepare(`INSERT INTO messages (conversation_id, direction, from_number, to_number, body, status, created_at)
-                     VALUES (?, 'inbound','a','b',?, 'received', ?)`)
-          .run(id, body, `2026-01-0${i + 1} 10:00:00`);
+        raw.prepare(`INSERT INTO messages (tenant_id, conversation_id, direction, from_number, to_number, body, status, created_at)
+                     VALUES (?, ?, 'inbound','a','b',?, 'received', ?)`)
+          .run(tenantId, id, body, `2026-01-0${i + 1} 10:00:00`);
       });
       return id;
     };
@@ -175,7 +199,7 @@ test('backfill finds historical opt-outs anywhere in the message history', () =>
     const wrong = mk('+15559991003', ['wrong number']);
     const happy = mk('+15559991004', ['Yes please call me']);
 
-    const summary = db.backfillSuppression();
+    const summary = db.backfillSuppression(tenantId);
 
     assert.strictEqual(summary.conversations_scanned, 4);
     assert.strictEqual(summary.inbound_messages_scanned, 6);
@@ -196,7 +220,7 @@ test('backfill finds historical opt-outs anywhere in the message history', () =>
     assert.strictEqual(raw.prepare('SELECT opted_out FROM conversations WHERE id = ?').get(happy).opted_out, 0);
 
     // Idempotent: a second run updates nothing further.
-    const second = db.backfillSuppression();
+    const second = db.backfillSuppression(tenantId);
     assert.strictEqual(second.records_updated, 0, 'second run is a no-op');
     assert.strictEqual(second.already_suppressed, 1);
     const after = raw.prepare('SELECT * FROM conversations WHERE id = ?').get(buried);
@@ -214,15 +238,17 @@ test('backfill respects a deliberate re-opt-in', () => {
     const db = loadDbModule(file);
     db.initDatabase();
     const raw = db.db;
+    const tenantId = db.createTenant('Opt-in Tenant').id;
 
-    const id = raw.prepare('INSERT INTO conversations (phone_number) VALUES (?)').run('+15559992001').lastInsertRowid;
-    raw.prepare(`INSERT INTO messages (conversation_id, direction, from_number, to_number, body, status, created_at)
-                 VALUES (?, 'inbound','a','b','STOP','received','2026-01-01 10:00:00')`).run(id);
+    const id = raw.prepare('INSERT INTO conversations (tenant_id, phone_number) VALUES (?, ?)')
+                  .run(tenantId, '+15559992001').lastInsertRowid;
+    raw.prepare(`INSERT INTO messages (tenant_id, conversation_id, direction, from_number, to_number, body, status, created_at)
+                 VALUES (?, ?, 'inbound','a','b','STOP','received','2026-01-01 10:00:00')`).run(tenantId, id);
     // Someone deliberately opted them back in afterwards.
     raw.prepare(`UPDATE conversations SET opted_out = 0, opted_in_at = '2026-02-01 10:00:00',
                  opted_in_by = 'jimbo' WHERE id = ?`).run(id);
 
-    const summary = db.backfillSuppression();
+    const summary = db.backfillSuppression(tenantId);
     assert.strictEqual(summary.skipped_due_to_opt_in, 1);
     assert.strictEqual(raw.prepare('SELECT opted_out FROM conversations WHERE id = ?').get(id).opted_out, 0,
       'the backfill must not undo a deliberate re-opt-in');
@@ -239,12 +265,14 @@ test('a dry-run backfill reports without writing', () => {
     const db = loadDbModule(file);
     db.initDatabase();
     const raw = db.db;
+    const tenantId = db.createTenant('Dry Run Tenant').id;
 
-    const id = raw.prepare('INSERT INTO conversations (phone_number) VALUES (?)').run('+15559993001').lastInsertRowid;
-    raw.prepare(`INSERT INTO messages (conversation_id, direction, from_number, to_number, body, status, created_at)
-                 VALUES (?, 'inbound','a','b','unsubscribe','received','2026-01-01 10:00:00')`).run(id);
+    const id = raw.prepare('INSERT INTO conversations (tenant_id, phone_number) VALUES (?, ?)')
+                  .run(tenantId, '+15559993001').lastInsertRowid;
+    raw.prepare(`INSERT INTO messages (tenant_id, conversation_id, direction, from_number, to_number, body, status, created_at)
+                 VALUES (?, ?, 'inbound','a','b','unsubscribe','received','2026-01-01 10:00:00')`).run(tenantId, id);
 
-    const summary = db.backfillSuppression({ dryRun: true });
+    const summary = db.backfillSuppression(tenantId, { dryRun: true });
     assert.strictEqual(summary.dry_run, true);
     assert.strictEqual(summary.opt_outs_identified, 1);
     assert.strictEqual(raw.prepare('SELECT opted_out FROM conversations WHERE id = ?').get(id).opted_out, 0,
