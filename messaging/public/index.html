@@ -17,35 +17,45 @@
     <!-- Left Sidebar: Conversations -->
     <aside class="sidebar">
       <div class="sidebar-header">
+        <!-- Brand row. The mark and the two shortcuts used to sit in one
+             wrapping flex row and collided at 360px; the mark now owns a
+             column and the shortcuts are icon-only. -->
         <div class="logo">
-          <img src="netenroll-logo-dark.png?v=2" width="918" height="179" alt="NetEnroll Messaging" class="logo-img">
-          <!-- Which tenant this session is acting as. The switcher is rendered
-               only for a superadmin; everyone else sees a plain label. -->
-          <div class="tenant-bar" id="tenant-bar" hidden>
-            <span class="tenant-label" id="tenant-name"></span>
-            <select class="tenant-switcher" id="tenant-switcher" hidden
-                    title="Act as a different tenant"></select>
+          <div class="logo-brand">
+            <img src="netenroll-logo-dark.png?v=2" width="918" height="179" alt="NetEnroll Messaging" class="logo-img">
+            <!-- Which tenant this session is acting as. The switcher is rendered
+                 only for a superadmin; everyone else sees a plain label. -->
+            <div class="tenant-bar" id="tenant-bar" hidden>
+              <span class="tenant-label" id="tenant-name"></span>
+              <select class="tenant-switcher" id="tenant-switcher" hidden
+                      title="Act as a different tenant"></select>
+            </div>
           </div>
           <div class="logo-actions">
-            <button type="button" id="btn-open-stats" class="btn-map-link" title="Open performance stats">
+            <button type="button" id="btn-open-stats" class="btn-icon" title="Performance stats">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-              <span>Stats</span>
+              <span class="sr-only">Stats</span>
             </button>
-            <a href="/storm-map" target="_blank" rel="noopener noreferrer" class="btn-map-link" title="Open Storm Intelligence Map in a new tab">
+            <a href="/storm-map" target="_blank" rel="noopener noreferrer" class="btn-icon" title="Storm Intelligence Map">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-svg"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
-              <span>Storm Map</span>
+              <span class="sr-only">Storm Map</span>
             </a>
           </div>
         </div>
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="search-input" placeholder="Search name or number...">
-        </div>
-        <div class="sidebar-actions">
-          <button id="btn-new-chat" class="btn-action btn-action-primary" title="Start a new conversation">
+
+        <!-- Search and the one action that starts something, on one line. -->
+        <div class="sidebar-find">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="search-input" placeholder="Search name or number...">
+          </div>
+          <button id="btn-new-chat" class="btn-action btn-action-primary btn-new" title="Start a new conversation">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>New Chat</span>
+            <span>New</span>
           </button>
+        </div>
+
+        <div class="sidebar-actions">
           <button id="btn-upload-leads" class="btn-action" title="Bulk upload leads from a CSV file">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span>Upload</span>

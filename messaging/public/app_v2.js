@@ -1561,8 +1561,11 @@ function renderConversations() {
 
     // Format timestamp
     let timeStr = '';
+    let timeTitle = '';
     if (c.last_message_at) {
-      timeStr = formatMessageTimestamp(c.last_message_at);
+      timeStr = formatListTimestamp(c.last_message_at);
+      // The exact moment is still one hover away.
+      timeTitle = formatMessageTimestamp(c.last_message_at);
     }
 
     const isUnread = c.unread === 1 || c.unread === '1' || c.unread === true;
@@ -1612,7 +1615,7 @@ function renderConversations() {
           <span class="conv-name">${escapeHTML(displayName)}${repliedDot}</span>
           <div class="conv-meta-right">
             ${stateBadge}
-            <span class="conv-time">${timeStr}</span>
+            <span class="conv-time" title="${timeTitle}">${timeStr}</span>
           </div>
         </div>
         <div class="conv-preview${overdueClass}">${previewIcon}<span class="conv-preview-text">${escapeHTML(preview)}</span>${stageChip}</div>
@@ -3521,6 +3524,31 @@ function getLocalDateString(dateStr) {
 }
 
 // Helper to format message timestamp to date and time in EST (e.g. Jun 8, 12:45 PM)
+/**
+ * Timestamp for a row in the conversation list.
+ *
+ * The thread shows "Sep 4, 10:33 AM" because there you want the exact moment.
+ * In the list that string is ninety of the row's three hundred pixels, and it
+ * pushes the name into an ellipsis. What the list is actually asked is "how
+ * stale is this?", which a relative stamp answers in a quarter of the width.
+ */
+function formatListTimestamp(dateInput) {
+  if (!dateInput) return '';
+  const date = dateInput instanceof Date ? dateInput : parseUtc(dateInput) || new Date(dateInput);
+  if (!date || isNaN(date.getTime())) return '';
+
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return 'now';
+  if (seconds < 3600) return Math.floor(seconds / 60) + 'm';
+  if (seconds < 86400) return Math.floor(seconds / 3600) + 'h';
+  if (seconds < 604800) return Math.floor(seconds / 86400) + 'd';
+
+  // Past a week the age stops being the useful thing and the date is.
+  return date.toLocaleString('en-US', {
+    timeZone: 'America/New_York', month: 'short', day: 'numeric'
+  });
+}
+
 function formatMessageTimestamp(dateInput) {
   if (!dateInput) return '';
   const date = dateInput instanceof Date ? dateInput : parseUtc(dateInput) || new Date(dateInput);

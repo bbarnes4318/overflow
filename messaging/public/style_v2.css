@@ -95,26 +95,37 @@ body {
 }
 
 .sidebar-header {
-  padding: 20px 16px 14px 16px;
+  /* Every pixel here is a pixel the conversation list does not get. The list is
+     what this screen is for, so the chrome above it is kept deliberately tight. */
+  padding: 12px 14px 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 9px;
 }
 
 .logo {
+  /* Two columns, no wrapping. The old rule let the mark, the tenant bar and two
+     labelled buttons share one wrapping row inside 360px, and they overlapped.
+     The mark now owns a column and cannot be crowded out of it. */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Wraps so the tenant bar drops onto its own line beneath the mark and the
-     action buttons, rather than competing with them for width. */
-  flex-wrap: wrap;
-  padding-bottom: 14px;
-  margin-bottom: 2px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  gap: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* The mark and the tenant it is acting as, stacked. Stacking costs nothing:
+   the icon buttons opposite are taller than the mark on its own. */
+.logo-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
 }
 
 .logo-img {
-  height: 28px;
+  height: 24px;
   /* width:auto, or the intrinsic width attribute on the <img> becomes the
      layout width and this flex child squeezes the header actions beside it. */
   width: auto;
@@ -124,19 +135,16 @@ body {
 }
 
 .tenant-bar {
+  /* Sits under the mark inside .logo-brand now, so it no longer needs to force
+     a wrap in the row above. */
   display: flex;
   align-items: center;
-  gap: 8px;
-  /* The .logo row is flex/nowrap, so the bar has to claim a full-width basis to
-     wrap onto its own line instead of squeezing in beside the logo mark. */
-  flex: 0 0 100%;
+  gap: 6px;
   min-width: 0;
-  order: 10;
-  margin-top: 8px;
 }
 
 .tenant-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.4px;
   text-transform: uppercase;
@@ -144,7 +152,7 @@ body {
   background: var(--primary-glow);
   border: 1px solid rgba(16, 185, 129, 0.25);
   border-radius: 5px;
-  padding: 3px 8px;
+  padding: 2px 7px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -154,14 +162,21 @@ body {
 .tenant-switcher {
   flex: 1;
   min-width: 0;
+  max-width: 150px;
   font-family: var(--font-body);
-  font-size: 11px;
-  color: var(--text-main);
-  background: var(--bg-input);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
   border: 1px solid var(--border-color);
   border-radius: 5px;
-  padding: 3px 6px;
+  padding: 2px 5px;
   cursor: pointer;
+}
+
+.tenant-switcher:hover {
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .tenant-switcher:focus {
@@ -173,9 +188,52 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 /* Storm Map Header Link */
+/* Stats and Storm Map are secondary. Their labels cost ~150px of a 360px
+   sidebar and were what pushed the mark out of its own row, so they are
+   icon-only with the label kept for screen readers and the title tooltip. */
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.07);
+  color: var(--primary);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 7px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.btn-icon:hover {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.42);
+}
+
+.btn-icon:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Readable by assistive tech, invisible on screen. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .btn-map-link {
   background: rgba(16, 185, 129, 0.07);
   color: var(--primary);
@@ -206,10 +264,16 @@ body {
 
 /* Sidebar Action Buttons Row */
 .sidebar-actions {
+  /* New Chat moved up beside the search field, leaving these two to split. */
   display: grid;
-  grid-template-columns: 1.15fr 1fr 1fr;
-  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
   width: 100%;
+}
+
+.btn-new {
+  flex-shrink: 0;
+  padding: 0 13px;
 }
 
 .btn-action {
@@ -217,7 +281,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 34px;
+  height: 32px;
   padding: 0 8px;
   border-radius: 7px;
   border: 1px solid var(--border-color);
@@ -412,14 +476,25 @@ body {
   padding: 0 20px 16px 20px;
 }
 
+/* Search and "New" share a line. Two full-width rows for what is one intent -
+   find a thread, or start one - is a row the list can have instead. */
+.sidebar-find {
+  display: flex;
+  align-items: stretch;
+  gap: 7px;
+}
+
 .search-box {
+  flex: 1;
+  min-width: 0;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 0 11px;
   gap: 8px;
+  height: 34px;
   transition: var(--transition-smooth);
 }
 
@@ -449,11 +524,14 @@ body {
   padding: 0 10px;
 }
 
+/* The six folders are a filter, not a destination - they earn their space by
+   being scannable, not by being large. */
+
 .folder-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 3px;
-  padding: 4px 0 6px 0;
+  gap: 4px;
+  padding: 7px 0 7px 0;
 }
 
 .folder-tab {
@@ -462,7 +540,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding: 8px 4px;
+  padding: 6px 4px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid transparent;
   border-radius: 7px;
@@ -557,7 +635,7 @@ body {
 .subtab-row {
   display: flex;
   gap: 4px;
-  padding: 2px 0 8px 0;
+  padding: 0 0 7px 0;
 }
 
 .subtab {
@@ -606,7 +684,7 @@ body {
 
 /* ---------------- Collapsible Stage & Date Filters ---------------- */
 .filters-accordion {
-  margin: 10px 16px 4px 16px;
+  margin: 7px 14px 3px 14px;
   border: 1px solid var(--border-color);
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.012);
@@ -623,7 +701,7 @@ body {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 11px;
+  padding: 6px 10px;
   cursor: pointer;
   user-select: none;
   font-family: var(--font-heading);
@@ -812,7 +890,7 @@ body {
 .conversations-list {
   flex: 1;
   overflow-y: auto;
-  padding: 4px 10px 20px 10px;
+  padding: 5px 10px 14px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -848,14 +926,19 @@ body {
   opacity: 0.85;
 }
 
+/* One row, one contact. Hover and selection are the only states that need to
+   read at a glance, so nothing else in here carries a background. */
 .conversation-item {
   display: flex;
   align-items: center;
-  padding: 11px 12px;
+  /* 11px top and bottom cost a whole row per screenful for whitespace nobody
+     asked for. The row still clears 44px, which is the touch target that
+     matters. */
+  padding: 8px 10px;
   border-radius: 8px;
   cursor: pointer;
   transition: var(--transition-smooth);
-  gap: 11px;
+  gap: 10px;
   position: relative;
   border: 1px solid transparent;
 }
@@ -953,9 +1036,14 @@ body {
 }
 
 .conv-time {
-  font-size: 10px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
   color: var(--text-muted);
   flex-shrink: 0;
+  /* Relative stamps are short and of similar width, so the names below them
+     line up instead of ending at six different places. */
+  min-width: 26px;
+  text-align: right;
 }
 
 .conv-preview {
@@ -2171,16 +2259,25 @@ input[type="radio"] {
 }
 
 /* Sidebar Conversation Selection Header & Checkboxes */
+/* A plain rule rather than a card. It holds one checkbox and a button that is
+   invisible until something is selected, which is not worth a boxed panel. */
 .conv-list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 16px;
-  margin: 8px 16px 2px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 7px;
-  background: rgba(255, 255, 255, 0.015);
+  min-height: 28px;
+  padding: 2px 14px 4px 14px;
+  margin: 2px 0 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Disabled, it is a permanent grey button advertising that you have selected
+   nothing. It appears when it can actually do something. */
+#btn-bulk-msg:disabled {
+  display: none;
 }
 
 .select-all-container {
