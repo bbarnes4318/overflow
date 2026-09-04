@@ -1020,8 +1020,8 @@ async function loadSettings() {
         : 'Not set. Variation stays off until a key is saved.';
     }
 
-    if (settingFractelSender) settingFractelSender.value = settings.fractel_sender_number || '2005555185';
-    if (settingFractelBrand) settingFractelBrand.value = settings.fractel_brand_id || 'B7PS8UH';
+    if (settingFractelSender) settingFractelSender.value = settings.fractel_sender_number || '';
+    if (settingFractelBrand) settingFractelBrand.value = settings.fractel_brand_id || '';
     if (settingFractelUsername) settingFractelUsername.value = settings.fractel_username || '';
     if (settingFractelPassword) settingFractelPassword.value = settings.fractel_password || '';
 
