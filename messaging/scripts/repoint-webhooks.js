@@ -54,24 +54,50 @@ async function getToken(username, password) {
   return token;
 }
 
-/** What the carrier currently has configured for this number. */
+/**
+ * What the carrier currently has configured for this number.
+ *
+ * The payload nests everything under `fonenumber`. Reading `data.sms_options`
+ * directly returns undefined, which silently looks like "no webhook set" - so
+ * the whole block is returned and the caller decides.
+ */
 async function readNumber(did, token) {
   const res = await fetch(NUMBER_URL(did), { headers: { token } });
   if (!res.ok) return { error: `HTTP ${res.status}` };
   const data = await res.json();
-  const notify = data && data.sms_options && data.sms_options.receive_notify;
-  return { url: (notify && notify.url) || null };
+  const opts = data && data.fonenumber && data.fonenumber.sms_options;
+  if (!opts) return { error: 'no sms_options in response' };
+  const notify = opts.receive_notify || {};
+  return {
+    url: notify.url || null,
+    smsOptions: opts,
+    // A second, independent consumer of the same number. Not ours to touch.
+    otherReceiver: (opts.receive && opts.receive.url) || null
+  };
 }
 
-async function writeNumber(did, token) {
+/**
+ * Read-modify-write, deliberately.
+ *
+ * These numbers carry more than one setting: a separate `receive` URL feeding
+ * another system, plus sms_enabled/mms_enabled. PUTting only `receive_notify`
+ * risks the carrier treating it as a replacement and dropping the rest, which
+ * would silently unhook another integration or disable messaging on the number.
+ * The full block goes back with exactly one field changed.
+ */
+async function writeNumber(did, token, currentOptions) {
+  const next = JSON.parse(JSON.stringify(currentOptions));
+  next.receive_notify = {
+    ...(next.receive_notify || {}),
+    type: 'Callback',
+    method: 'JSON',
+    url: TARGET
+  };
+
   const res = await fetch(NUMBER_URL(did), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', token },
-    body: JSON.stringify({
-      sms_options: {
-        receive_notify: { type: 'Callback', method: 'JSON', url: TARGET }
-      }
-    })
+    body: JSON.stringify({ sms_options: next })
   });
   const body = await res.text();
   return { ok: res.ok, status: res.status, body: body.slice(0, 200) };
@@ -128,12 +154,23 @@ async function writeNumber(did, token) {
     console.log(`  ${DRY_RUN ? '~' : '>'}  ${label}`);
     console.log(`       from: ${current.url || '(none set)'}`);
     console.log(`       to:   ${TARGET}`);
+    if (current.otherReceiver) {
+      console.log(`       note: separate 'receive' URL preserved -> ${current.otherReceiver}`);
+    }
 
     if (DRY_RUN) { changed++; continue; }
 
-    const result = await writeNumber(row.did, token);
+    const result = await writeNumber(row.did, token, current.smsOptions);
     if (result.ok) {
-      changed++;
+      // Confirm from the carrier rather than trusting the response code.
+      const after = await readNumber(row.did, token);
+      if (after.url === TARGET) {
+        console.log('       confirmed');
+        changed++;
+      } else {
+        console.log(`       WROTE BUT DID NOT TAKE: still ${after.url || '(none)'}`);
+        failed++;
+      }
     } else {
       console.log(`       FAILED: HTTP ${result.status} ${result.body}`);
       failed++;
