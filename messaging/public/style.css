@@ -112,6 +112,9 @@ body {
 
 .logo-img {
   height: 28px;
+  /* width:auto, or the intrinsic width attribute on the <img> becomes the
+     layout width and this flex child squeezes the header actions beside it. */
+  width: auto;
   max-width: 100%;
   object-fit: contain;
   display: block;

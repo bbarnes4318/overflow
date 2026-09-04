@@ -69,6 +69,10 @@ body {
 
 .logo-img {
   height: 32px;
+  /* The <img> carries intrinsic width/height so the browser can reserve the
+     box before it loads. Without width:auto that attribute also becomes the
+     layout width, leaving the mark adrift in a box three times too wide. */
+  width: auto;
   max-width: 100%;
   object-fit: contain;
   margin-bottom: 8px;
