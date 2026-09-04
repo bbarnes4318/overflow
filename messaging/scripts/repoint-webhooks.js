@@ -28,6 +28,8 @@ const NUMBER_URL = did => `https://api.fonestorm.com/v2/fonenumbers/${did}`;
 
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
+const onlyFlagIndex = args.indexOf('--only');
+const ONLY_DID = onlyFlagIndex !== -1 ? args[onlyFlagIndex + 1] : null;
 const urlFlagIndex = args.indexOf('--url');
 const TARGET_BASE = (urlFlagIndex !== -1 && args[urlFlagIndex + 1])
   || process.env.WEBHOOK_BASE_URL
@@ -77,27 +79,25 @@ async function readNumber(did, token) {
 }
 
 /**
- * Read-modify-write, deliberately.
+ * Send ONLY receive_notify.
  *
- * These numbers carry more than one setting: a separate `receive` URL feeding
- * another system, plus sms_enabled/mms_enabled. PUTting only `receive_notify`
- * risks the carrier treating it as a replacement and dropping the rest, which
- * would silently unhook another integration or disable messaging on the number.
- * The full block goes back with exactly one field changed.
+ * The obvious safe move - read the whole sms_options block and put it back with
+ * one field changed - is not available: this API's read shape is not its write
+ * shape. It returns `receive.url` but validates `receive.value`, so echoing
+ * back what it just gave you is rejected with HTTP 400.
+ *
+ * So the write is deliberately partial, and the caller verifies afterwards that
+ * the OTHER receiver survived. That check is the safeguard, not the payload.
  */
-async function writeNumber(did, token, currentOptions) {
-  const next = JSON.parse(JSON.stringify(currentOptions));
-  next.receive_notify = {
-    ...(next.receive_notify || {}),
-    type: 'Callback',
-    method: 'JSON',
-    url: TARGET
-  };
-
+async function writeNumber(did, token) {
   const res = await fetch(NUMBER_URL(did), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', token },
-    body: JSON.stringify({ sms_options: next })
+    body: JSON.stringify({
+      sms_options: {
+        receive_notify: { type: 'Callback', method: 'JSON', url: TARGET }
+      }
+    })
   });
   const body = await res.text();
   return { ok: res.ok, status: res.status, body: body.slice(0, 200) };
@@ -129,14 +129,17 @@ async function writeNumber(did, token, currentOptions) {
     fail('No enabled DIDs in tenant_dids. Assign numbers to a tenant first.');
   }
 
+  const scoped = ONLY_DID ? dids.filter(d => d.did === ONLY_DID) : dids;
+  if (ONLY_DID && !scoped.length) fail(`DID ${ONLY_DID} is not assigned to any tenant.`);
+
   console.log(`\n  Target: ${TARGET}`);
-  console.log(`  Numbers: ${dids.length}${DRY_RUN ? '   (DRY RUN - nothing will be changed)' : ''}\n`);
+  console.log(`  Numbers: ${scoped.length}${DRY_RUN ? '   (DRY RUN - nothing will be changed)' : ''}\n`);
 
   const token = await getToken(username, password);
 
   let changed = 0, already = 0, failed = 0;
 
-  for (const row of dids) {
+  for (const row of scoped) {
     const current = await readNumber(row.did, token);
     const label = `${row.did}  ${row.tenant_name}`;
 
@@ -165,8 +168,16 @@ async function writeNumber(did, token, currentOptions) {
       // Confirm from the carrier rather than trusting the response code.
       const after = await readNumber(row.did, token);
       if (after.url === TARGET) {
-        console.log('       confirmed');
-        changed++;
+        // A partial write could have dropped the other receiver. Prove it did not.
+        if (current.otherReceiver && after.otherReceiver !== current.otherReceiver) {
+          console.log(`       WARNING: the separate 'receive' URL changed`);
+          console.log(`         was: ${current.otherReceiver}`);
+          console.log(`         now: ${after.otherReceiver || '(gone)'}`);
+          failed++;
+        } else {
+          console.log(`       confirmed${current.otherReceiver ? " ('receive' intact)" : ''}`);
+          changed++;
+        }
       } else {
         console.log(`       WROTE BUT DID NOT TAKE: still ${after.url || '(none)'}`);
         failed++;
