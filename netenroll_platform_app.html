@@ -228,7 +228,7 @@
                 id: 'prod_fe',
                 code: 'FINAL_EXPENSE',
                 name: 'Final Expense Life Insurance', 
-                fee: 125, 
+                fee: 160, 
                 tagline: 'Burial & Final Expense Callers',
                 description: 'Inbound senior citizens calling directly to request burial and funeral insurance quotes.',
                 features: ['12-18 min average call length', 'High purchase intent seniors', '100% TCPA opt-in verified consent'],
@@ -270,7 +270,7 @@
         const FAQS = [
             {
                 q: "How does NetEnroll charge me?",
-                a: "NetEnroll uses a performance-based billing model. For the Final Expense program, the current rate is $125 per eligible submitted application."
+                a: "NetEnroll uses a performance-based billing model. For the Final Expense program, the current rate is $160 per eligible submitted application."
             },
             {
                 q: "Do I pay for every call?",
@@ -433,7 +433,7 @@
 
             // Applications Database Table
             const [applications, setApplications] = useState([
-                { id: 'APP-9982', callId: 'CALL-501', agentId: 'ag_8849201', agentName: 'Marcus Vance', vertical: 'Final Expense Life Insurance', carrier: 'Mutual of Omaha', policyNum: 'FE-8849201', applicant: 'Robert Miller', state: 'TX', fee: 125, paymentIntentId: 'pi_3M9284019231', status: 'SETTLED', billableStatus: 'BILLABLE', time: '10:42 AM', date: '2026-03-02' },
+                { id: 'APP-9982', callId: 'CALL-501', agentId: 'ag_8849201', agentName: 'Marcus Vance', vertical: 'Final Expense Life Insurance', carrier: 'Mutual of Omaha', policyNum: 'FE-8849201', applicant: 'Robert Miller', state: 'TX', fee: 160, paymentIntentId: 'pi_3M9284019231', status: 'SETTLED', billableStatus: 'BILLABLE', time: '10:42 AM', date: '2026-03-02' },
                 { id: 'APP-9983', callId: 'CALL-498', agentId: 'ag_8849201', agentName: 'Marcus Vance', vertical: 'Medicare Advantage & Supplement', carrier: 'Humana', policyNum: 'MED-993021', applicant: 'Dorothy Kowalski', state: 'NC', fee: 175, paymentIntentId: 'pi_3M9284019232', status: 'SETTLED', billableStatus: 'BILLABLE', time: '11:15 AM', date: '2026-03-02' },
                 { id: 'APP-9984', callId: 'CALL-480', agentId: 'ag_9901822', agentName: 'Sarah Jenkins', vertical: 'Medicare Advantage & Supplement', carrier: 'Aetna', policyNum: 'MED-102938', applicant: 'James Thornton', state: 'NC', fee: 175, paymentIntentId: 'pi_3M9284019233', status: 'SETTLED', billableStatus: 'BILLABLE', time: '02:30 PM', date: '2026-03-01' }
             ]);
@@ -447,7 +447,7 @@
 
             // Webhook Audit Logs
             const [webhookLogs, setWebhookLogs] = useState([
-                { id: 'evt_1N901021', type: 'payment_intent.succeeded', intentId: 'pi_3M9284019231', amount: 125, status: 'PROCESSED', timestamp: '10:42 AM', signatureValid: true }
+                { id: 'evt_1N901021', type: 'payment_intent.succeeded', intentId: 'pi_3M9284019231', amount: 160, status: 'PROCESSED', timestamp: '10:42 AM', signatureValid: true }
             ]);
 
             // Audit Trail Logs
@@ -746,7 +746,7 @@
                 const feProd = dbProducts.find(p => p.name === 'Final Expense Life Insurance');
                 results.push({
                     name: '4. Server Pricing Authority Check',
-                    pass: feProd.fee === 125,
+                    pass: feProd.fee === FINAL_EXPENSE_FEE,
                     details: `Fee dynamically bound to DB config: $${feProd.fee}`
                 });
 
@@ -900,7 +900,7 @@
                         {/* ============================================================
                             PUBLIC MARKETING SITE — light mode only.
                             One idea has to land in about five seconds:
-                            "calls are free, the application is what costs $125."
+                            "calls are free, the application is what costs $160."
                             Everything on this page is subordinate to that.
                            ============================================================ */}
                         {currentTab === 'marketing' && (
@@ -1261,7 +1261,7 @@
                                                     ['Applications', '19'],
                                                     ['Agents', '6'],
                                                     ['Conversion rate', '14.8%'],
-                                                    ['Application fees', '$2,375']
+                                                    ['Application fees', '$3,040']
                                                 ].map(([label, value], i, arr) => (
                                                     <div key={label}
                                                          className={`bg-white px-6 sm:px-7 py-7 ${i === arr.length - 1 ? 'col-span-2 lg:col-span-1' : ''}`}>
