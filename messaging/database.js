@@ -1104,8 +1104,8 @@ function insertMessage(tenantId, msg) {
 
   const result = db.prepare(`
     INSERT INTO messages (
-      tenant_id, conversation_id, direction, from_number, to_number, body, media_urls, status, scheduled_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      tenant_id, conversation_id, direction, from_number, to_number, body, media_urls, status, scheduled_at, ref_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     tid,
     msg.conversation_id,
@@ -1115,7 +1115,10 @@ function insertMessage(tenantId, msg) {
     msg.body || '',
     msg.media_urls ? JSON.stringify(msg.media_urls) : null,
     msg.status,
-    msg.scheduled_at || null
+    msg.scheduled_at || null,
+    // Inbound carries the carrier's own message id. Storing it is what makes
+    // the webhook idempotent - see inboundExists().
+    msg.ref_id || null
   );
   
   const inserted = {
@@ -1287,6 +1290,25 @@ function recordCarrierStatus(tenantId, messageId, carrierStatus) {
  * this is where the owning tenant is DISCOVERED. The row carries tenant_id, and
  * the webhook uses it to scope every write that follows.
  */
+/**
+ * Has this exact inbound message already been stored?
+ *
+ * Carriers deliver the same message more than once: a retry after a slow
+ * response, or - as happened here - two separate callbacks configured on the
+ * same number both firing. The carrier's message id is stable across all of
+ * those, so it is the thing to key on.
+ *
+ * Scoped to the tenant and to inbound, so it can never collide with an
+ * outbound row that happens to carry the same ref_id from a send receipt.
+ */
+function inboundExists(tenantId, refId) {
+  const tid = requireTenant(tenantId);
+  if (!refId) return false;
+  return !!db.prepare(
+    `SELECT 1 FROM messages WHERE tenant_id = ? AND ref_id = ? AND direction = 'inbound'`
+  ).get(tid, String(refId));
+}
+
 function getMessageByRefId(refId) {
   if (!refId) return null;
   return db.prepare('SELECT * FROM messages WHERE ref_id = ?').get(refId) || null;
@@ -2574,6 +2596,7 @@ module.exports = {
   USER_ROLES,
 
   getMessageByRefId,
+  inboundExists,
   getNotesForTarget,
   addNoteForTarget,
   getNotesForConversation,

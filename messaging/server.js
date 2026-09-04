@@ -1432,6 +1432,14 @@ app.post('/webhook/inbound', (req, res) => {
       return res.status(200).send('OK');
     }
 
+    // The same message can arrive more than once - a carrier retry, or two
+    // callbacks configured on one number both firing. Drop the repeat before
+    // it becomes a second row in somebody's thread.
+    if (RefId && db.inboundExists(tenantId, RefId)) {
+      console.log(`[webhook] duplicate inbound ${RefId} ignored (already stored).`);
+      return res.status(200).send('OK');
+    }
+
     // Create/get conversation for sender, inside the resolved tenant.
     const conv = db.getOrCreateConversation(tenantId, From);
 
@@ -1448,7 +1456,8 @@ app.post('/webhook/inbound', (req, res) => {
       to_number: toNum,
       body: Message || '',
       media_urls: MediaURLs || null,
-      status: 'received'
+      status: 'received',
+      ref_id: RefId || null
     };
 
     // Insert message into database

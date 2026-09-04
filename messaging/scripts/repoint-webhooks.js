@@ -9,13 +9,16 @@
  *                    your endpoint. type "None" means the inbound message goes
  *                    NOWHERE. This is the field that matters.
  *   receive_notify - a secondary callback. Setting it alone looks correct in
- *                    the carrier console and delivers nothing.
+ *                    the carrier console and delivers nothing. Point it at the
+ *                    same endpoint as `receive` and the message arrives TWICE.
  *
  * That distinction cost us a silent outage: all six DIDs read as "already
  * pointed here" because receive_notify was ours, while the number we were
  * actually sending from had receive.type "None" and dropped every reply.
  *
- * So this script writes BOTH, and treats `receive` as the one to verify.
+ * So this script sets `receive` and verifies it, and turns receive_notify OFF
+ * wherever it points at the same endpoint - otherwise the fix for the outage
+ * becomes a duplicate in every conversation.
  *
  * Credentials come from the settings table (Gateway Settings in the UI), never
  * from the command line, so they are not exposed in shell history or the
@@ -92,6 +95,8 @@ async function readNumber(did, token) {
     // The delivery action. null here means inbound is discarded.
     receiveType: receive.type || 'None',
     receiveUrl: receive.url || null,
+    // type matters as much as url here: a stale url survives type "None".
+    notifyType: notify.type || 'None',
     notifyUrl: notify.url || null,
     smsEnabled: opts.sms_enabled
   };
@@ -105,13 +110,16 @@ async function readNumber(did, token) {
  * with HTTP 400. Hence the deliberate hand-built payload rather than a
  * read-modify-write of the whole block.
  */
-async function writeNumber(did, token, { setReceive, setNotify }) {
+async function writeNumber(did, token, { setReceive, clearNotify }) {
   const sms_options = {};
   if (setReceive) {
     sms_options.receive = { type: 'URL', value: TARGET, url_method: 'JSON' };
   }
-  if (setNotify) {
-    sms_options.receive_notify = { type: 'Callback', method: 'JSON', url: TARGET };
+  // `receive` already delivers the message. Leaving receive_notify pointed at
+  // the same endpoint delivers it a second time, which is exactly what it did
+  // the first time this was fixed.
+  if (clearNotify) {
+    sms_options.receive_notify = { type: 'None' };
   }
   const res = await fetch(NUMBER_URL(did), {
     method: 'PUT',
@@ -171,8 +179,9 @@ async function writeNumber(did, token, { setReceive, setNotify }) {
     }
 
     const receiveOk = before.receiveUrl === TARGET;
-    const notifyOk = before.notifyUrl === TARGET;
-    if (receiveOk && notifyOk) {
+    // A notify still aimed at us alongside `receive` is a duplicate generator.
+    const notifyDuplicates = before.notifyType === 'Callback' && before.notifyUrl === TARGET;
+    if (receiveOk && !notifyDuplicates) {
       console.log(`  =  ${label}  delivering here already`);
       already++;
       continue;
@@ -195,6 +204,9 @@ async function writeNumber(did, token, { setReceive, setNotify }) {
       ? 'None - inbound is being DISCARDED'
       : before.receiveUrl}`);
     console.log(`       -> ${TARGET}`);
+    if (notifyDuplicates) {
+      console.log(`       also clearing receive_notify - it points here too and would double every message`);
+    }
     if (before.smsEnabled !== 'yes') {
       console.log(`       WARNING: sms_enabled is '${before.smsEnabled}' - inbound may not flow at all.`);
     }
@@ -203,7 +215,7 @@ async function writeNumber(did, token, { setReceive, setNotify }) {
 
     const result = await writeNumber(row.did, token, {
       setReceive: !receiveOk,
-      setNotify: !notifyOk
+      clearNotify: notifyDuplicates
     });
     if (!result.ok) {
       console.log(`       FAILED: HTTP ${result.status} ${result.body}`);
