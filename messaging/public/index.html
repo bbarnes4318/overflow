@@ -895,7 +895,10 @@
   <script src="lib/area_codes_v2.js?v=fresh-2026"></script>
   <script src="lib/area_codes.js?v=fresh-2026"></script>
   <script src="app_v2.js?v=fresh-2026"></script>
-  <script src="app.js?v=fresh-2026"></script>
+  <!-- app.js is NOT loaded. It and app_v2.js both declare `btnNewChat` at top
+       level, and a duplicate const is a parse-time SyntaxError, so app.js has
+       never executed a single line - it only cost 131KB of download and parse
+       per page load and seven console errors. app_v2.js is the live file. -->
   <script src="tenant.js?v=fresh-2026"></script>
 </body>
 </html>
