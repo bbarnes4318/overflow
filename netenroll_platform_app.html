@@ -240,7 +240,7 @@
                 fee: 120, 
                 tagline: 'Eligible Medicare Beneficiaries',
                 description: 'Inbound beneficiaries looking to compare plan benefits during AEP, SEP, or Turning-65 windows.',
-                features: ['CMS disclaimer compliant', 'SOA & call recording friendly', 'Matched to your active state licenses'],
+                features: ['CMS disclaimer compliant', 'SOA & call recording friendly', 'Matched to the states you select'],
                 status: 'ACTIVE'
             },
             { 
@@ -296,12 +296,12 @@
                 a: "An insurance application you complete and submit for a consumer from a NetEnroll call, recorded against your account with the carrier, policy number and applicant details. Eligibility follows the billing terms of the campaign you are enrolled in."
             },
             {
-                q: "Do I need to be licensed?",
-                a: "Yes. NetEnroll is for licensed insurance producers. Registration asks for your National Producer Number and the states you are authorized to sell in, and your account is matched to those states."
+                q: "Do I need an insurance license?",
+                a: "NetEnroll does not ask for a producer number and does not verify licensing. You are responsible for holding whatever licenses and authority the law requires for the business you conduct. Calls are routed to the states you select on your account."
             },
             {
                 q: "How are calls routed?",
-                a: "Inbound calls are matched to an available agent licensed in the consumer's state and connected to the phone number on your account. Every call is recorded against your account for tracking."
+                a: "Inbound calls are matched to an available agent who has selected the consumer's state and connected to the phone number on your account. Every call is recorded against your account for tracking."
             },
             {
                 q: "Can agencies manage multiple agents?",
@@ -309,7 +309,7 @@
             },
             {
                 q: "How quickly can I start?",
-                a: "Registration is a short form: your contact details, your National Producer Number, the program you want, and a payment method. Once those are complete you can set your status to available and begin taking calls."
+                a: "Registration is a short form: whether you are a company or an individual, your contact details, the states you want calls from, the program you want, and a payment method. Once those are complete you can set your status to available and begin taking calls."
             },
             {
                 q: "Are there monthly fees?",
@@ -1047,7 +1047,7 @@
                                         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
                                             {[
                                                 ['call', 'Live final expense calls'],
-                                                ['shield', 'License matching'],
+                                                ['shield', 'State matching'],
                                                 ['chart', 'Call tracking'],
                                                 ['doc', 'Application tracking']
                                             ].map(([icon, label]) => (
@@ -1286,7 +1286,7 @@
                                                 working the consumers who are ready to move forward.
                                             </p>
                                             <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
-                                                {['Calls routed to you', 'License matching', 'Call tracking', 'Application tracking'].map(t => (
+                                                {['Calls routed to you', 'State matching', 'Call tracking', 'Application tracking'].map(t => (
                                                     <li key={t} className="flex items-start gap-2.5 text-[15px] leading-snug text-muted">
                                                         <CheckMark /> <span>{t}</span>
                                                     </li>
@@ -1305,7 +1305,7 @@
                                                 applications organized in one platform.
                                             </p>
                                             <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
-                                                {['Agent management', 'Call routing', 'License matching', 'Call tracking', 'Application tracking', 'Reporting'].map(t => (
+                                                {['Agent management', 'Call routing', 'State matching', 'Call tracking', 'Application tracking', 'Reporting'].map(t => (
                                                     <li key={t} className="flex items-start gap-2.5 text-[15px] leading-snug text-muted">
                                                         <CheckMark /> <span>{t}</span>
                                                     </li>
@@ -1590,12 +1590,12 @@
                                         <form onSubmit={handleStep2Submit} className="space-y-6">
                                             <div>
                                                 <h3 className="text-xl font-bold text-white">Licensed States</h3>
-                                                <p className="text-xs text-slate-400 mt-1">Select every state where you hold an active license. Calls are routed to you only in these states.</p>
+                                                <p className="text-xs text-slate-400 mt-1">Select the states you want calls from. Calls are routed to you only in these states, so choose the ones you are able to write business in.</p>
                                             </div>
 
                                             <div>
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <label className="text-xs font-semibold text-slate-300 uppercase">Select Active Licensed States *</label>
+                                                    <label className="text-xs font-semibold text-slate-300 uppercase">Select Your States *</label>
                                                     <span className="text-[10px] font-mono text-emerald-400">{agentProfile.licensedStates.length} States Selected</span>
                                                 </div>
                                                 <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 max-h-48 overflow-y-auto grid grid-cols-5 sm:grid-cols-10 gap-2">
