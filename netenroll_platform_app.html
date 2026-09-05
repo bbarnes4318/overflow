@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Expense Insurance Calls | NetEnroll</title>
-    <meta name="description" content="Final expense calls for licensed insurance agents. Connect with consumers seeking coverage and pay a fixed fee when an eligible application is submitted.">
+    <title>Final Expense Calls | Pay Per Application | NetEnroll</title>
+    <meta name="description" content="Final expense calls for licensed insurance agents. No traditional per-call charge - you pay when an eligible insurance application is submitted. Starting at $160 per submitted application.">
     <meta name="theme-color" content="#FFFFFF">
     
     <!-- Tailwind CSS CDN -->
@@ -57,7 +57,7 @@
            ========================================================= */
 
         /* Sticky header is 72px; anchors must clear it. */
-        section[id] { scroll-margin-top: 88px; }
+        section[id] { scroll-margin-top: 82px; }
 
         .btn-primary {
             display: inline-flex; align-items: center; justify-content: center;
@@ -88,17 +88,19 @@
             text-transform: uppercase; color: #087F5B;
         }
         .t-h1 {
-            font-size: clamp(2.15rem, 5.1vw, 4.05rem);
-            line-height: 1.045; letter-spacing: -0.034em;
+            /* 58-64px on desktop, 38-44px on a phone. Larger than this and
+               the headline alone pushes the price below the fold. */
+            font-size: clamp(2.4rem, 4.6vw, 3.75rem);
+            line-height: 1.05; letter-spacing: -0.033em;
             font-weight: 700; color: #111827;
         }
         .t-h2 {
-            font-size: clamp(1.8rem, 3.5vw, 2.7rem);
-            line-height: 1.1; letter-spacing: -0.028em;
+            font-size: clamp(1.9rem, 3.3vw, 2.6rem);
+            line-height: 1.12; letter-spacing: -0.028em;
             font-weight: 700; color: #111827;
         }
         .t-h3 { font-size: clamp(1.25rem, 1.9vw, 1.55rem); line-height: 1.25; letter-spacing: -0.02em; font-weight: 650; color: #111827; }
-        .t-lede { font-size: clamp(1.04rem, 1.3vw, 1.19rem); line-height: 1.62; color: #667085; }
+        .t-lede { font-size: clamp(1.05rem, 1.25vw, 1.16rem); line-height: 1.6; color: #667085; }
         .t-body { font-size: 16px; line-height: 1.62; color: #667085; }
 
         /* Numerals: tabular so stacked money columns line up. */
@@ -264,46 +266,55 @@
             'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
         ];
 
-        // Final-expense only. Answers describe the flow this application actually
-        // implements; nothing here asserts a rate or rule that is not in
-        // INITIAL_DB_PRODUCTS or the onboarding steps below.
+        // Final-expense only. Every answer describes what this application
+        // actually does. Nothing here asserts a rate, a rule, or a regulatory
+        // position that is not in INITIAL_DB_PRODUCTS or the onboarding steps.
         const FAQS = [
             {
-                q: "How does NetEnroll charge me?",
-                a: "NetEnroll uses a performance-based billing model. For the Final Expense program, the current rate is $160 per eligible submitted application."
+                q: "How does billing work?",
+                a: "Billing is performance-based. There is no traditional charge for a delivered call; the applicable fee is tied to an eligible submitted application. For the Final Expense program the rate starts at $160 per submitted application."
             },
             {
                 q: "Do I pay for every call?",
-                a: "No. Calls themselves are not the billable event. The fee is triggered when an eligible application is submitted."
+                a: "No. The call is not the billing event. Receiving a call, speaking with the consumer, and the length of the conversation carry no per-call charge."
             },
             {
-                q: "Do I need an insurance license?",
-                a: "Yes. NetEnroll is designed for licensed insurance producers. Registration asks for your National Producer Number, and your account is matched to the states in which you are authorized to sell."
+                q: "What does \"$160+ per submitted application\" mean?",
+                a: "$160 is the starting rate for the Final Expense program. The rate that applies to your account is the one shown for your campaign, and it is confirmed before you begin."
             },
             {
-                q: "What happens when a consumer doesn't submit an application?",
-                a: "You are not charged for the call simply because you spoke with the consumer."
+                q: "What counts as a submitted application?",
+                a: "An insurance application you complete and submit for a consumer from a NetEnroll call, recorded against your account with the carrier, policy number and applicant details. Eligibility follows the billing terms of the campaign you are enrolled in."
+            },
+            {
+                q: "Do I need to be licensed?",
+                a: "Yes. NetEnroll is for licensed insurance producers. Registration asks for your National Producer Number and the states you are authorised to sell in, and your account is matched to those states."
+            },
+            {
+                q: "How are calls routed?",
+                a: "Inbound calls are matched to an available agent licensed in the consumer's state and connected to the phone number on your account. Every call is recorded against your account for tracking."
+            },
+            {
+                q: "Can agencies manage multiple agents?",
+                a: "Yes. An agency can have several producers on the platform, each with their own routing and their own call and application records, reported together at the agency level."
+            },
+            {
+                q: "How quickly can I start?",
+                a: "Registration is a short form: your contact details, your National Producer Number, the program you want, and a payment method. Once those are complete you can set your status to available and begin taking calls."
             },
             {
                 q: "Are there monthly fees?",
                 a: "No. There is no monthly subscription and no separate charge for account access. Billing is limited to the per-application fee for the program you are enrolled in."
-            },
-            {
-                q: "How quickly can I start?",
-                a: "Registration is a short form: your contact details, your National Producer Number, the program you want, and a payment method. Once those steps are complete you can set your status to available and begin taking calls."
-            },
-            {
-                q: "How are calls routed?",
-                a: "Inbound calls are matched to an available agent licensed in the consumer's state and connected to the phone number on your account. Each call is recorded against your account for tracking."
-            },
-            {
-                q: "Can agencies have multiple agents?",
-                a: "Yes. An agency can have several producers on the platform, each with their own routing and their own call and application records, reported together at the agency level."
             }
         ];
 
         // Pricing is read from the product catalogue, never hard-coded in copy.
         const FINAL_EXPENSE_FEE = (INITIAL_DB_PRODUCTS.find(p => p.code === 'FINAL_EXPENSE') || {}).fee;
+
+        // The headline price is a starting rate, so it is quoted with a "+".
+        // The bare number is still used wherever arithmetic has to add up -
+        // "$160+ less to acquire it" would not be a number.
+        const FEE_DISPLAY = `$${FINAL_EXPENSE_FEE}+`;
 
         const CheckMark = ({ className = '' }) => (
             <svg className={`w-[18px] h-[18px] mt-[3px] shrink-0 text-brandgreen ${className}`} viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -809,7 +820,7 @@
                     <header className={isPublic
                         ? "sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-line"
                         : "sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80"}>
-                        <div className="max-w-[1240px] mx-auto px-5 sm:px-6 h-[72px] flex items-center justify-between gap-4">
+                        <div className="max-w-[1240px] mx-auto px-5 sm:px-6 h-[66px] flex items-center justify-between gap-4">
 
                             <button onClick={() => setCurrentTab('marketing')} className="flex items-center shrink-0" aria-label="NetEnroll home">
                                 <span className="text-left leading-none">
@@ -899,44 +910,47 @@
                         
                         {/* ============================================================
                             PUBLIC MARKETING SITE — light mode only.
-                            One idea has to land in about five seconds:
-                            "calls are free, the application is what costs $160."
-                            Everything on this page is subordinate to that.
+
+                            Most traffic arrives cold from an SMS. The first
+                            viewport has to answer four things without a scroll:
+                            what this is, who it is for, how billing works, and
+                            what to do next. Everything below it only explains.
                            ============================================================ */}
                         {currentTab === 'marketing' && (
                             <div className="bg-white text-ink pad-for-cta">
 
                                 {/* ---------------- HERO ---------------- */}
-                                <section className="px-5 sm:px-6 pt-10 pb-11 lg:pt-[76px] lg:pb-[68px]">
-                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.14fr_0.86fr] gap-12 lg:gap-14 items-center">
+                                <section className="px-5 sm:px-6 pt-9 pb-10 lg:pt-[52px] lg:pb-[44px]">
+                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.52fr_1fr] gap-10 lg:gap-12 items-center">
 
                                         <div className="reveal">
                                             <p className="eyebrow">Final Expense Calls</p>
 
-                                            <h1 className="t-h1 mt-5">
+                                            <h1 className="t-h1 mt-4">
                                                 Stop paying for every call.
-                                                <span className="block text-brandgreen">Pay when you submit an application.</span>
+                                                <span className="block text-brandgreen">Pay when an application is submitted.</span>
                                             </h1>
 
-                                            <p className="t-lede mt-7 max-w-[34rem]">
-                                                Connect with consumers looking for final expense coverage and keep your
-                                                acquisition cost tied to submitted applications instead of every phone call.
+                                            <p className="t-lede mt-6 max-w-[38rem]">
+                                                Get connected with consumers looking for final expense coverage without
+                                                the traditional per-call charge. You pay when an eligible insurance
+                                                application is submitted.
                                             </p>
 
-                                            {/* The number is the message. Give it the weight. */}
-                                            <div className="mt-9 pl-6 border-l-[3px] border-brandgreen">
+                                            {/* The price is the offer. It does not go in a card further down. */}
+                                            <div className="mt-7 pl-6 border-l-[3px] border-brandgreen">
                                                 <div className="flex items-baseline gap-3.5 flex-wrap">
-                                                    <span className="num text-[3.5rem] sm:text-[4rem] leading-[0.9] font-bold text-deepgreen">
-                                                        ${FINAL_EXPENSE_FEE}
+                                                    <span className="num text-[3.4rem] sm:text-[3.9rem] leading-[0.9] font-bold text-deepgreen">
+                                                        {FEE_DISPLAY}
                                                     </span>
-                                                    <span className="text-[16px] font-semibold text-ink">per submitted application</span>
+                                                    <span className="text-[15.5px] font-semibold text-ink">per submitted application</span>
                                                 </div>
-                                                <p className="mt-3.5 text-[14.5px] text-muted">
-                                                    No monthly subscription &nbsp;·&nbsp; No per-minute billing &nbsp;·&nbsp; No long-term contract
+                                                <p className="mt-3 text-[14.5px] text-muted">
+                                                    No traditional per-call charge. Billing is tied to the eligible application.
                                                 </p>
                                             </div>
 
-                                            <div className="mt-9 flex flex-col sm:flex-row gap-3">
+                                            <div className="mt-7 flex flex-col sm:flex-row gap-3">
                                                 <button onClick={startSignup} className="btn-primary btn-lg">
                                                     Start Receiving Calls
                                                 </button>
@@ -945,25 +959,25 @@
                                                 </button>
                                             </div>
 
-                                            <p className="mt-7 text-[14px] text-muted">
+                                            <p className="mt-6 text-[14px] text-muted">
                                                 Built for licensed final expense agents and agencies.
                                             </p>
                                         </div>
 
-                                        {/* The business model as a picture. Not a dashboard. */}
-                                        <div className="reveal-2 w-full max-w-[480px] lg:max-w-[425px] mx-auto lg:mx-0 lg:justify-self-end">
+                                        {/* The billing model as a picture, so it lands before the copy is read. */}
+                                        <div className="reveal-2 w-full max-w-[400px] mx-auto lg:mx-0 lg:justify-self-end">
                                             <div className="card shadow-lift overflow-hidden">
-                                                <div className="px-6 py-4 border-b border-line flex items-center justify-between">
-                                                    <span className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">FINAL EXPENSE CALL</span>
+                                                <div className="px-6 py-3.5 border-b border-line flex items-center justify-between">
+                                                    <span className="text-[12px] font-semibold tracking-[0.13em] text-muted">FINAL EXPENSE CALL</span>
                                                     <span className="flex items-center gap-2 text-[12px] font-medium text-deepgreen">
                                                         <span className="w-[7px] h-[7px] rounded-full bg-brandgreen"></span>
                                                         Live
                                                     </span>
                                                 </div>
 
-                                                <div className="px-6 pt-6 pb-6">
+                                                <div className="px-6 pt-5 pb-6">
                                                     {[
-                                                        ['Call received', 'Consumer looking for final expense coverage'],
+                                                        ['Incoming consumer', 'Looking for final expense coverage'],
                                                         ['Agent connected', null],
                                                         ['Conversation', null]
                                                     ].map(([title, sub], i) => (
@@ -974,10 +988,10 @@
                                                                     <span className="w-[9px] h-[9px] rounded-full bg-line"></span>
                                                                 </span>
                                                                 <span className="flex-1 min-w-0">
-                                                                    <span className="block text-[15.5px] font-medium text-ink">{title}</span>
-                                                                    {sub && <span className="block mt-0.5 text-[13.5px] text-muted">{sub}</span>}
+                                                                    <span className="block text-[15px] font-medium text-ink">{title}</span>
+                                                                    {sub && <span className="block mt-0.5 text-[13px] text-muted">{sub}</span>}
                                                                 </span>
-                                                                <span className="num text-[15px] font-semibold text-muted">$0</span>
+                                                                <span className="num text-[14.5px] font-semibold text-muted">$0</span>
                                                             </div>
                                                         </React.Fragment>
                                                     ))}
@@ -988,15 +1002,15 @@
                                                         <span className="w-[26px] flex justify-center shrink-0">
                                                             <span className="w-[11px] h-[11px] rounded-full bg-brandgreen"></span>
                                                         </span>
-                                                        <span className="flex-1 text-[15.5px] font-semibold text-ink">Application submitted</span>
+                                                        <span className="flex-1 text-[15px] font-semibold text-ink">Application submitted</span>
                                                     </div>
 
-                                                    <div className="mt-6 rounded-2xl bg-mint border border-brandgreen/25 px-6 py-8 text-center">
+                                                    <div className="mt-5 rounded-2xl bg-mint border border-brandgreen/25 px-6 py-6 text-center">
                                                         <p className="eyebrow text-deepgreen">Application Fee</p>
-                                                        <div className="num mt-3 text-[3.75rem] leading-[0.88] font-bold text-deepgreen">
-                                                            ${FINAL_EXPENSE_FEE}
+                                                        <div className="num mt-2.5 text-[3.4rem] leading-[0.88] font-bold text-deepgreen">
+                                                            {FEE_DISPLAY}
                                                         </div>
-                                                        <p className="mt-3.5 text-[14px] font-medium text-deepgreen/80">The only billable event</p>
+                                                        <p className="mt-3 text-[13.5px] font-medium text-deepgreen/80">The billing event</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1006,8 +1020,8 @@
 
                                 {/* ---------------- TRUST STRIP ---------------- */}
                                 <section className="border-y border-line bg-soft">
-                                    <div className="max-w-[1200px] mx-auto px-5 sm:px-6 py-7">
-                                        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-5">
+                                    <div className="max-w-[1200px] mx-auto px-5 sm:px-6 py-6">
+                                        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
                                             {[
                                                 ['call', 'Live final expense calls'],
                                                 ['shield', 'License matching'],
@@ -1023,23 +1037,26 @@
                                     </div>
                                 </section>
 
-                                {/* ---------------- THE DIFFERENCE ---------------- */}
-                                <section id="final-expense" className="px-5 sm:px-6 py-[64px] lg:py-[78px]">
+                                {/* ---------------- THE BILLING DIFFERENCE ---------------- */}
+                                <section id="final-expense" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
                                         <div className="max-w-[46rem]">
                                             <h2 className="t-h2">
                                                 Your marketing budget shouldn't disappear
                                                 <span className="text-brandgreen"> when the phone rings.</span>
                                             </h2>
-                                            <p className="t-lede mt-6">
-                                                Traditional pay-per-call programs charge you the moment a consumer connects.
-                                                NetEnroll ties your acquisition cost to the application instead.
+                                            <p className="t-lede mt-5">
+                                                Traditional pay-per-call programs charge you when a consumer connects. You
+                                                are paying before you know whether the opportunity becomes an application.
+                                            </p>
+                                            <p className="t-lede mt-4">
+                                                NetEnroll changes the billing event. Instead of a charge for every delivered
+                                                call, the applicable fee is tied to an eligible submitted application.
                                             </p>
                                         </div>
 
-                                        {/* One table, not two cards. Side-by-side rows let the eye
-                                            read across a single event instead of comparing two
-                                            separate lists, and it costs half the vertical space. */}
+                                        {/* One table, not two cards: the eye reads across a single event rather
+                                            than comparing two separate lists. */}
                                         <div className="mt-11 card shadow-lift overflow-hidden">
                                             <div className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_180px_180px] items-center gap-x-4 sm:gap-x-0 px-6 sm:px-8 py-4 border-b border-line bg-soft">
                                                 <span className="hidden sm:block text-[12.5px] font-semibold tracking-[0.13em] text-muted">WHAT HAPPENS</span>
@@ -1049,10 +1066,10 @@
 
                                             <div className="divide-y divide-line">
                                                 {[
-                                                    ['Call comes in', 'Charged', '$0', false],
-                                                    ['You speak with the consumer', 'Charged', '$0', false],
-                                                    ["Consumer doesn't move forward", 'Charged', '$0', false],
-                                                    ['Application submitted', '—', `$${FINAL_EXPENSE_FEE}`, true]
+                                                    ['Consumer calls', 'You pay', '$0', false],
+                                                    ['You speak with the consumer', 'You pay', '$0', false],
+                                                    ["Consumer doesn't move forward", 'You pay', 'No fee', false],
+                                                    ['Application submitted', '—', FEE_DISPLAY, true]
                                                 ].map(([event, trad, ours, isFee]) => (
                                                     <div key={event}
                                                          className={`grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_180px_180px] items-center gap-x-4 sm:gap-x-0 px-6 sm:px-8 py-4 ${isFee ? 'bg-mint' : ''}`}>
@@ -1066,69 +1083,67 @@
                                             </div>
                                         </div>
 
-                                        <p className="mt-9 text-center text-[18px] sm:text-[20px] font-semibold tracking-[-0.02em] text-ink">
-                                            Spend your marketing budget on outcomes — not minutes.
+                                        <p className="mt-9 text-center text-[19px] sm:text-[22px] font-bold tracking-[-0.025em] text-ink">
+                                            Put your acquisition cost closer to the application.
                                         </p>
                                     </div>
                                 </section>
 
                                 {/* ---------------- HOW IT WORKS ---------------- */}
-                                <section id="how-it-works" className="border-y border-line bg-soft px-5 sm:px-6 py-[64px] lg:py-[78px]">
+                                <section id="how-it-works" className="border-y border-line bg-soft px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
-                                        <h2 className="t-h2 max-w-[44rem]">How it works.</h2>
+                                        <h2 className="t-h2 max-w-[44rem]">A simpler way to buy final expense opportunities.</h2>
 
-                                        <ol className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-9 lg:gap-8 step-rule">
+                                        <ol className="mt-11 grid sm:grid-cols-2 lg:grid-cols-4 gap-9 lg:gap-8 step-rule">
                                             {[
-                                                ['01', 'Get connected', 'Receive a live final expense call from a consumer seeking coverage.'],
+                                                ['01', 'Get the call', 'Receive a live final expense call through your campaign.'],
                                                 ['02', 'Talk to the consumer', 'Handle the conversation exactly as you normally would.'],
-                                                ['03', 'Submit the application', 'When the consumer moves forward, complete and submit the application.'],
-                                                ['04', 'Pay the application fee', `The applicable $${FINAL_EXPENSE_FEE} fee is charged for the eligible submitted application.`]
+                                                ['03', 'Submit the application', 'When the consumer moves forward, complete and submit the eligible insurance application.'],
+                                                ['04', 'Pay the application fee', `The applicable ${FEE_DISPLAY} fee is charged according to the campaign's billing terms.`]
                                             ].map(([num, title, body]) => (
                                                 <li key={num} className="relative">
                                                     <span className="num relative z-10 w-[46px] h-[46px] rounded-full bg-white border-2 border-mint ring-1 ring-line flex items-center justify-center text-[16px] font-bold text-deepgreen">
                                                         {num}
                                                     </span>
-                                                    <h3 className="mt-6 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</h3>
+                                                    <h3 className="mt-5 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</h3>
                                                     <p className="mt-2.5 text-[15.5px] leading-relaxed text-muted max-w-[18rem]">{body}</p>
                                                 </li>
                                             ))}
                                         </ol>
 
-                                        <p className="mt-14 text-center text-[26px] sm:text-[34px] leading-tight font-bold tracking-[-0.03em] text-ink">
-                                            Calls are not the billable event.
+                                        <p className="mt-12 text-center text-[24px] sm:text-[32px] leading-tight font-bold tracking-[-0.03em] text-ink">
+                                            The call is not the billing event.
                                         </p>
                                     </div>
                                 </section>
 
-                                {/* ---------------- PRICING + ECONOMICS ---------------- */}
-                                <section id="pricing" className="px-5 sm:px-6 py-[64px] lg:py-[78px]">
+                                {/* ---------------- PRICING ---------------- */}
+                                <section id="pricing" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
 
                                         <div className="max-w-[42rem]">
-                                            <h2 className="t-h2">One simple rate.</h2>
-                                            <p className="t-lede mt-6">
-                                                No guessing. No per-minute math. No paying every time the phone rings.
-                                            </p>
+                                            <h2 className="t-h2">
+                                                Pay for applications.
+                                                <span className="block text-brandgreen">Not phone calls.</span>
+                                            </h2>
                                         </div>
 
-                                        <div className="mt-12 max-w-[960px] mx-auto">
-                                            {/* Price beside the terms rather than above them: the whole
-                                                offer then fits on one screen instead of two. */}
+                                        <div className="mt-11 max-w-[960px] mx-auto">
                                             <div className="card shadow-lift overflow-hidden grid md:grid-cols-[minmax(0,340px)_1fr]">
                                                 <div className="bg-mint border-b md:border-b-0 md:border-r border-brandgreen/20 px-8 py-10 flex flex-col justify-center text-center md:text-left">
                                                     <p className="eyebrow text-deepgreen">Final Expense</p>
-                                                    <div className="num mt-3.5 text-[4.25rem] sm:text-[5rem] leading-[0.84] font-bold text-deepgreen">
-                                                        ${FINAL_EXPENSE_FEE}
+                                                    <div className="num mt-3.5 text-[4rem] sm:text-[4.6rem] leading-[0.84] font-bold text-deepgreen">
+                                                        {FEE_DISPLAY}
                                                     </div>
-                                                    <p className="mt-4 text-[17px] font-semibold text-ink">per submitted application</p>
+                                                    <p className="mt-4 text-[16.5px] font-semibold text-ink">per submitted application</p>
                                                 </div>
 
                                                 <div className="p-8 sm:p-9">
                                                     <div className="grid sm:grid-cols-2 gap-8">
                                                         <div>
-                                                            <h3 className="text-[15px] font-semibold text-ink">You don't pay for</h3>
+                                                            <h3 className="text-[15px] font-semibold text-ink">No traditional per-call fee for</h3>
                                                             <ul className="mt-4 space-y-3">
-                                                                {['Receiving a call', 'Talking to the consumer', 'Call duration', "A consumer who doesn't move forward"].map(t => (
+                                                                {['Receiving the call', 'Talking with the consumer', 'Call duration', "A consumer who doesn't submit an application"].map(t => (
                                                                     <li key={t} className="flex items-start gap-3 text-[15px] leading-snug text-muted">
                                                                         <CheckMark /> <span>{t}</span>
                                                                     </li>
@@ -1152,22 +1167,18 @@
                                             </div>
 
                                             <p className="mt-5 text-center text-[14.5px] text-muted">
-                                                No monthly subscription. No long-term contract.
+                                                No monthly subscription. Campaign terms are confirmed during signup.
                                             </p>
                                         </div>
 
-                                        {/* --- The arithmetic. One line each; the comparison section
-                                               above already made the argument. --- */}
+                                        {/* --- The arithmetic, clearly labelled as illustration --- */}
                                         <div className="mt-[54px] pt-[46px] border-t border-line">
-                                            <h3 className="t-h2 max-w-[38rem]">Why agents are switching from pay-per-call.</h3>
-
+                                            <h3 className="t-h2 max-w-[38rem]">Why pay for every conversation?</h3>
                                             <p className="t-lede mt-5 max-w-[44rem]">
                                                 Ten calls. One application. The difference is what you paid to get it.
                                             </p>
 
-                                            {/* Both columns end on the same line - cost per application - because
-                                                that is the only figure the two models can be compared on. */}
-                                            <div className="mt-11 grid lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
+                                            <div className="mt-10 grid lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
                                                 <div className="card bg-soft p-7 sm:p-8 flex flex-col">
                                                     <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">TRADITIONAL PAY-PER-CALL</p>
                                                     <dl className="mt-6 space-y-3 flex-1">
@@ -1182,7 +1193,7 @@
                                                     </dl>
                                                     <div className="mt-7 pt-6 border-t border-line flex items-baseline justify-between gap-4">
                                                         <span className="text-[15.5px] font-medium text-ink">Cost per application</span>
-                                                        <span className="num text-[2.6rem] leading-none font-bold text-danger">$350</span>
+                                                        <span className="num text-[2.5rem] leading-none font-bold text-danger">$350</span>
                                                     </div>
                                                 </div>
 
@@ -1200,42 +1211,42 @@
                                                     </dl>
                                                     <div className="mt-7 pt-6 border-t border-line flex items-baseline justify-between gap-4">
                                                         <span className="text-[15.5px] font-medium text-ink">Cost per application</span>
-                                                        <span className="num text-[2.6rem] leading-none font-bold text-deepgreen">${FINAL_EXPENSE_FEE}</span>
+                                                        <span className="num text-[2.5rem] leading-none font-bold text-deepgreen">${FINAL_EXPENSE_FEE}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <p className="mt-10 text-[20px] sm:text-[24px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
+                                            <p className="mt-9 text-[19px] sm:text-[23px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
                                                 Same ten calls. Same one application.
                                                 <span className="text-brandgreen"> ${350 - FINAL_EXPENSE_FEE} less to acquire it.</span>
                                             </p>
-
-                                            {/* The real argument is not the saving, it is who carries the nine that
-                                                went nowhere. Stated as what the model does, not as a promise. */}
-                                            <p className="mt-5 text-[16.5px] leading-relaxed text-muted max-w-[46rem]">
-                                                And the nine that did not move forward cost you nothing. On a per-call
-                                                programme that $350 is spent before you know whether any of them will.
+                                            <p className="mt-4 text-[16px] leading-relaxed text-muted max-w-[46rem]">
+                                                And the nine that did not move forward carry no application fee. On a
+                                                per-call programme that $350 is spent before you know whether any of
+                                                them will.
                                             </p>
 
                                             <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem]">
                                                 Illustrative example only. The $35 per-call rate, the ten-call volume and the
-                                                single application are for illustration and are not NetEnroll figures. Results
-                                                vary by agent, market, and demand; no conversion rate is implied or guaranteed.
+                                                single application are for illustration and are not NetEnroll figures. The
+                                                ${FINAL_EXPENSE_FEE} shown is the starting application rate. Actual rates and
+                                                results vary by agent, market, and demand; no conversion rate is implied or
+                                                guaranteed.
                                             </p>
                                         </div>
                                     </div>
                                 </section>
 
                                 {/* ---------------- AGENTS + AGENCIES ---------------- */}
-                                <section className="border-y border-line bg-soft px-5 sm:px-6 py-[60px] lg:py-[70px]">
+                                <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
                                     <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-6 lg:gap-8">
 
                                         <div className="card p-8 sm:p-10 flex flex-col">
-                                            <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">FOR INDIVIDUAL AGENTS</p>
+                                            <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">FOR INDEPENDENT AGENTS</p>
                                             <h3 className="t-h3 mt-5">Focus on selling.</h3>
                                             <p className="mt-4 text-[16px] leading-relaxed text-muted">
-                                                You shouldn't have to gamble your marketing budget on every person who
-                                                answers the phone.
+                                                Spend less time worrying about paying for every phone call and more time
+                                                working the consumers who are ready to move forward.
                                             </p>
                                             <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
                                                 {['Calls routed to you', 'License matching', 'Call tracking', 'Application tracking'].map(t => (
@@ -1244,49 +1255,48 @@
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <button onClick={startSignup} className="btn-primary mt-9 self-start">
-                                                Start Receiving Calls
+                                            <button onClick={startSignup} className="btn-primary mt-8 self-start">
+                                                Start as an Agent
                                             </button>
                                         </div>
 
                                         <div className="card p-8 sm:p-10 flex flex-col">
                                             <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">FOR AGENCIES</p>
-                                            <h3 className="t-h3 mt-5">Give your producers another way to acquire business.</h3>
+                                            <h3 className="t-h3 mt-5">Give your producers another acquisition channel.</h3>
                                             <p className="mt-4 text-[16px] leading-relaxed text-muted">
-                                                Route calls to your producers, track activity, and manage performance from
-                                                one platform.
+                                                Route final expense calls to your producers while keeping call activity and
+                                                applications organised in one platform.
                                             </p>
                                             <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
-                                                {['Multi-agent management', 'Call routing', 'License matching', 'Call tracking', 'Application tracking', 'Performance reporting'].map(t => (
+                                                {['Agent management', 'Call routing', 'License matching', 'Call tracking', 'Application tracking', 'Reporting'].map(t => (
                                                     <li key={t} className="flex items-start gap-2.5 text-[15px] leading-snug text-muted">
                                                         <CheckMark /> <span>{t}</span>
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <button onClick={() => scrollToSection('faq')} className="btn-secondary mt-9 self-start">
+                                            <button onClick={() => scrollToSection('faq')} className="btn-secondary mt-8 self-start">
                                                 Talk to Us
                                             </button>
                                         </div>
                                     </div>
                                 </section>
 
-                                {/* ---------------- PLATFORM / TRUST ---------------- */}
-                                <section className="px-5 sm:px-6 py-[64px] lg:py-[78px]">
+                                {/* ---------------- PLATFORM / TRACKING ---------------- */}
+                                <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
                                         <div className="max-w-[44rem]">
-                                            <h2 className="t-h2">Know exactly what's happening with your calls.</h2>
-                                            <p className="t-lede mt-6">
-                                                Every call and application is tracked inside your NetEnroll account so you
-                                                can monitor activity and performance.
+                                            <h2 className="t-h2">See what's happening with your campaign.</h2>
+                                            <p className="t-lede mt-5">
+                                                Track calls, applications and agent activity from your NetEnroll account.
                                             </p>
                                         </div>
 
                                         {/* Stylised interface. Every figure below is sample data and says so. */}
-                                        <div className="mt-12 card shadow-lift overflow-hidden">
+                                        <div className="mt-11 card shadow-lift overflow-hidden">
                                             <div className="px-6 sm:px-8 py-4 border-b border-line flex items-center justify-between gap-4 bg-soft">
-                                                <span className="text-[13px] font-semibold tracking-[0.11em] text-muted">ACCOUNT OVERVIEW</span>
+                                                <span className="text-[13px] font-semibold tracking-[0.11em] text-muted">CAMPAIGN OVERVIEW</span>
                                                 <span className="rounded-full border border-line bg-white px-3 py-1 text-[11.5px] font-medium text-muted">
-                                                    Example data
+                                                    Sample data
                                                 </span>
                                             </div>
 
@@ -1295,7 +1305,7 @@
                                                     ['Calls', '128'],
                                                     ['Applications', '19'],
                                                     ['Agents', '6'],
-                                                    ['Conversion rate', '14.8%'],
+                                                    ['Conversion', '14.8%'],
                                                     ['Application fees', '$3,040']
                                                 ].map(([label, value], i, arr) => (
                                                     <div key={label}
@@ -1341,23 +1351,22 @@
 
                                         <div className="mt-10 pt-9 border-t border-line max-w-[46rem]">
                                             <p className="eyebrow">Built for licensed insurance professionals</p>
-                                            <p className="mt-5 text-[19px] sm:text-[21px] leading-relaxed font-medium tracking-[-0.015em] text-ink">
-                                                Designed for agents and agencies that want a simpler, more
-                                                performance-focused way to acquire final expense business.
+                                            <p className="mt-4 text-[18px] sm:text-[20px] leading-relaxed font-medium tracking-[-0.015em] text-ink">
+                                                Designed for final expense agents and agencies that want a more
+                                                performance-focused way to acquire business.
                                             </p>
                                         </div>
                                     </div>
                                 </section>
 
                                 {/* ---------------- FAQ ---------------- */}
-                                <section id="faq" className="border-y border-line bg-soft px-5 sm:px-6 py-[60px] lg:py-[70px]">
+                                <section id="faq" className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
                                     <div className="max-w-[1040px] mx-auto">
                                         <h2 className="t-h2">Questions.</h2>
 
-                                        {/* Two independent columns: eight stacked rows made this the
-                                            second-tallest section on the page for no good reason, and
-                                            opening one item only reflows its own column. */}
-                                        <div className="mt-10 grid lg:grid-cols-2 gap-5 items-start">
+                                        {/* Two independent columns: nine stacked rows made this the second-tallest
+                                            section for no good reason, and opening one only reflows its own column. */}
+                                        <div className="mt-9 grid lg:grid-cols-2 gap-5 items-start">
                                             {[FAQS.slice(0, Math.ceil(FAQS.length / 2)), FAQS.slice(Math.ceil(FAQS.length / 2))].map((group, gi) => (
                                                 <div key={gi} className="card divide-y divide-line overflow-hidden">
                                                     {group.map((faq, j) => {
@@ -1388,20 +1397,19 @@
                                 </section>
 
                                 {/* ---------------- FINAL CTA ---------------- */}
-                                <section className="bg-mint px-5 sm:px-6 py-[64px] lg:py-[78px]">
+                                <section className="bg-mint px-5 sm:px-6 py-[58px] lg:py-[74px]">
                                     <div className="max-w-[760px] mx-auto text-center">
                                         <h2 className="t-h2">Ready to stop paying for every call?</h2>
-                                        <p className="t-lede mt-6 max-w-[38rem] mx-auto">
-                                            Start receiving final expense calls and keep your acquisition costs tied to
-                                            submitted applications.
+                                        <p className="t-lede mt-5 max-w-[38rem] mx-auto">
+                                            Start receiving final expense calls and tie your acquisition cost to the
+                                            application instead of the phone call.
                                         </p>
-                                        <button onClick={startSignup} className="btn-primary btn-lg mt-10">
+                                        <div className="num mt-8 text-[2.8rem] leading-none font-bold text-deepgreen">{FEE_DISPLAY}</div>
+                                        <p className="mt-2.5 text-[14px] font-semibold tracking-[0.1em] text-deepgreen/80">PER SUBMITTED APPLICATION</p>
+                                        <button onClick={startSignup} className="btn-primary btn-lg mt-8">
                                             Start Receiving Calls
                                         </button>
-                                        <p className="num mt-6 text-[16px] font-semibold text-deepgreen">
-                                            ${FINAL_EXPENSE_FEE} per submitted application
-                                        </p>
-                                        <p className="mt-2.5 text-[14px] text-muted">
+                                        <p className="mt-5 text-[14px] text-muted">
                                             Built for licensed final expense agents and agencies.
                                         </p>
                                     </div>
