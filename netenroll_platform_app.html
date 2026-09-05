@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Final Expense Calls | Pay Per Application | NetEnroll</title>
-    <meta name="description" content="Final expense calls for licensed insurance agents. No traditional per-call charge - you pay when an eligible insurance application is submitted. Starting at $160 per submitted application.">
+    <meta name="description" content="Final expense calls for licensed insurance agents. No traditional per-call charge - you pay when an eligible insurance application is submitted. $240 per submitted application, three-application minimum to start.">
     <meta name="theme-color" content="#FFFFFF">
     
     <!-- Tailwind CSS CDN -->
@@ -227,7 +227,7 @@
                 id: 'prod_fe',
                 code: 'FINAL_EXPENSE',
                 name: 'Final Expense Life Insurance', 
-                fee: 160, 
+                fee: 240, 
                 tagline: 'Burial & Final Expense Callers',
                 description: 'Inbound senior citizens calling directly to request burial and funeral insurance quotes.',
                 features: ['12-18 min average call length', 'High purchase intent seniors', '100% TCPA opt-in verified consent'],
@@ -269,15 +269,15 @@
         const FAQS = [
             {
                 q: "How does billing work?",
-                a: "Billing is performance-based. There is no traditional charge for a delivered call; the applicable fee is tied to an eligible submitted application. For the Final Expense program the rate starts at $160 per submitted application."
+                a: "There is no charge for a delivered call. The fee is tied to an eligible submitted application, and for the Final Expense program the rate is $240 per submitted application. Your first purchase covers a minimum of three applications, billed once at $720."
             },
             {
                 q: "Do I pay for every call?",
                 a: "No. The call is not the billing event. Receiving a call, speaking with the consumer, and the length of the conversation carry no per-call charge."
             },
             {
-                q: "What does \"$160+ per submitted application\" mean?",
-                a: "$160 is the starting rate for the Final Expense program. The rate that applies to your account is the one shown for your campaign, and it is confirmed before you begin."
+                q: "What is the minimum to get started?",
+                a: "Three applications, billed once at $720 ($240 each). That is the first purchase for the Final Expense program. It is not a subscription and it does not renew on a schedule."
             },
             {
                 q: "What counts as a submitted application?",
@@ -301,17 +301,36 @@
             },
             {
                 q: "Are there monthly fees?",
-                a: "No. There is no monthly subscription and no separate charge for account access. Billing is limited to the per-application fee for the program you are enrolled in."
+                a: "No. There is no monthly subscription and no separate charge for account access. What you pay is the per-application fee for your program, purchased in blocks, starting with the three-application minimum."
             }
         ];
 
         // Pricing is read from the product catalogue, never hard-coded in copy.
         const FINAL_EXPENSE_FEE = (INITIAL_DB_PRODUCTS.find(p => p.code === 'FINAL_EXPENSE') || {}).fee;
 
-        // The headline price is a starting rate, so it is quoted with a "+".
-        // The bare number is still used wherever arithmetic has to add up -
-        // "$160+ less to acquire it" would not be a number.
-        const FEE_DISPLAY = `$${FINAL_EXPENSE_FEE}+`;
+        // The rate is a firm number now, not a "from" price, so no "+".
+        const FEE_DISPLAY = `$${FINAL_EXPENSE_FEE}`;
+
+        // The first purchase is a block of applications, not a single one. Both
+        // figures are derived so the page can never quote a total that the
+        // Stripe Payment Link does not actually charge.
+        const MIN_APPLICATIONS = 3;
+        const MIN_PURCHASE = FINAL_EXPENSE_FEE * MIN_APPLICATIONS;
+        const MIN_PURCHASE_DISPLAY = `$${MIN_PURCHASE}`;
+
+        // Live Stripe Payment Link. It is a public URL by design - it carries no
+        // key and nothing secret. The secret API key belongs on a server, and
+        // this application does not have one, so it is not here.
+        const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/cNifZg3677ZI12fdkR63K1i';
+
+        // Promotional rate. OFF until "Allow promotion codes" is enabled on the
+        // Payment Link in the Stripe dashboard - the checkout currently shows no
+        // field to type it into, so advertising it would send people to a $720
+        // page expecting $597. Flip this to true once the field appears.
+        const PROMO_ENABLED = false;
+        const PROMO_CODE = 'LABORDAY';
+        const PROMO_FEE = 199;
+        const PROMO_TOTAL = PROMO_FEE * MIN_APPLICATIONS;
 
         const CheckMark = ({ className = '' }) => (
             <svg className={`w-[18px] h-[18px] mt-[3px] shrink-0 text-brandgreen ${className}`} viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -405,6 +424,9 @@
 
             // Onboarding Engine State
             const [onboardingStep, setOnboardingStep] = useState(1);
+            // True from the moment we hand off to Stripe. Nothing clears it,
+            // because nothing here can verify the payment.
+            const [awaitingPayment, setAwaitingPayment] = useState(false);
             const [onboardingError, setOnboardingError] = useState('');
             const [isVerifyingNPN, setIsVerifyingNPN] = useState(false);
 
@@ -766,6 +788,7 @@
             // into the existing registration flow - no demo request, no gate.
             const startSignup = () => {
                 setSelectedVertical('Final Expense Life Insurance');
+                setAwaitingPayment(false);
                 setOnboardingStep(1);
                 setCurrentTab('onboarding');
                 window.scrollTo({ top: 0, behavior: 'auto' });
@@ -943,7 +966,8 @@
                                                     <span className="text-[15.5px] font-semibold text-ink">per submitted application</span>
                                                 </div>
                                                 <p className="mt-3 text-[14.5px] text-muted">
-                                                    No traditional per-call charge. Billing is tied to the eligible application.
+                                                    No traditional per-call charge. {MIN_APPLICATIONS}-application
+                                                    minimum to start ({MIN_PURCHASE_DISPLAY}).
                                                 </p>
                                             </div>
 
@@ -1192,8 +1216,20 @@
                                                 </div>
                                             </div>
 
-                                            <p className="mt-5 text-center text-[14.5px] text-muted">
-                                                No monthly subscription. Campaign terms are confirmed during signup.
+                                            {/* The one number a visitor is most likely to be surprised by at
+                                                the checkout, stated before they get there. */}
+                                            <p className="mt-5 text-center text-[15px] font-medium text-ink">
+                                                Your first purchase is a minimum of {MIN_APPLICATIONS} applications,
+                                                billed once at {MIN_PURCHASE_DISPLAY}.
+                                            </p>
+                                            {PROMO_ENABLED && (
+                                                <p className="mt-2 text-center text-[14.5px] text-deepgreen">
+                                                    Enter code <span className="font-semibold">{PROMO_CODE}</span> at
+                                                    checkout for ${PROMO_FEE} per application (${PROMO_TOTAL} total).
+                                                </p>
+                                            )}
+                                            <p className="mt-2 text-center text-[14.5px] text-muted">
+                                                No monthly subscription. No per-call charge.
                                             </p>
                                         </div>
 
@@ -1201,8 +1237,8 @@
                                         <div className="mt-[54px] pt-[46px] border-t border-line">
                                             <h3 className="t-h2 max-w-[38rem]">Why pay for every conversation?</h3>
                                             <p className="t-lede mt-5 max-w-[44rem]">
-                                                Take ten calls. One of them becomes an application. This is the whole
-                                                bill.
+                                                Thirty calls. Three of them become applications. This is the whole
+                                                bill - and it is the same first purchase everyone starts on.
                                             </p>
 
                                             {/* Only NetEnroll's own numbers appear here. There is no industry
@@ -1210,9 +1246,9 @@
                                             <div className="mt-10 card shadow-lift px-7 sm:px-9 py-3">
                                                 <dl className="divide-y divide-line">
                                                     {[
-                                                        ['10 calls received', '$0', false],
-                                                        ['9 consumers who did not move forward', '$0', false],
-                                                        ['1 submitted application', FEE_DISPLAY, true]
+                                                        ['30 calls received', '$0', false],
+                                                        ['27 consumers who did not move forward', '$0', false],
+                                                        [`${MIN_APPLICATIONS} submitted applications`, MIN_PURCHASE_DISPLAY, true]
                                                     ].map(([item, amount, isFee]) => (
                                                         <div key={item} className="flex items-baseline justify-between gap-5 py-6">
                                                             <dt className={isFee ? 'text-[16px] font-medium text-ink' : 'text-[16px] text-muted'}>{item}</dt>
@@ -1225,19 +1261,20 @@
                                             </div>
 
                                             <p className="mt-9 text-[19px] sm:text-[23px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
-                                                Ten conversations.
-                                                <span className="text-brandgreen"> One billing event.</span>
+                                                Thirty conversations.
+                                                <span className="text-brandgreen"> Three billing events.</span>
                                             </p>
                                             <p className="mt-4 text-[16px] leading-relaxed text-muted max-w-[46rem]">
                                                 There is no charge for the call itself, for how long you spend on it, or
-                                                for the nine consumers who did not move forward.
+                                                for the twenty-seven consumers who did not move forward.
                                             </p>
 
                                             <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem]">
-                                                Illustrative example only. The ten-call volume and the single application
-                                                are for illustration and are not NetEnroll figures. The {FEE_DISPLAY} shown
-                                                is the starting application rate. Actual rates and results vary by agent,
-                                                market, and demand; no conversion rate is implied or guaranteed.
+                                                Illustrative example only. The thirty-call volume is for illustration and
+                                                is not a NetEnroll figure. The {FEE_DISPLAY} per-application rate and
+                                                the {MIN_APPLICATIONS}-application minimum are the actual terms of the current
+                                                Final Expense program. Results vary by agent, market, and demand; no
+                                                conversion rate is implied or guaranteed.
                                             </p>
                                         </div>
                                     </div>
@@ -1582,40 +1619,48 @@
                                     {onboardingStep === 4 && (
                                         <form onSubmit={handleStep4Submit} className="space-y-6">
                                             <div>
-                                                <h3 className="text-xl font-bold text-white">Stripe Billing Pre-Authorization</h3>
-                                                <p className="text-xs text-slate-400 mt-1">Pre-authorize a payment method. You are charged strictly when a policy application is submitted.</p>
+                                                <h3 className="text-xl font-bold text-white">Payment</h3>
+                                                <p className="text-xs text-slate-400 mt-1">
+                                                    Checkout is handled by Stripe. Card details are entered on Stripe&apos;s
+                                                    page and never touch NetEnroll.
+                                                </p>
                                             </div>
 
-                                            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-bold text-slate-200">Stripe Customer Vault ID</span>
-                                                    <span className="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded">{agentProfile.stripeCustomerId}</span>
+                                            {/* The order, itemised, so the total on Stripe's page is not a surprise. */}
+                                            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                                                <div className="flex items-center justify-between text-xs">
+                                                    <span className="text-slate-300">Final Expense applications</span>
+                                                    <span className="font-mono text-slate-300">{MIN_APPLICATIONS} &times; ${FINAL_EXPENSE_FEE}</span>
                                                 </div>
-
-                                                <div className="space-y-3">
-                                                    <div>
-                                                        <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1">Cardholder Name</label>
-                                                        <input type="text" readOnly value={`${agentProfile.firstName} ${agentProfile.lastName}`} className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300" />
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1">Payment Method Token (Stripe SetupIntent)</label>
-                                                        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white font-mono justify-between">
-                                                            <span>•••• •••• •••• {agentProfile.cardLast4}</span>
-                                                            <i className="fa-brands fa-cc-visa text-slate-400 text-base"></i>
-                                                        </div>
-                                                    </div>
+                                                <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+                                                    <span className="text-xs font-bold text-slate-200">Due today</span>
+                                                    <span className="font-mono text-2xl font-bold text-emerald-400">{MIN_PURCHASE_DISPLAY}</span>
                                                 </div>
+                                                {PROMO_ENABLED && (
+                                                    <p className="text-[11px] text-emerald-400 pt-1">
+                                                        Enter code {PROMO_CODE} on the Stripe page for ${PROMO_FEE} per
+                                                        application (${PROMO_TOTAL} total).
+                                                    </p>
+                                                )}
+                                                <p className="text-[11px] text-slate-500 pt-1">
+                                                    One-time charge. Not a subscription. Applications are drawn from this
+                                                    balance as you submit them.
+                                                </p>
                                             </div>
 
                                             <div className="flex gap-4">
                                                 <button type="button" onClick={() => setOnboardingStep(3)} className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl text-xs transition">
                                                     Back
                                                 </button>
-                                                <button type="submit" className="w-2/3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center justify-center gap-2">
-                                                    <span>Authorize & Finalize Setup</span>
-                                                    <i className="fa-solid fa-arrow-right"></i>
-                                                </button>
+                                                {/* Leaves the SPA for Stripe. There is no backend here to receive a
+                                                    webhook, so the account cannot be activated automatically on
+                                                    payment - see the note below the button. */}
+                                                <a href={STRIPE_PAYMENT_LINK} target="_blank" rel="noopener noreferrer"
+                                                   onClick={() => { setAwaitingPayment(true); setOnboardingStep(5); }}
+                                                   className="w-2/3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center justify-center gap-2">
+                                                    <span>Pay {MIN_PURCHASE_DISPLAY} with Stripe</span>
+                                                    <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                                                </a>
                                             </div>
                                         </form>
                                     )}
@@ -1623,7 +1668,7 @@
                                     {/* STEP 05 */}
                                     {onboardingStep === 5 && (
                                         <div className="text-center space-y-6 py-8">
-                                            {agentProfile.accountStatus === 'ACTIVE' ? (
+                                            {agentProfile.accountStatus === 'ACTIVE' && !awaitingPayment ? (
                                                 <div className="space-y-6">
                                                     <div className="w-16 h-16 rounded-3xl bg-emerald-500 text-slate-950 mx-auto flex items-center justify-center text-3xl font-black shadow-xl shadow-emerald-500/30 glow-emerald">
                                                         <i className="fa-solid fa-check"></i>
@@ -1641,9 +1686,26 @@
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <div className="space-y-4">
-                                                    <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                                                    <h3 className="text-lg font-bold text-white">Verifying Account Credentials...</h3>
+                                                <div className="space-y-5">
+                                                    <div className="w-16 h-16 rounded-3xl bg-slate-800 text-emerald-400 mx-auto flex items-center justify-center text-2xl">
+                                                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <h3 className="text-2xl font-black text-white">Finish paying on Stripe</h3>
+                                                        <p className="text-xs text-slate-300 max-w-md mx-auto">
+                                                            A Stripe checkout for {MIN_PURCHASE_DISPLAY} opened in a new tab.
+                                                            Once the payment clears we activate your account and switch on
+                                                            call routing for the states you selected.
+                                                        </p>
+                                                    </div>
+                                                    <a href={STRIPE_PAYMENT_LINK} target="_blank" rel="noopener noreferrer"
+                                                       className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-8 py-4 rounded-xl text-xs transition shadow-xl shadow-emerald-500/25 uppercase tracking-wider inline-flex items-center gap-2">
+                                                        <span>Reopen Stripe Checkout</span>
+                                                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                                                    </a>
+                                                    <p className="text-[11px] text-slate-500">
+                                                        Closed the tab by mistake? The button above reopens it.
+                                                    </p>
                                                 </div>
                                             )}
                                         </div>
@@ -2483,8 +2545,8 @@
                                     </div>
 
                                     <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-slate-300 space-y-1">
-                                        <div className="font-bold text-emerald-400">Server Billing Execution Notice:</div>
-                                        <div>Submitting this policy triggers a server-calculated charge to your saved card (•••• {agentProfile.cardLast4}).</div>
+                                        <div className="font-bold text-emerald-400">Billing Notice:</div>
+                                        <div>Submitting this application draws one application from your prepaid balance at ${FINAL_EXPENSE_FEE} per application.</div>
                                     </div>
 
                                     <button type="submit" disabled={isProcessingPayment} className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center justify-center gap-2">
