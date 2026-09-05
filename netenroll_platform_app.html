@@ -255,6 +255,18 @@
             }
         ];
 
+        // Entity types an agency is likely to be registered as. "Other" exists so
+        // nobody is forced into a wrong answer to get through the form.
+        const ENTITY_TYPES = [
+            'Sole Proprietorship',
+            'Single-Member LLC',
+            'LLC',
+            'S Corporation',
+            'C Corporation',
+            'Partnership',
+            'Other'
+        ];
+
         const ALL_US_STATES = [
             'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
             'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
@@ -420,7 +432,6 @@
             // because nothing here can verify the payment.
             const [awaitingPayment, setAwaitingPayment] = useState(false);
             const [onboardingError, setOnboardingError] = useState('');
-            const [isVerifyingNPN, setIsVerifyingNPN] = useState(false);
 
             // Rate Limit Counter (Security)
             const [requestCount, setRequestCount] = useState(0);
@@ -433,8 +444,11 @@
                 email: 'marcus@vanceinsurance.com',
                 phone: '+1 (555) 234-5678',
                 agencyName: 'Vance Financial Group',
-                npn: '1849201',
-                npnVerified: true,
+                // A registration is either a company or a single producer. The
+                // company fields below are only meaningful when it is a company.
+                accountType: 'COMPANY',
+                entityType: 'LLC',
+                entityState: 'TX',
                 licensedStates: ['TX', 'FL', 'GA', 'NC', 'OH'],
                 selectedPrograms: ['prod_fe', 'prod_med'],
                 dailyMaxTarget: 5,
@@ -448,9 +462,9 @@
 
             // Master Directory
             const [masterAgentDirectory, setMasterAgentDirectory] = useState([
-                { id: 'ag_8849201', name: 'Marcus Vance', email: 'marcus@vanceinsurance.com', agency: 'Vance Financial Group', npn: '1849201', states: ['TX', 'FL', 'GA', 'NC', 'OH'], status: 'ACTIVE', paymentStatus: 'CURRENT', createdAt: '2026-02-15' },
-                { id: 'ag_9901822', name: 'Sarah Jenkins', email: 'sarah@jenkinsbenefits.com', agency: 'Jenkins Financial', npn: '1940291', states: ['NC', 'SC', 'VA'], status: 'ACTIVE', paymentStatus: 'CURRENT', createdAt: '2026-02-18' },
-                { id: 'ag_7740192', name: 'David Ross', email: 'david@crosscountryins.com', agency: 'Ross Insurance Group', npn: '1720194', states: ['CA', 'AZ', 'NV'], status: 'PENDING_VERIFICATION', paymentStatus: 'UNVERIFIED', createdAt: '2026-03-01' }
+                { id: 'ag_8849201', name: 'Marcus Vance', email: 'marcus@vanceinsurance.com', agency: 'Vance Financial Group', accountType: 'COMPANY', entityType: 'LLC', entityState: 'TX', states: ['TX', 'FL', 'GA', 'NC', 'OH'], status: 'ACTIVE', paymentStatus: 'CURRENT', createdAt: '2026-02-15' },
+                { id: 'ag_9901822', name: 'Sarah Jenkins', email: 'sarah@jenkinsbenefits.com', agency: 'Jenkins Financial', accountType: 'COMPANY', entityType: 'S Corporation', entityState: 'NC', states: ['NC', 'SC', 'VA'], status: 'ACTIVE', paymentStatus: 'CURRENT', createdAt: '2026-02-18' },
+                { id: 'ag_7740192', name: 'David Ross', email: 'david@crosscountryins.com', agency: 'Ross Insurance Group', accountType: 'INDIVIDUAL', entityType: '', entityState: '', states: ['CA', 'AZ', 'NV'], status: 'PENDING_VERIFICATION', paymentStatus: 'UNVERIFIED', createdAt: '2026-03-01' }
             ]);
 
             // Applications Database Table
@@ -534,12 +548,8 @@
             const handleStep1Submit = (e) => { e.preventDefault(); setOnboardingStep(2); };
             const handleStep2Submit = (e) => {
                 e.preventDefault();
-                setIsVerifyingNPN(true);
-                setTimeout(() => {
-                    setIsVerifyingNPN(false);
-                    setAgentProfile(prev => ({ ...prev, npnVerified: true }));
-                    setOnboardingStep(3);
-                }, 1000);
+                if (!agentProfile.licensedStates.length) return;
+                setOnboardingStep(3);
             };
             const handleStep3Submit = (e) => { e.preventDefault(); setOnboardingStep(4); };
             const handleStep4Submit = (e) => {
@@ -812,7 +822,7 @@
             const adminGrossRevenue = applications.filter(a => a.status === 'SETTLED').reduce((acc, a) => acc + a.fee, 0);
 
             const filteredMasterAgents = masterAgentDirectory.filter(a => {
-                const matchesSearch = a.name.toLowerCase().includes(adminAgentSearch.toLowerCase()) || a.npn.includes(adminAgentSearch) || a.email.toLowerCase().includes(adminAgentSearch.toLowerCase());
+                const matchesSearch = a.name.toLowerCase().includes(adminAgentSearch.toLowerCase()) || a.agency.toLowerCase().includes(adminAgentSearch.toLowerCase()) || a.email.toLowerCase().includes(adminAgentSearch.toLowerCase());
                 const matchesStatus = adminAgentStatusFilter === 'ALL' || a.status === adminAgentStatusFilter;
                 return matchesSearch && matchesStatus;
             });
@@ -1458,7 +1468,7 @@
                                         <div className="grid grid-cols-5 gap-2">
                                             {[
                                                 { num: 1, label: 'Account' },
-                                                { num: 2, label: 'Professional' },
+                                                { num: 2, label: 'States' },
                                                 { num: 3, label: 'Programs' },
                                                 { num: 4, label: 'Payment' },
                                                 { num: 5, label: 'Activation' }
@@ -1480,6 +1490,71 @@
                                                 <h3 className="text-xl font-bold text-white">Create Your Agent Profile</h3>
                                                 <p className="text-xs text-slate-400 mt-1">Set up your credentials for inbound call routing.</p>
                                             </div>
+
+                                            {/* Asked first because it decides what the rest of the form is. */}
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Registering as *</label>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                    {[
+                                                        ['COMPANY', 'Company', 'An agency or business entity', 'fa-building'],
+                                                        ['INDIVIDUAL', 'Individual Agent', 'A producer registering alone', 'fa-user']
+                                                    ].map(([value, title, sub, icon]) => {
+                                                        const active = agentProfile.accountType === value;
+                                                        return (
+                                                            <button key={value} type="button"
+                                                                    onClick={() => setAgentProfile({...agentProfile, accountType: value})}
+                                                                    aria-pressed={active}
+                                                                    className={`text-left p-4 rounded-2xl border transition ${active
+                                                                        ? 'bg-emerald-500/10 border-emerald-500'
+                                                                        : 'bg-slate-950 border-slate-800 hover:border-slate-700'}`}>
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${active ? 'bg-emerald-500 text-slate-950' : 'bg-slate-900 text-slate-500'}`}>
+                                                                        <i className={`fa-solid ${icon}`}></i>
+                                                                    </span>
+                                                                    <span className="min-w-0">
+                                                                        <span className={`block text-xs font-bold ${active ? 'text-emerald-300' : 'text-slate-200'}`}>{title}</span>
+                                                                        <span className="block text-[10px] text-slate-500 mt-0.5">{sub}</span>
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Only rendered for a company, and only required when rendered - a
+                                                hidden required input silently blocks submit with no visible cause. */}
+                                            {agentProfile.accountType === 'COMPANY' && (
+                                                <div className="space-y-6 p-5 rounded-2xl bg-slate-950/60 border border-slate-800">
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Company Name *</label>
+                                                        <input type="text" required value={agentProfile.agencyName}
+                                                               onChange={e => setAgentProfile({...agentProfile, agencyName: e.target.value})}
+                                                               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500"
+                                                               placeholder="Vance Financial Group" />
+                                                    </div>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                        <div>
+                                                            <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Entity Type *</label>
+                                                            <select required value={agentProfile.entityType}
+                                                                    onChange={e => setAgentProfile({...agentProfile, entityType: e.target.value})}
+                                                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                                                <option value="">Select entity type</option>
+                                                                {ENTITY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">State of Formation *</label>
+                                                            <select required value={agentProfile.entityState}
+                                                                    onChange={e => setAgentProfile({...agentProfile, entityState: e.target.value})}
+                                                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
+                                                                <option value="">Select state</option>
+                                                                {ALL_US_STATES.map(st => <option key={st} value={st}>{st}</option>)}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                                 <div>
@@ -1504,7 +1579,7 @@
                                             </div>
 
                                             <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center justify-center gap-2">
-                                                <span>Continue to Licensing Credentials</span>
+                                                <span>Continue to Licensed States</span>
                                                 <i className="fa-solid fa-arrow-right"></i>
                                             </button>
                                         </form>
@@ -1514,20 +1589,8 @@
                                     {onboardingStep === 2 && (
                                         <form onSubmit={handleStep2Submit} className="space-y-6">
                                             <div>
-                                                <h3 className="text-xl font-bold text-white">Licensing & State Verification</h3>
-                                                <p className="text-xs text-slate-400 mt-1">Provide your NPN to verify active state license eligibility.</p>
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">National Producer Number (NPN) *</label>
-                                                <div className="relative">
-                                                    <input type="text" required value={agentProfile.npn} onChange={e => setAgentProfile({...agentProfile, npn: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-mono focus:outline-none focus:border-emerald-500" placeholder="1849201" />
-                                                    {isVerifyingNPN && (
-                                                        <span className="absolute right-3 top-3 text-xs text-emerald-400 font-mono flex items-center gap-1.5">
-                                                            <i className="fa-solid fa-spinner fa-spin"></i> Verifying Credentials...
-                                                        </span>
-                                                    )}
-                                                </div>
+                                                <h3 className="text-xl font-bold text-white">Licensed States</h3>
+                                                <p className="text-xs text-slate-400 mt-1">Select every state where you hold an active license. Calls are routed to you only in these states.</p>
                                             </div>
 
                                             <div>
@@ -1551,8 +1614,8 @@
                                                 <button type="button" onClick={() => setOnboardingStep(1)} className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl text-xs transition">
                                                     Back
                                                 </button>
-                                                <button type="submit" disabled={isVerifyingNPN} className="w-2/3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center justify-center gap-2">
-                                                    <span>Verify Credentials & Continue</span>
+                                                <button type="submit" disabled={agentProfile.licensedStates.length === 0} className="w-2/3 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-black py-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center justify-center gap-2">
+                                                    <span>Continue to Programs</span>
                                                     <i className="fa-solid fa-arrow-right"></i>
                                                 </button>
                                             </div>
@@ -1654,7 +1717,9 @@
                                                     <div className="space-y-2">
                                                         <h3 className="text-2xl font-black text-white">Agent Account Activated</h3>
                                                         <p className="text-xs text-slate-300 max-w-md mx-auto">
-                                                            Your NPN <strong>{agentProfile.npn}</strong> has been verified. Call routing is ready.
+                                                            Call routing is ready for
+                                                            <strong> {agentProfile.licensedStates.length} </strong>
+                                                            licensed {agentProfile.licensedStates.length === 1 ? 'state' : 'states'}.
                                                         </p>
                                                     </div>
 
@@ -1705,11 +1770,14 @@
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <h2 className="text-lg font-bold text-white">{agentProfile.firstName} {agentProfile.lastName}</h2>
-                                                <span className="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">NPN: {agentProfile.npn}</span>
+                                                <span className="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">{agentProfile.accountType === 'COMPANY' ? agentProfile.entityType : 'Individual Agent'}</span>
                                                 <span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">{agentProfile.accountStatus}</span>
                                             </div>
                                             <p className="text-xs text-slate-400 mt-0.5">
-                                                Agency: <span className="text-slate-200">{agentProfile.agencyName}</span> | Line: <span className="text-slate-200 font-mono">{agentProfile.phone}</span>
+                                                {agentProfile.accountType === 'COMPANY' && (
+                                                    <>Company: <span className="text-slate-200">{agentProfile.agencyName}</span> | </>
+                                                )}
+                                                Line: <span className="text-slate-200 font-mono">{agentProfile.phone}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -2087,8 +2155,8 @@
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">NPN Credential</label>
-                                                    <input type="text" readOnly value={agentProfile.npn} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 font-mono" />
+                                                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Account Type</label>
+                                                    <input type="text" readOnly value={agentProfile.accountType === 'COMPANY' ? `${agentProfile.entityType} (${agentProfile.entityState})` : 'Individual Agent'} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 font-mono" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Forwarding Call Line</label>
@@ -2227,7 +2295,7 @@
                                             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
                                                 <div className="text-xs text-slate-400 font-medium">Registered Agents</div>
                                                 <div className="text-3xl font-black text-white mt-2">{adminTotalAgents}</div>
-                                                <div className="text-[10px] text-emerald-400 mt-1 font-mono">{adminActiveAgents} Active / {adminPendingAgents} Pending NPN</div>
+                                                <div className="text-[10px] text-emerald-400 mt-1 font-mono">{adminActiveAgents} Active / {adminPendingAgents} Pending Verification</div>
                                             </div>
 
                                             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
@@ -2260,7 +2328,7 @@
                                             </div>
 
                                             <div className="flex items-center gap-3 w-full sm:w-auto">
-                                                <input type="text" placeholder="Search NPN, agent name, email..." value={adminAgentSearch} onChange={e => setAdminAgentSearch(e.target.value)} className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono outline-none focus:border-purple-500 w-full sm:w-64" />
+                                                <input type="text" placeholder="Search agent, agency, email..." value={adminAgentSearch} onChange={e => setAdminAgentSearch(e.target.value)} className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono outline-none focus:border-purple-500 w-full sm:w-64" />
                                                 <select value={adminAgentStatusFilter} onChange={e => setAdminAgentSearchStatus(e.target.value)} className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-purple-500">
                                                     <option value="ALL">All Statuses</option>
                                                     <option value="ACTIVE">ACTIVE</option>
@@ -2274,7 +2342,7 @@
                                             <table className="w-full text-left text-xs text-slate-300">
                                                 <thead className="bg-slate-950 text-slate-400 uppercase font-mono border-b border-slate-800">
                                                     <tr>
-                                                        <th className="p-3">Agent ID / NPN</th>
+                                                        <th className="p-3">Agent ID / Entity</th>
                                                         <th className="p-3">Full Name / Email</th>
                                                         <th className="p-3">Agency Name</th>
                                                         <th className="p-3">Active States</th>
@@ -2288,7 +2356,7 @@
                                                         <tr key={ag.id} className="hover:bg-slate-950/50">
                                                             <td className="p-3">
                                                                 <div className="font-bold text-white">{ag.id}</div>
-                                                                <div className="text-[10px] text-slate-500">NPN: {ag.npn}</div>
+                                                                <div className="text-[10px] text-slate-500">{ag.accountType === 'COMPANY' ? `${ag.entityType} · ${ag.entityState}` : 'Individual Agent'}</div>
                                                             </td>
                                                             <td className="p-3 font-sans">
                                                                 <div className="font-bold text-slate-100">{ag.name}</div>
