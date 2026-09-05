@@ -22,9 +22,6 @@
                         mint: '#ECFDF5',
                         brandgreen: '#10B981',
                         deepgreen: '#087F5B',
-                        // Used only for the "you still get charged" column in the
-                        // comparison. Kept to a few small words on the whole page.
-                        danger: '#B42318',
                         brand: {
                             50: '#ecfdf5',
                             100: '#d1fae5',
@@ -288,7 +285,7 @@
             },
             {
                 q: "Do I need to be licensed?",
-                a: "Yes. NetEnroll is for licensed insurance producers. Registration asks for your National Producer Number and the states you are authorised to sell in, and your account is matched to those states."
+                a: "Yes. NetEnroll is for licensed insurance producers. Registration asks for your National Producer Number and the states you are authorized to sell in, and your account is matched to those states."
             },
             {
                 q: "How are calls routed?",
@@ -921,13 +918,13 @@
 
                                 {/* ---------------- HERO ---------------- */}
                                 <section className="px-5 sm:px-6 pt-9 pb-10 lg:pt-[52px] lg:pb-[44px]">
-                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.52fr_1fr] gap-10 lg:gap-12 items-center">
+                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.75fr_1fr] gap-10 lg:gap-12 items-center">
 
                                         <div className="reveal">
                                             <p className="eyebrow">Final Expense Calls</p>
 
                                             <h1 className="t-h1 mt-4">
-                                                Stop paying for every call.
+                                                Stop paying for every&nbsp;call.
                                                 <span className="block text-brandgreen">Pay when an application is submitted.</span>
                                             </h1>
 
@@ -1055,32 +1052,61 @@
                                             </p>
                                         </div>
 
-                                        {/* One table, not two cards: the eye reads across a single event rather
-                                            than comparing two separate lists. */}
-                                        <div className="mt-11 card shadow-lift overflow-hidden">
-                                            <div className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_180px_180px] items-center gap-x-4 sm:gap-x-0 px-6 sm:px-8 py-4 border-b border-line bg-soft">
-                                                <span className="hidden sm:block text-[12.5px] font-semibold tracking-[0.13em] text-muted">WHAT HAPPENS</span>
-                                                <span className="text-[12.5px] font-semibold tracking-[0.13em] text-muted text-right sm:text-center">TRADITIONAL</span>
-                                                <span className="text-[12.5px] font-semibold tracking-[0.13em] text-deepgreen text-right sm:text-center">NETENROLL</span>
-                                            </div>
+                                        {/* Two objects rather than one table. The reader is choosing between
+                                            two billing models, so each model is a thing they can look at, and
+                                            the outcome on every row is set large enough to read across the
+                                            page. The four rows are matched line for line so the eye can
+                                            travel sideways without a shared grid holding it together. */}
+                                        <div className="mt-11 grid lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
+                                            {[
+                                                {
+                                                    label: 'TRADITIONAL PAY-PER-CALL',
+                                                    featured: false,
+                                                    rows: [
+                                                        ['Consumer calls', 'You pay'],
+                                                        ['You speak with the consumer', 'You pay'],
+                                                        ["Consumer doesn't move forward", 'You pay'],
+                                                        ['Application submitted', 'Already paid']
+                                                    ]
+                                                },
+                                                {
+                                                    label: 'NETENROLL',
+                                                    featured: true,
+                                                    rows: [
+                                                        ['Consumer calls', '$0'],
+                                                        ['You speak with the consumer', '$0'],
+                                                        ["Consumer doesn't move forward", 'No fee'],
+                                                        ['Application submitted', FEE_DISPLAY]
+                                                    ]
+                                                }
+                                            ].map(({ label, featured, rows }) => (
+                                                <div key={label}
+                                                     className={featured
+                                                         ? 'rounded-2xl border-2 border-brandgreen bg-mint shadow-lift px-7 sm:px-9 py-8 sm:py-9'
+                                                         : 'rounded-2xl border border-line bg-soft px-7 sm:px-9 py-8 sm:py-9'}>
+                                                    <p className={`text-[12.5px] font-semibold tracking-[0.13em] ${featured ? 'text-deepgreen' : 'text-muted'}`}>
+                                                        {label}
+                                                    </p>
 
-                                            <div className="divide-y divide-line">
-                                                {[
-                                                    ['Consumer calls', 'You pay', '$0', false],
-                                                    ['You speak with the consumer', 'You pay', '$0', false],
-                                                    ["Consumer doesn't move forward", 'You pay', 'No fee', false],
-                                                    ['Application submitted', '—', FEE_DISPLAY, true]
-                                                ].map(([event, trad, ours, isFee]) => (
-                                                    <div key={event}
-                                                         className={`grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_180px_180px] items-center gap-x-4 sm:gap-x-0 px-6 sm:px-8 py-4 ${isFee ? 'bg-mint' : ''}`}>
-                                                        <span className={isFee ? 'text-[15.5px] font-semibold text-ink' : 'text-[15.5px] text-muted'}>{event}</span>
-                                                        <span className={`text-[14.5px] font-semibold text-right sm:text-center ${trad === '—' ? 'text-line' : 'text-danger'}`}>{trad}</span>
-                                                        <span className={isFee
-                                                            ? 'num text-[26px] font-bold text-deepgreen leading-none text-right sm:text-center'
-                                                            : 'num text-[15.5px] font-semibold text-brandgreen text-right sm:text-center'}>{ours}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                                    <dl className={`mt-6 divide-y ${featured ? 'divide-brandgreen/20' : 'divide-line'}`}>
+                                                        {rows.map(([event, outcome], i) => {
+                                                            const isFee = i === rows.length - 1;
+                                                            return (
+                                                                <div key={event} className="flex items-baseline justify-between gap-5 py-[18px]">
+                                                                    <dt className={`text-[15.5px] leading-snug ${isFee && featured ? 'font-medium text-ink' : 'text-muted'}`}>
+                                                                        {event}
+                                                                    </dt>
+                                                                    <dd className={`num shrink-0 text-right font-bold leading-none tracking-[-0.02em] ${featured
+                                                                        ? (isFee ? 'text-[2.35rem] text-deepgreen' : 'text-[1.85rem] text-brandgreen')
+                                                                        : 'text-[1.6rem] text-ink/60'}`}>
+                                                                        {outcome}
+                                                                    </dd>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </dl>
+                                                </div>
+                                            ))}
                                         </div>
 
                                         <p className="mt-9 text-center text-[19px] sm:text-[22px] font-bold tracking-[-0.025em] text-ink">
@@ -1175,63 +1201,43 @@
                                         <div className="mt-[54px] pt-[46px] border-t border-line">
                                             <h3 className="t-h2 max-w-[38rem]">Why pay for every conversation?</h3>
                                             <p className="t-lede mt-5 max-w-[44rem]">
-                                                Ten calls. One application. The difference is what you paid to get it.
+                                                Take ten calls. One of them becomes an application. This is the whole
+                                                bill.
                                             </p>
 
-                                            <div className="mt-10 grid lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
-                                                <div className="card bg-soft p-7 sm:p-8 flex flex-col">
-                                                    <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">TRADITIONAL PAY-PER-CALL</p>
-                                                    <dl className="mt-6 space-y-3 flex-1">
-                                                        <div className="flex items-baseline justify-between gap-4">
-                                                            <dt className="text-[16px] text-muted">10 calls &nbsp;×&nbsp; $35 each</dt>
-                                                            <dd className="num text-[17px] font-semibold text-ink">$350</dd>
+                                            {/* Only NetEnroll's own numbers appear here. There is no industry
+                                                per-call rate we can stand behind, so none is quoted. */}
+                                            <div className="mt-10 card shadow-lift px-7 sm:px-9 py-3 max-w-[44rem]">
+                                                <dl className="divide-y divide-line">
+                                                    {[
+                                                        ['10 calls received', '$0', false],
+                                                        ['9 consumers who did not move forward', '$0', false],
+                                                        ['1 submitted application', FEE_DISPLAY, true]
+                                                    ].map(([item, amount, isFee]) => (
+                                                        <div key={item} className="flex items-baseline justify-between gap-5 py-6">
+                                                            <dt className={isFee ? 'text-[16px] font-medium text-ink' : 'text-[16px] text-muted'}>{item}</dt>
+                                                            <dd className={`num shrink-0 font-bold leading-none tracking-[-0.02em] ${isFee
+                                                                ? 'text-[2.5rem] text-deepgreen'
+                                                                : 'text-[2rem] text-brandgreen'}`}>{amount}</dd>
                                                         </div>
-                                                        <div className="flex items-baseline justify-between gap-4">
-                                                            <dt className="text-[16px] text-muted">1 application submitted</dt>
-                                                            <dd className="num text-[17px] font-semibold text-muted">no extra charge</dd>
-                                                        </div>
-                                                    </dl>
-                                                    <div className="mt-7 pt-6 border-t border-line flex items-baseline justify-between gap-4">
-                                                        <span className="text-[15.5px] font-medium text-ink">Cost per application</span>
-                                                        <span className="num text-[2.5rem] leading-none font-bold text-danger">$350</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="card border-brandgreen border-2 shadow-lift p-7 sm:p-8 flex flex-col">
-                                                    <p className="text-[12.5px] font-semibold tracking-[0.13em] text-deepgreen">NETENROLL</p>
-                                                    <dl className="mt-6 space-y-3 flex-1">
-                                                        <div className="flex items-baseline justify-between gap-4">
-                                                            <dt className="text-[16px] text-muted">10 calls &nbsp;×&nbsp; $0 each</dt>
-                                                            <dd className="num text-[17px] font-semibold text-brandgreen">$0</dd>
-                                                        </div>
-                                                        <div className="flex items-baseline justify-between gap-4">
-                                                            <dt className="text-[16px] text-muted">1 application submitted</dt>
-                                                            <dd className="num text-[17px] font-semibold text-ink">${FINAL_EXPENSE_FEE}</dd>
-                                                        </div>
-                                                    </dl>
-                                                    <div className="mt-7 pt-6 border-t border-line flex items-baseline justify-between gap-4">
-                                                        <span className="text-[15.5px] font-medium text-ink">Cost per application</span>
-                                                        <span className="num text-[2.5rem] leading-none font-bold text-deepgreen">${FINAL_EXPENSE_FEE}</span>
-                                                    </div>
-                                                </div>
+                                                    ))}
+                                                </dl>
                                             </div>
 
                                             <p className="mt-9 text-[19px] sm:text-[23px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
-                                                Same ten calls. Same one application.
-                                                <span className="text-brandgreen"> ${350 - FINAL_EXPENSE_FEE} less to acquire it.</span>
+                                                Ten conversations.
+                                                <span className="text-brandgreen"> One billing event.</span>
                                             </p>
                                             <p className="mt-4 text-[16px] leading-relaxed text-muted max-w-[46rem]">
-                                                And the nine that did not move forward carry no application fee. On a
-                                                per-call programme that $350 is spent before you know whether any of
-                                                them will.
+                                                There is no charge for the call itself, for how long you spend on it, or
+                                                for the nine consumers who did not move forward.
                                             </p>
 
                                             <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem]">
-                                                Illustrative example only. The $35 per-call rate, the ten-call volume and the
-                                                single application are for illustration and are not NetEnroll figures. The
-                                                ${FINAL_EXPENSE_FEE} shown is the starting application rate. Actual rates and
-                                                results vary by agent, market, and demand; no conversion rate is implied or
-                                                guaranteed.
+                                                Illustrative example only. The ten-call volume and the single application
+                                                are for illustration and are not NetEnroll figures. The {FEE_DISPLAY} shown
+                                                is the starting application rate. Actual rates and results vary by agent,
+                                                market, and demand; no conversion rate is implied or guaranteed.
                                             </p>
                                         </div>
                                     </div>
@@ -1265,7 +1271,7 @@
                                             <h3 className="t-h3 mt-5">Give your producers another acquisition channel.</h3>
                                             <p className="mt-4 text-[16px] leading-relaxed text-muted">
                                                 Route final expense calls to your producers while keeping call activity and
-                                                applications organised in one platform.
+                                                applications organized in one platform.
                                             </p>
                                             <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
                                                 {['Agent management', 'Call routing', 'License matching', 'Call tracking', 'Application tracking', 'Reporting'].map(t => (
@@ -1274,8 +1280,8 @@
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <button onClick={() => scrollToSection('faq')} className="btn-secondary mt-8 self-start">
-                                                Talk to Us
+                                            <button onClick={startSignup} className="btn-primary mt-8 self-start">
+                                                Start Receiving Calls
                                             </button>
                                         </div>
                                     </div>
@@ -2530,6 +2536,7 @@
                                         <h3 className="text-[13px] font-semibold text-ink">Company</h3>
                                         <ul className="mt-4 space-y-2.5 text-sm text-muted">
                                             <li><button onClick={() => scrollToSection('how-it-works')} className="hover:text-ink transition-colors">How It Works</button></li>
+                                            <li><button onClick={() => scrollToSection('pricing')} className="hover:text-ink transition-colors">Pricing</button></li>
                                             <li><button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">FAQ</button></li>
                                             <li><button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">Contact</button></li>
                                         </ul>
@@ -2540,7 +2547,7 @@
                                         <ul className="mt-4 space-y-2.5 text-sm text-muted">
                                             <li><span className="text-muted/70">Terms of Service</span></li>
                                             <li><span className="text-muted/70">Privacy Policy</span></li>
-                                            <li><span className="text-muted/70">TCPA &amp; CMS Compliance</span></li>
+                                            <li><span className="text-muted/70">TCPA &amp; Compliance</span></li>
                                         </ul>
                                     </div>
                                 </div>
