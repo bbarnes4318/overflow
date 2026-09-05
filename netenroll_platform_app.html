@@ -1161,31 +1161,66 @@
                                         <div className="mt-[54px] pt-[46px] border-t border-line">
                                             <h3 className="t-h2 max-w-[38rem]">Why agents are switching from pay-per-call.</h3>
 
-                                            <div className="mt-10 grid lg:grid-cols-2 gap-5">
-                                                <div className="card p-7 flex items-center justify-between gap-6">
-                                                    <div className="min-w-0">
-                                                        <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">TRADITIONAL PAY-PER-CALL</p>
-                                                        <p className="num mt-2.5 text-[16px] text-muted">5 calls &nbsp;×&nbsp; $60 per call</p>
+                                            <p className="t-lede mt-5 max-w-[44rem]">
+                                                Ten calls. One application. The difference is what you paid to get it.
+                                            </p>
+
+                                            {/* Both columns end on the same line - cost per application - because
+                                                that is the only figure the two models can be compared on. */}
+                                            <div className="mt-11 grid lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
+                                                <div className="card bg-soft p-7 sm:p-8 flex flex-col">
+                                                    <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">TRADITIONAL PAY-PER-CALL</p>
+                                                    <dl className="mt-6 space-y-3 flex-1">
+                                                        <div className="flex items-baseline justify-between gap-4">
+                                                            <dt className="text-[16px] text-muted">10 calls &nbsp;×&nbsp; $35 each</dt>
+                                                            <dd className="num text-[17px] font-semibold text-ink">$350</dd>
+                                                        </div>
+                                                        <div className="flex items-baseline justify-between gap-4">
+                                                            <dt className="text-[16px] text-muted">1 application submitted</dt>
+                                                            <dd className="num text-[17px] font-semibold text-muted">no extra charge</dd>
+                                                        </div>
+                                                    </dl>
+                                                    <div className="mt-7 pt-6 border-t border-line flex items-baseline justify-between gap-4">
+                                                        <span className="text-[15.5px] font-medium text-ink">Cost per application</span>
+                                                        <span className="num text-[2.6rem] leading-none font-bold text-danger">$350</span>
                                                     </div>
-                                                    <span className="num text-[2.4rem] leading-none font-bold text-danger shrink-0">$300</span>
                                                 </div>
 
-                                                <div className="card border-brandgreen border-2 shadow-card p-7 flex items-center justify-between gap-6">
-                                                    <div className="min-w-0">
-                                                        <p className="text-[12.5px] font-semibold tracking-[0.13em] text-deepgreen">NETENROLL</p>
-                                                        <p className="num mt-2.5 text-[16px] text-muted">5 calls at $0 &nbsp;+&nbsp; 1 submitted application</p>
+                                                <div className="card border-brandgreen border-2 shadow-lift p-7 sm:p-8 flex flex-col">
+                                                    <p className="text-[12.5px] font-semibold tracking-[0.13em] text-deepgreen">NETENROLL</p>
+                                                    <dl className="mt-6 space-y-3 flex-1">
+                                                        <div className="flex items-baseline justify-between gap-4">
+                                                            <dt className="text-[16px] text-muted">10 calls &nbsp;×&nbsp; $0 each</dt>
+                                                            <dd className="num text-[17px] font-semibold text-brandgreen">$0</dd>
+                                                        </div>
+                                                        <div className="flex items-baseline justify-between gap-4">
+                                                            <dt className="text-[16px] text-muted">1 application submitted</dt>
+                                                            <dd className="num text-[17px] font-semibold text-ink">${FINAL_EXPENSE_FEE}</dd>
+                                                        </div>
+                                                    </dl>
+                                                    <div className="mt-7 pt-6 border-t border-line flex items-baseline justify-between gap-4">
+                                                        <span className="text-[15.5px] font-medium text-ink">Cost per application</span>
+                                                        <span className="num text-[2.6rem] leading-none font-bold text-deepgreen">${FINAL_EXPENSE_FEE}</span>
                                                     </div>
-                                                    <span className="num text-[2.4rem] leading-none font-bold text-deepgreen shrink-0">${FINAL_EXPENSE_FEE}</span>
                                                 </div>
                                             </div>
 
-                                            <p className="mt-9 text-[20px] sm:text-[24px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[42rem]">
-                                                Your acquisition cost is tied to the application — not the conversation.
+                                            <p className="mt-10 text-[20px] sm:text-[24px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
+                                                Same ten calls. Same one application.
+                                                <span className="text-brandgreen"> ${350 - FINAL_EXPENSE_FEE} less to acquire it.</span>
                                             </p>
-                                            <p className="mt-4 text-[13px] leading-relaxed text-muted max-w-[54rem]">
-                                                Illustrative example only. The $60 per-call rate and the five-call volume are not
-                                                NetEnroll figures. Results vary by agent, market, and demand; no conversion rate
-                                                is implied or guaranteed.
+
+                                            {/* The real argument is not the saving, it is who carries the nine that
+                                                went nowhere. Stated as what the model does, not as a promise. */}
+                                            <p className="mt-5 text-[16.5px] leading-relaxed text-muted max-w-[46rem]">
+                                                And the nine that did not move forward cost you nothing. On a per-call
+                                                programme that $350 is spent before you know whether any of them will.
+                                            </p>
+
+                                            <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem]">
+                                                Illustrative example only. The $35 per-call rate, the ten-call volume and the
+                                                single application are for illustration and are not NetEnroll figures. Results
+                                                vary by agent, market, and demand; no conversion rate is implied or guaranteed.
                                             </p>
                                         </div>
                                     </div>
