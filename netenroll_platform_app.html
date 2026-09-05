@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Final Expense Calls | Pay Per Application | NetEnroll</title>
-    <meta name="description" content="Final expense calls for licensed insurance agents. No traditional per-call charge - you pay when an eligible insurance application is submitted. $240 per submitted application, three-application minimum to start.">
+    <meta name="description" content="Final expense calls for licensed insurance agents. No traditional per-call charge - you pay when an eligible insurance application is submitted. $199 per submitted application, no minimum purchase.">
     <meta name="theme-color" content="#FFFFFF">
     
     <!-- Tailwind CSS CDN -->
@@ -227,7 +227,7 @@
                 id: 'prod_fe',
                 code: 'FINAL_EXPENSE',
                 name: 'Final Expense Life Insurance', 
-                fee: 240, 
+                fee: 199, 
                 tagline: 'Burial & Final Expense Callers',
                 description: 'Inbound senior citizens calling directly to request burial and funeral insurance quotes.',
                 features: ['12-18 min average call length', 'High purchase intent seniors', '100% TCPA opt-in verified consent'],
@@ -237,7 +237,7 @@
                 id: 'prod_med',
                 code: 'MEDICARE',
                 name: 'Medicare Advantage & Supplement', 
-                fee: 175, 
+                fee: 120, 
                 tagline: 'Eligible Medicare Beneficiaries',
                 description: 'Inbound beneficiaries looking to compare plan benefits during AEP, SEP, or Turning-65 windows.',
                 features: ['CMS disclaimer compliant', 'SOA & call recording friendly', 'Matched to your active state licenses'],
@@ -247,7 +247,7 @@
                 id: 'prod_aca',
                 code: 'ACA_HEALTH',
                 name: 'ACA Health Insurance', 
-                fee: 140, 
+                fee: 100, 
                 tagline: 'Individual & Family Marketplace Shoppers',
                 description: 'Inbound health insurance shoppers seeking federal subsidy qualification and plan enrollment.',
                 features: ['Subsidy eligible consumers', 'Year-round OEP/SEP inbound calls', 'Fast 8-12 minute average enrollment'],
@@ -269,7 +269,7 @@
         const FAQS = [
             {
                 q: "How does billing work?",
-                a: "There is no charge for a delivered call. The fee is tied to an eligible submitted application, and for the Final Expense program the rate is $240 per submitted application. Your first purchase covers a minimum of three applications, billed once at $720."
+                a: "There is no charge for a delivered call. The fee is tied to an eligible submitted application. For the Final Expense program the rate is $199 per submitted application, for Medicare it is $120, and for ACA it is $100. There is no minimum purchase - a single application is a valid order."
             },
             {
                 q: "Do I pay for every call?",
@@ -277,7 +277,7 @@
             },
             {
                 q: "What is the minimum to get started?",
-                a: "Three applications, billed once at $720 ($240 each). That is the first purchase for the Final Expense program. It is not a subscription and it does not renew on a schedule."
+                a: "One application. There is no block to buy up front and no minimum spend. It is not a subscription and it does not renew on a schedule."
             },
             {
                 q: "What counts as a submitted application?",
@@ -301,7 +301,7 @@
             },
             {
                 q: "Are there monthly fees?",
-                a: "No. There is no monthly subscription and no separate charge for account access. What you pay is the per-application fee for your program, purchased in blocks, starting with the three-application minimum."
+                a: "No. There is no monthly subscription and no separate charge for account access. What you pay is the per-application fee for the program you are enrolled in, with no minimum purchase."
             }
         ];
 
@@ -311,10 +311,10 @@
         // The rate is a firm number now, not a "from" price, so no "+".
         const FEE_DISPLAY = `$${FINAL_EXPENSE_FEE}`;
 
-        // The first purchase is a block of applications, not a single one. Both
-        // figures are derived so the page can never quote a total that the
-        // Stripe Payment Link does not actually charge.
-        const MIN_APPLICATIONS = 3;
+        // One application is a valid purchase, so the "minimum" is really just
+        // the price of one. Kept derived anyway: if a block ever comes back,
+        // changing this number is the whole edit.
+        const MIN_APPLICATIONS = 1;
         const MIN_PURCHASE = FINAL_EXPENSE_FEE * MIN_APPLICATIONS;
         const MIN_PURCHASE_DISPLAY = `$${MIN_PURCHASE}`;
 
@@ -323,14 +323,6 @@
         // this application does not have one, so it is not here.
         const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/cNifZg3677ZI12fdkR63K1i';
 
-        // Promotional rate. OFF until "Allow promotion codes" is enabled on the
-        // Payment Link in the Stripe dashboard - the checkout currently shows no
-        // field to type it into, so advertising it would send people to a $720
-        // page expecting $597. Flip this to true once the field appears.
-        const PROMO_ENABLED = false;
-        const PROMO_CODE = 'LABORDAY';
-        const PROMO_FEE = 199;
-        const PROMO_TOTAL = PROMO_FEE * MIN_APPLICATIONS;
 
         const CheckMark = ({ className = '' }) => (
             <svg className={`w-[18px] h-[18px] mt-[3px] shrink-0 text-brandgreen ${className}`} viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -966,8 +958,8 @@
                                                     <span className="text-[15.5px] font-semibold text-ink">per submitted application</span>
                                                 </div>
                                                 <p className="mt-3 text-[14.5px] text-muted">
-                                                    No traditional per-call charge. {MIN_APPLICATIONS}-application
-                                                    minimum to start ({MIN_PURCHASE_DISPLAY}).
+                                                    No traditional per-call charge, and no minimum purchase.
+                                                    Start with a single application.
                                                 </p>
                                             </div>
 
@@ -1216,18 +1208,10 @@
                                                 </div>
                                             </div>
 
-                                            {/* The one number a visitor is most likely to be surprised by at
-                                                the checkout, stated before they get there. */}
                                             <p className="mt-5 text-center text-[15px] font-medium text-ink">
-                                                Your first purchase is a minimum of {MIN_APPLICATIONS} applications,
-                                                billed once at {MIN_PURCHASE_DISPLAY}.
+                                                No minimum purchase. Buy a single application at
+                                                {' '}{MIN_PURCHASE_DISPLAY} and go from there.
                                             </p>
-                                            {PROMO_ENABLED && (
-                                                <p className="mt-2 text-center text-[14.5px] text-deepgreen">
-                                                    Enter code <span className="font-semibold">{PROMO_CODE}</span> at
-                                                    checkout for ${PROMO_FEE} per application (${PROMO_TOTAL} total).
-                                                </p>
-                                            )}
                                             <p className="mt-2 text-center text-[14.5px] text-muted">
                                                 No monthly subscription. No per-call charge.
                                             </p>
@@ -1237,8 +1221,8 @@
                                         <div className="mt-[54px] pt-[46px] border-t border-line">
                                             <h3 className="t-h2 max-w-[38rem]">Why pay for every conversation?</h3>
                                             <p className="t-lede mt-5 max-w-[44rem]">
-                                                Thirty calls. Three of them become applications. This is the whole
-                                                bill - and it is the same first purchase everyone starts on.
+                                                Take ten calls. One of them becomes an application. This is the whole
+                                                bill.
                                             </p>
 
                                             {/* Only NetEnroll's own numbers appear here. There is no industry
@@ -1246,9 +1230,9 @@
                                             <div className="mt-10 card shadow-lift px-7 sm:px-9 py-3">
                                                 <dl className="divide-y divide-line">
                                                     {[
-                                                        ['30 calls received', '$0', false],
-                                                        ['27 consumers who did not move forward', '$0', false],
-                                                        [`${MIN_APPLICATIONS} submitted applications`, MIN_PURCHASE_DISPLAY, true]
+                                                        ['10 calls received', '$0', false],
+                                                        ['9 consumers who did not move forward', '$0', false],
+                                                        ['1 submitted application', FEE_DISPLAY, true]
                                                     ].map(([item, amount, isFee]) => (
                                                         <div key={item} className="flex items-baseline justify-between gap-5 py-6">
                                                             <dt className={isFee ? 'text-[16px] font-medium text-ink' : 'text-[16px] text-muted'}>{item}</dt>
@@ -1261,20 +1245,20 @@
                                             </div>
 
                                             <p className="mt-9 text-[19px] sm:text-[23px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
-                                                Thirty conversations.
-                                                <span className="text-brandgreen"> Three billing events.</span>
+                                                Ten conversations.
+                                                <span className="text-brandgreen"> One billing event.</span>
                                             </p>
                                             <p className="mt-4 text-[16px] leading-relaxed text-muted max-w-[46rem]">
                                                 There is no charge for the call itself, for how long you spend on it, or
-                                                for the twenty-seven consumers who did not move forward.
+                                                for the nine consumers who did not move forward.
                                             </p>
 
                                             <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem]">
-                                                Illustrative example only. The thirty-call volume is for illustration and
-                                                is not a NetEnroll figure. The {FEE_DISPLAY} per-application rate and
-                                                the {MIN_APPLICATIONS}-application minimum are the actual terms of the current
-                                                Final Expense program. Results vary by agent, market, and demand; no
-                                                conversion rate is implied or guaranteed.
+                                                Illustrative example only. The ten-call volume and the single application
+                                                are for illustration and are not NetEnroll figures. The {FEE_DISPLAY}
+                                                per-application rate is the actual rate for the current Final Expense
+                                                program. Results vary by agent, market, and demand; no conversion rate is
+                                                implied or guaranteed.
                                             </p>
                                         </div>
                                     </div>
@@ -1629,22 +1613,16 @@
                                             {/* The order, itemised, so the total on Stripe's page is not a surprise. */}
                                             <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
                                                 <div className="flex items-center justify-between text-xs">
-                                                    <span className="text-slate-300">Final Expense applications</span>
-                                                    <span className="font-mono text-slate-300">{MIN_APPLICATIONS} &times; ${FINAL_EXPENSE_FEE}</span>
+                                                    <span className="text-slate-300">Final Expense &mdash; one application</span>
+                                                    <span className="font-mono text-slate-300">${FINAL_EXPENSE_FEE}</span>
                                                 </div>
                                                 <div className="flex items-center justify-between pt-3 border-t border-slate-800">
                                                     <span className="text-xs font-bold text-slate-200">Due today</span>
                                                     <span className="font-mono text-2xl font-bold text-emerald-400">{MIN_PURCHASE_DISPLAY}</span>
                                                 </div>
-                                                {PROMO_ENABLED && (
-                                                    <p className="text-[11px] text-emerald-400 pt-1">
-                                                        Enter code {PROMO_CODE} on the Stripe page for ${PROMO_FEE} per
-                                                        application (${PROMO_TOTAL} total).
-                                                    </p>
-                                                )}
                                                 <p className="text-[11px] text-slate-500 pt-1">
-                                                    One-time charge. Not a subscription. Applications are drawn from this
-                                                    balance as you submit them.
+                                                    One-time charge. Not a subscription. Buy more applications whenever
+                                                    you want them.
                                                 </p>
                                             </div>
 
