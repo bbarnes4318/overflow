@@ -2585,23 +2585,27 @@
                                     <div>
                                         <h3 className="text-[13px] font-semibold text-ink">Legal</h3>
                                         <ul className="mt-4 space-y-2.5 text-sm text-muted">
-                                            <li><span className="text-muted/70">Terms of Service</span></li>
-                                            <li><span className="text-muted/70">Privacy Policy</span></li>
-                                            <li><span className="text-muted/70">TCPA &amp; Compliance</span></li>
+                                            <li><a href="/terms" className="hover:text-ink transition-colors">Terms of Service</a></li>
+                                            <li><a href="/privacy" className="hover:text-ink transition-colors">Privacy Policy</a></li>
+                                            <li><a href="/tcpa-compliance" className="hover:text-ink transition-colors">TCPA &amp; Compliance</a></li>
                                         </ul>
                                     </div>
                                 </div>
 
                                 <div className="mt-12 pt-7 border-t border-line flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                                    <p className="text-[13px] text-muted">© 2026 NetEnroll Inc. All rights reserved.</p>
-                                    <p className="text-[13px] text-muted">netenroll.com</p>
+                                    <p className="text-[13px] text-muted">© 2026 PVN LLC. All rights reserved. NetEnroll is a service of PVN LLC.</p>
+                                    <address className="not-italic text-[13px] text-muted sm:text-right">
+                                        2800 N 6th Street #796, Saint Augustine, FL 32084
+                                        <span className="hidden sm:inline"> &middot; </span>
+                                        <a href="tel:+19045128487" className="block sm:inline hover:text-ink transition-colors">904-512-8487</a>
+                                    </address>
                                 </div>
                             </div>
                         </footer>
                     ) : (
                         <footer className="border-t border-slate-800 bg-slate-950 py-8 text-xs text-slate-500">
                             <div className="max-w-7xl mx-auto px-5 sm:px-6 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-                                <span>© 2026 NetEnroll Inc.</span>
+                                <span>© 2026 PVN LLC</span>
                                 <button onClick={() => setCurrentTab('marketing')} className="hover:text-slate-300 transition-colors text-left">Back to netenroll.com</button>
                             </div>
                         </footer>

@@ -199,7 +199,15 @@ install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 for asset in netenroll-logo.png netenroll-logo-dark.png; do
   install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
 done
+
+# Terms, Privacy and TCPA are standalone HTML served by path, not tabs inside
+# the app. They go in the web root flat, so nginx's \$uri.html rule resolves
+# /terms, /privacy and /tcpa-compliance without a redirect.
+for doc in terms.html privacy.html tcpa-compliance.html legal.css; do
+  install -m 0644 "${REMOTE_DIR}/legal/\${doc}" "${WEB_ROOT}/\${doc}"
+done
 echo "--> Published \$(wc -c < "${WEB_ROOT}/${INDEX_NAME}") bytes to ${WEB_ROOT}/${INDEX_NAME}"
+echo "--> Published legal documents: terms.html privacy.html tcpa-compliance.html legal.css"
 
 # 2a. The static site's own vhost. Written once, then left alone so certbot's
 # in-place TLS rewrite is not undone by the next deploy.
