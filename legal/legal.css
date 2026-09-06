@@ -254,6 +254,17 @@ h1 {
     font-weight: 650;
 }
 
+/* One level below h3, for the labelled parts inside a clause. Set in the muted
+   colour so it reads as a label on the paragraph beneath it, not a new section. */
+.doc-content h4 {
+    margin: 26px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--deepgreen);
+}
+
 .doc-content p { margin: 15px 0 0; }
 .doc-content ul, .doc-content ol { margin: 15px 0 0; padding-left: 24px; }
 .doc-content li { margin: 8px 0 0; }
