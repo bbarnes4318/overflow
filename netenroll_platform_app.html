@@ -176,26 +176,45 @@
         @media (min-width: 1280px) {
             .lv-shell { height: calc(100vh - 67px); display: flex; flex-direction: column; }
             .lv-grids { flex: 1 1 auto; min-height: 0; }
+
+            /* The tables fill the height the flex column hands them and share
+               it out across their own rows, so the grid fits without a
+               scrollbar on a short laptop as well as on a 900px desktop and
+               nothing has to know how tall the header happens to be. */
+            .lv-grids { align-items: stretch; }
+            .lv-grids table { height: 100%; }
+            .lv-grids .lv-table tbody td { height: 16px; }
         }
+
+        /* Title, the primary control and search on one line. */
+        .lv-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
+        .lv-title {
+            font-size: 20px; font-weight: 700; letter-spacing: -0.022em;
+            color: #111827; line-height: 1.2; margin: 0;
+        }
+        .lv-search { position: relative; }
+        .lv-legend { font-size: 11px; color: #667085; display: flex; align-items: center; gap: 5px; margin-left: auto; }
+        .lv-sub { font-size: 13px; line-height: 1.45; color: #667085; margin-top: 7px; max-width: 78rem; }
+        .lv-fine { font-size: 11px; line-height: 1.4; color: #667085; margin-top: 5px; }
 
         /* ---- Resident-state selector: the primary control ----
            Same 10px radius and #E6E9ED line as .btn-secondary, sized
            up a step so it reads as the main input, not a footnote. */
         .lv-select {
             appearance: none; -webkit-appearance: none;
-            background-color: #fff;
-            color: #111827;                                  /* ink */
-            border: 1px solid #E6E9ED;                       /* line */
+            background-color: #ECFDF5;                       /* mint */
+            color: #064e3b;                                  /* brand.900 */
+            border: 1.5px solid #10B981;                     /* brandgreen */
             border-radius: 10px;
-            font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
-            padding: 11px 38px 11px 13px;
+            font-size: 15px; font-weight: 650; letter-spacing: -0.01em;
+            padding: 8px 36px 8px 12px;
             box-shadow: 0 1px 2px rgba(16,24,40,.05);
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 15px 15px;
             transition: border-color .18s ease, box-shadow .18s ease;
         }
-        .lv-select:hover { border-color: #D3D8DE; }
+        .lv-select:hover { background-color: #d1fae5; }   /* brand.100 */
         .lv-select:focus-visible {
             outline: 2px solid #087F5B;                      /* deepgreen */
             outline-offset: 2px; border-color: #087F5B;
@@ -224,7 +243,7 @@
             position: sticky; top: 0; z-index: 1;
             background: #F8FAF9;                             /* soft */
             border-bottom: 1px solid #E6E9ED;
-            padding: 0; height: 38px;
+            padding: 0; height: 34px;
             font-size: 10.5px; font-weight: 600;
             letter-spacing: 0.045em; text-transform: uppercase;
             color: #667085;                                  /* muted */
@@ -235,7 +254,7 @@
         /* Each header is a real button, so sorting is keyboard-reachable. */
         .lv-sort {
             display: flex; align-items: center; gap: 3px;
-            width: 100%; height: 38px; padding: 0 7px 5px;
+            width: 100%; height: 34px; padding: 0 7px 4px;
             justify-content: flex-end;
             font: inherit; color: inherit; letter-spacing: inherit;
             text-transform: inherit; background: none; border: 0;
@@ -250,7 +269,7 @@
         .lv-caret { font-size: 8px; line-height: 1; }
 
         .lv-table tbody td {
-            height: 23px; padding: 0 7px;
+            height: 23px; padding: 0 7px; line-height: 1.3;
             border-bottom: 1px solid #F1F3F5;
             font-size: 11.5px; color: #111827;
             text-align: right; white-space: nowrap;
@@ -274,7 +293,6 @@
         .lv-src:hover { text-decoration: underline; text-underline-offset: 2px; color: #087F5B; }
         .lv-src:focus-visible { outline: 2px solid #087F5B; outline-offset: 1px; border-radius: 3px; }
 
-        .lv-legend { font-size: 11px; color: #667085; }
         .lv-swatch {
             display: inline-block; width: 14px; height: 9px;
             border-radius: 2px; border: 1px solid #E6E9ED; vertical-align: -1px;
@@ -328,8 +346,13 @@
                 border-bottom: 0; background: none; backdrop-filter: none;
             }
         }
-        @media (min-width: 1280px) {
-            .lv-sticky-select { position: absolute; top: 20px; right: 24px; z-index: 5; }
+        /* Below the tablet break the header row generates no box of its own, so
+           the sticky selector resolves against .lv-shell -- which is as tall as
+           the whole card list -- instead of against a 40px row it would scroll
+           straight out of. */
+        @media (max-width: 767px) {
+            .lv-head { display: contents; }
+            .lv-title { font-size: 22px; }
         }
 
         .sr-only {
@@ -833,6 +856,9 @@
             const unresolved = rows.filter(r => r.error !== null);
             const notedCount = rows.filter(r => r.notes.length > 0).length;
             const dataVerified = data ? data.lastVerified : '';
+            // 46 of 51 are flat. The previous copy claimed the opposite.
+            const retaliatoryCount = data ? data.jurisdictions.filter(j => data.retaliatorySchedules[j.code]).length : 0;
+            const flatCount = jurisdictions.length - retaliatoryCount;
 
             /* Two columns of 25 at >=1280px. See the note in the
                stylesheet: fifty rows in one column cannot fit 1440x900
@@ -1005,27 +1031,19 @@
 
             return (
                 <div className="lv-page bg-white text-ink">
-                    <div className="lv-shell relative max-w-[1360px] mx-auto px-5 sm:px-6 pt-5 pb-4 flex flex-col">
+                    <div className="lv-shell relative max-w-[1360px] mx-auto px-5 sm:px-6 pt-3.5 pb-3 flex flex-col">
 
-                        {/* ---- 1. HEADER STRIP ---- */}
-                        <div className="lv-sticky-select shrink-0">{selector}</div>
-                        <div className="shrink-0 mt-3 md:mt-4 xl:mt-0">
-                            <h1 className="t-h3">State Licensing Value</h1>
-                            <p className="t-body mt-1.5 max-w-[64rem] xl:max-w-[59rem] text-[13.5px] leading-[1.5]">
-                                This tool ranks every jurisdiction by what a non-resident producer
-                                licence costs against the number of residents aged 55 to 80 it puts
-                                within reach. Because most states charge a retaliatory fee matched to
-                                your home state, the same licence costs different amounts for
-                                different agents; select your resident state to see your own figures.
-                            </p>
-                        </div>
-
-                        {/* ---- 2. CONTROLS ROW ---- */}
-                        <div className="shrink-0 mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2">
-                            <div className="relative">
+                        {/* ---- 1. HEADER: title, the control that drives the page, search ----
+                             The resident-state selector sits beside the title because it is
+                             the whole point of the page; parked in the far corner it read as
+                             decoration and people missed it. ---- */}
+                        <div className="lv-head shrink-0">
+                            <h1 className="lv-title">State Licensing Value</h1>
+                            <div className="lv-sticky-select">{selector}</div>
+                            <div className="lv-search">
                                 <label htmlFor="lv-filter" className="sr-only">Filter by state name</label>
                                 <input id="lv-filter" type="search" className="lv-filter"
-                                       placeholder="Filter by state name"
+                                       placeholder="Filter states"
                                        value={filter}
                                        onChange={e => setFilter(e.target.value)} />
                                 <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-[13px] h-[13px] text-muted"
@@ -1034,24 +1052,7 @@
                                     <path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
                                 </svg>
                             </div>
-
-                            <div className="flex items-center gap-1.5 text-[11px] text-muted">
-                                <span className="font-medium text-ink">Sort</span>
-                                {LV_COLUMNS.filter(c => c.key !== 'niprFee').map(c => (
-                                    <button key={c.key} type="button" onClick={() => toggleSort(c.key)}
-                                            aria-pressed={sort.key === c.key}
-                                            className={sort.key === c.key
-                                                ? 'px-2 py-1 rounded-md border border-brandgreen bg-mint text-deepgreen font-semibold transition-colors'
-                                                : 'px-2 py-1 rounded-md border border-line hover:border-[#D3D8DE] hover:text-ink transition-colors'}>
-                                        {c.key === 'seniorPop' ? 'Population' : c.key === 'index' ? 'Value' : c.label}
-                                        {sort.key === c.key && (
-                                            <span className="lv-caret ml-1" aria-hidden="true">{sort.dir === 'asc' ? '▲' : '▼'}</span>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <p className="lv-legend flex items-center gap-1.5 xl:ml-auto" aria-hidden="true">
+                            <p className="lv-legend" aria-hidden="true">
                                 <span>Better value</span>
                                 <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.30)' }} />
                                 <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.19)' }} />
@@ -1061,19 +1062,26 @@
                             </p>
                         </div>
 
-                        <p className="shrink-0 mt-2 text-[11px] leading-[1.45] text-muted">
-                            Showing {visible.length} of {rows.length} jurisdictions, excluding your resident
-                            state of {residentName}.
+                        {/* Counts come from the data, so this sentence cannot drift out of
+                            step with the file the way the last one did. */}
+                        <p className="lv-sub shrink-0">
+                            What a non-resident producer licence costs against the population aged 55
+                            to 80 it reaches. {retaliatoryCount} jurisdictions set their fee from your
+                            resident state; the other {flatCount} charge everyone the same.
+                        </p>
+
+                        <p className="lv-fine shrink-0">
+                            Showing {visible.length} of {rows.length}, excluding {residentName}.
                             {notedCount > 0 && (
-                                <span> An asterisk (<span className="lv-flag num" aria-hidden="true">*</span>) marks {notedCount} rows carrying a caveat worth reading.</span>
+                                <span> An asterisk (<span className="lv-flag num" aria-hidden="true">*</span>) marks {notedCount} rows with a caveat.</span>
                             )}
-                            {' '}Each state name links to the published fee schedule it was read from,
-                            verified {dataVerified}. State fees change without notice, and NIPR&rsquo;s
-                            application screen is the authoritative amount at checkout.
+                            {' '}Each state name links to its published fee schedule, verified {dataVerified}.
+                            Fees change without notice; NIPR&rsquo;s application screen is the authoritative
+                            amount at checkout.
                         </p>
 
                         {unresolved.length > 0 && (
-                            <p className="shrink-0 mt-2 text-[11px] font-medium text-deepgreen" role="alert">
+                            <p className="lv-fine shrink-0 font-medium text-deepgreen" role="alert">
                                 {unresolved.length} jurisdiction{unresolved.length === 1 ? ' could not be' : 's could not be'} resolved
                                 from the published data and {unresolved.length === 1 ? 'is' : 'are'} shown without a figure:{' '}
                                 {unresolved.map(r => r.code).join(', ')}.
@@ -1089,7 +1097,7 @@
                             <React.Fragment>
                                 {/* Desktop (>=1280px): two columns of 25, the whole list
                                     inside one 900px-tall viewport. */}
-                                <div className="lv-grids hidden xl:grid mt-2.5 grid-cols-2 gap-x-7 items-start">
+                                <div className="lv-grids hidden xl:grid mt-2.5 grid-cols-2 gap-x-7">
                                     {halves.map((chunk, i) => (
                                         chunk.length === 0 ? null : (
                                             <table className="lv-table" key={i}>
@@ -1722,7 +1730,7 @@
                                 <div className="mt-4 pt-4 border-t border-line flex flex-col gap-2.5">
                                     {isPublic ? (
                                         <a href={PORTAL_URL} onClick={() => setMobileNavOpen(false)}
-                                           className="btn-secondary w-full text-center">
+                                           className="btn-secondary w-full">
                                             Sign In
                                         </a>
                                     ) : (
