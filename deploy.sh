@@ -196,9 +196,10 @@ install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 
 # The page references these by relative path, so they must sit beside it in the
 # web root. Installing only the HTML leaves a broken image in the header.
-for asset in netenroll-logo.png netenroll-logo-dark.png; do
+for asset in netenroll-logo.png netenroll-logo-dark.png robots.txt sitemap.xml; do
   install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
 done
+
 
 # Terms, Privacy and TCPA are standalone HTML served by path, not tabs inside
 # the app. They go in the web root flat, so nginx's \$uri.html rule resolves
@@ -206,6 +207,12 @@ done
 for doc in terms.html privacy.html tcpa-compliance.html legal.css; do
   install -m 0644 "${REMOTE_DIR}/legal/\${doc}" "${WEB_ROOT}/\${doc}"
 done
+
+
+# The /licensing-value tool fetches this at runtime. It is the only source of
+# fee and population figures on the page, so a deploy that skips it leaves the
+# tool showing its "could not be loaded" notice rather than stale numbers.
+install -m 0644 "${REMOTE_DIR}/src/data/licensing-fees.json" "${WEB_ROOT}/licensing-fees.json"
 echo "--> Published \$(wc -c < "${WEB_ROOT}/${INDEX_NAME}") bytes to ${WEB_ROOT}/${INDEX_NAME}"
 echo "--> Published legal documents: terms.html privacy.html tcpa-compliance.html legal.css"
 

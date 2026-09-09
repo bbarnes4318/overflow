@@ -6,6 +6,7 @@
     <title>Final Expense Calls | Pay Per Application | NetEnroll</title>
     <meta name="description" content="Final expense calls for licensed insurance agents. No traditional per-call charge - you pay when an eligible insurance application is submitted. $199 per submitted application, no minimum purchase.">
     <meta name="theme-color" content="#FFFFFF">
+    <link rel="canonical" href="https://netenroll.com/">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -152,6 +153,183 @@
         @media (min-width: 768px) { .mobile-cta { display: none; } }
         /* Keep the sticky bar from covering the end of the page. */
         @media (max-width: 767px) { .pad-for-cta { padding-bottom: 84px; } }
+
+        /* =========================================================
+           STATE LICENSING VALUE TOOL  (/licensing-value)
+           A high-density grid, not a marketing section. The type
+           scale above is deliberately large for a page read in five
+           seconds; fifty rows need smaller steps, so this layer
+           defines its own — from the same tokens, no new hues.
+
+           Desktop target is 1440x900 with no vertical scroll. Fifty
+           rows in ONE column cannot meet that at legible type (it
+           works out to ~12px a row), so at >=1280px the grid runs as
+           two columns of 25. Nothing is paginated and nothing hides.
+           ========================================================= */
+
+        /* Ramp hue = brandgreen #10B981, the one brand green, varied
+           only by alpha. Declared once so no component invents its own. */
+        .lv-page { --lv-ramp: 16 185 129; }
+
+        /* The tool owns the viewport under the sticky header, which measures
+           67px: h-[66px] on the inner row plus the header's own 1px border. */
+        @media (min-width: 1280px) {
+            .lv-shell { height: calc(100vh - 67px); display: flex; flex-direction: column; }
+            .lv-grids { flex: 1 1 auto; min-height: 0; }
+        }
+
+        /* ---- Resident-state selector: the primary control ----
+           Same 10px radius and #E6E9ED line as .btn-secondary, sized
+           up a step so it reads as the main input, not a footnote. */
+        .lv-select {
+            appearance: none; -webkit-appearance: none;
+            background-color: #fff;
+            color: #111827;                                  /* ink */
+            border: 1px solid #E6E9ED;                       /* line */
+            border-radius: 10px;
+            font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+            padding: 11px 38px 11px 13px;
+            box-shadow: 0 1px 2px rgba(16,24,40,.05);
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 15px 15px;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+        .lv-select:hover { border-color: #D3D8DE; }
+        .lv-select:focus-visible {
+            outline: 2px solid #087F5B;                      /* deepgreen */
+            outline-offset: 2px; border-color: #087F5B;
+        }
+
+        /* ---- Text filter ---- */
+        .lv-filter {
+            background-color: #fff; color: #111827;
+            border: 1px solid #E6E9ED; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            padding: 7px 11px 7px 30px; width: 212px;
+            transition: border-color .18s ease;
+        }
+        .lv-filter::placeholder { color: #667085; font-weight: 400; }   /* muted */
+        .lv-filter:hover { border-color: #D3D8DE; }
+        .lv-filter:focus-visible { outline: 2px solid #087F5B; outline-offset: 2px; border-color: #087F5B; }
+
+        /* ---- The grid ---- */
+        .lv-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+        .lv-table caption {
+            position: absolute; width: 1px; height: 1px;
+            overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+        }
+
+        .lv-table thead th {
+            position: sticky; top: 0; z-index: 1;
+            background: #F8FAF9;                             /* soft */
+            border-bottom: 1px solid #E6E9ED;
+            padding: 0; height: 38px;
+            font-size: 10.5px; font-weight: 600;
+            letter-spacing: 0.045em; text-transform: uppercase;
+            color: #667085;                                  /* muted */
+            text-align: right; vertical-align: bottom;
+        }
+        .lv-table thead th.lv-al { text-align: left; }
+
+        /* Each header is a real button, so sorting is keyboard-reachable. */
+        .lv-sort {
+            display: flex; align-items: center; gap: 3px;
+            width: 100%; height: 38px; padding: 0 7px 5px;
+            justify-content: flex-end;
+            font: inherit; color: inherit; letter-spacing: inherit;
+            text-transform: inherit; background: none; border: 0;
+            cursor: pointer; transition: color .15s ease;
+        }
+        .lv-al .lv-sort { justify-content: flex-start; }
+        .lv-lbl { text-align: right; line-height: 1.2; }
+        .lv-al .lv-lbl { text-align: left; }
+        .lv-sort:hover { color: #111827; }
+        .lv-sort:focus-visible { outline: 2px solid #087F5B; outline-offset: -2px; border-radius: 4px; }
+        .lv-sort.is-active { color: #087F5B; }
+        .lv-caret { font-size: 8px; line-height: 1; }
+
+        .lv-table tbody td {
+            height: 23px; padding: 0 7px;
+            border-bottom: 1px solid #F1F3F5;
+            font-size: 11.5px; color: #111827;
+            text-align: right; white-space: nowrap;
+            overflow: visible;
+        }
+        .lv-table tbody td.lv-al { text-align: left; }
+        .lv-table tbody tr:last-child td { border-bottom: 0; }
+        .lv-table tbody tr:hover td { background-color: #F8FAF9; }     /* soft */
+        .lv-rank { color: #667085; font-size: 10.5px; }
+        .lv-name { font-weight: 550; letter-spacing: -0.01em; }
+        .lv-dim  { color: #667085; }
+
+        /* The value index. The tint is redundant to the number printed
+           on top of it — colour is never the only carrier of meaning. */
+        .lv-index { font-weight: 650; letter-spacing: -0.02em; }
+
+        .lv-legend { font-size: 11px; color: #667085; }
+        .lv-swatch {
+            display: inline-block; width: 14px; height: 9px;
+            border-radius: 2px; border: 1px solid #E6E9ED; vertical-align: -1px;
+        }
+
+        /* ---- Pending-confirmation marker ----
+           A dagger, not a colour: the glyph carries the meaning and
+           the tooltip carries the explanation. */
+        .lv-flag {
+            font-size: 10px; line-height: 1; color: #667085;   /* muted */
+            cursor: help; border: 0; background: none; padding: 0 0 0 3px;
+            vertical-align: 1px;
+        }
+        .lv-flag-pending { color: #087F5B; font-weight: 700; }   /* deepgreen */
+        .lv-flag:focus-visible { outline: 2px solid #087F5B; outline-offset: 1px; border-radius: 3px; }
+
+        /* ---- Tooltip ---- */
+        .lv-tipwrap { position: relative; display: inline-block; }
+        .lv-tip {
+            position: absolute; bottom: calc(100% + 6px); left: -8px; z-index: 30;
+            width: min(236px, calc(100vw - 32px)); padding: 8px 10px;
+            background: #111827;                              /* ink */
+            color: #fff; border-radius: 8px;
+            font-size: 11px; font-weight: 450; line-height: 1.45;
+            letter-spacing: 0; text-align: left; text-transform: none;
+            white-space: normal; pointer-events: none;
+            opacity: 0; transform: translateY(2px);
+            transition: opacity .14s ease, transform .14s ease;
+            box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 10px 30px -14px rgba(16,24,40,.14);
+        }
+        .lv-tipwrap:hover .lv-tip,
+        .lv-tipwrap:focus-within .lv-tip { opacity: 1; transform: translateY(0); }
+        /* Rows near the top of the grid open their tooltip downward. */
+        .lv-tip.lv-tip-below { bottom: auto; top: calc(100% + 6px); transform: translateY(-2px); }
+        .lv-tipwrap:hover .lv-tip-below,
+        .lv-tipwrap:focus-within .lv-tip-below { transform: translateY(0); }
+
+        /* ---- Mobile card layout ---- */
+        .lv-card { background: #fff; border: 1px solid #E6E9ED; border-radius: 12px; padding: 12px 13px; }
+        .lv-card + .lv-card { margin-top: 8px; }
+
+        /* Selector stays reachable while the cards scroll. */
+        .lv-sticky-select {
+            position: sticky; top: 67px; z-index: 20;
+            background: rgba(255,255,255,.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid #E6E9ED;
+            margin: 0 -20px; padding: 12px 20px;
+        }
+        @media (min-width: 768px) {
+            .lv-sticky-select {
+                position: static; margin: 0; padding: 0;
+                border-bottom: 0; background: none; backdrop-filter: none;
+            }
+        }
+        @media (min-width: 1280px) {
+            .lv-sticky-select { position: absolute; top: 20px; right: 24px; z-index: 5; }
+        }
+
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
     </style>
 
     <!-- React & Babel CDNs -->
@@ -383,6 +561,558 @@
             );
         };
 
+
+        /* =========================================================
+           STATE LICENSING VALUE TOOL — /licensing-value
+
+           Answers one question: for an agent resident in state X,
+           which other states return the most 55-80 population per
+           dollar of licensing cost.
+
+           Every fee, population and provenance flag comes from
+           src/data/licensing-fees.json, published beside index.html.
+           Nothing below hardcodes a fee, a population or a caveat —
+           if a number appears on this page it came out of that file.
+           ========================================================= */
+
+        const LICENSING_ROUTE = '/licensing-value';
+        const LICENSING_DATA_URL = '/licensing-fees.json';
+        const LICENSING_STORAGE_KEY = 'netenroll.licensingValue.residentState';
+
+        const HOME_META = {
+            title: document.title,
+            description: (document.querySelector('meta[name="description"]') || {}).content || ''
+        };
+
+        const LICENSING_META = {
+            title: 'State Licensing Value | Cost per 1,000 Seniors | NetEnroll',
+            description: 'Compare non-resident insurance licensing cost against the ages 55-80 population of every state. State fee, NIPR fee and cost per 1,000 seniors, ranked for your resident state.'
+        };
+
+        /* ---- Formatters. Tabular numerals come from .num. ---- */
+        const lvInt = new Intl.NumberFormat('en-US');
+        const lvMoney = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        /* Four places, not two: at two decimals every row reads $0.00
+           and the column that justifies this page becomes useless. */
+        const lvIndexFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 4, maximumFractionDigits: 4 });
+
+        /* ---- Fee resolution, exactly the order the data spec sets ----
+           A schedule that is missing the resident state is a data error,
+           not a cue to fall back: the published retaliatory schedules do
+           not follow any arithmetic rule, so a guess would be a wrong
+           number wearing a confident face. Throw, and let the caller
+           surface it. */
+        function lvResolveStateFee(data, residentCode, target) {
+            const schedule = data.retaliatorySchedules[target.code];
+            if (schedule) {
+                const fee = schedule[residentCode];
+                if (typeof fee !== 'number') {
+                    throw new Error(
+                        'Retaliatory schedule for ' + target.code +
+                        ' has no entry for resident state ' + residentCode + '.'
+                    );
+                }
+                return { fee, source: 'schedule' };
+            }
+            if (typeof target.flatFee !== 'number') {
+                throw new Error(
+                    target.code + ' has neither a retaliatory schedule nor a base fee.'
+                );
+            }
+            return { fee: target.flatFee, source: 'flat' };
+        }
+
+        /* Build every row for one resident state. The resident state is
+           excluded outright — an agent does not buy a non-resident
+           licence at home. */
+        function lvBuildRows(data, residentCode) {
+            const rows = [];
+            data.jurisdictions.forEach(j => {
+                if (j.code === residentCode) return;
+                const noteKeys = (data.noteRefs && data.noteRefs[j.code]) || [];
+                const base = {
+                    code: j.code,
+                    name: j.name,
+                    seniorPop: j.seniorPopulation55to80,
+                    niprFee: data.niprTransactionFee,
+                    unverified: !!j.feeIsFallback,
+                    upperBound: !!j.prorated,
+                    perLoa: !!j.perLineOfAuthority,
+                    sourceUrl: j.sourceUrl,
+                    lastVerified: j.lastVerified,
+                    notes: noteKeys.map(k => data.notes[k]).filter(Boolean)
+                };
+                try {
+                    const { fee, source } = lvResolveStateFee(data, residentCode, j);
+                    const totalFee = fee + data.niprTransactionFee;
+                    rows.push(Object.assign(base, {
+                        stateFee: fee,
+                        feeSource: source,
+                        totalFee,
+                        index: totalFee / (j.seniorPopulation55to80 / 1000),
+                        error: null
+                    }));
+                } catch (err) {
+                    rows.push(Object.assign(base, {
+                        stateFee: null, feeSource: null, totalFee: null,
+                        index: null, error: err.message
+                    }));
+                }
+            });
+
+            /* Rank is the standing by value index, cheapest first. It is
+               deliberately independent of the active sort, so sorting by
+               state name still shows each state's place. */
+            const ranked = rows.filter(r => r.error === null)
+                               .slice()
+                               .sort((a, b) => a.index - b.index);
+            ranked.forEach((r, i) => { r.rank = i + 1; });
+            rows.filter(r => r.error !== null).forEach(r => { r.rank = null; });
+            return rows;
+        }
+
+        /* Tint scale for the value-index column. Alpha only, over the one
+           brand green. Computed across the FULL row set rather than the
+           filtered one, so typing in the filter never re-colours the
+           states left on screen. Log-compressed because the raw spread is
+           heavily skewed — the small-population states run orders of
+           magnitude above the median and would otherwise flatten
+           everything else to one indistinguishable wash. */
+        function lvRampScale(rows) {
+            const vals = rows.filter(r => r.index > 0).map(r => r.index);
+            if (!vals.length) return () => 0;
+            const lo = Math.log(Math.min.apply(null, vals));
+            const hi = Math.log(Math.max.apply(null, vals));
+            const span = hi - lo;
+            return v => {
+                if (!(v > 0)) return 0;
+                const t = span > 0 ? (Math.log(v) - lo) / span : 0;
+                return +(0.04 + 0.26 * (1 - t)).toFixed(3);
+            };
+        }
+
+        /* Records older than 180 days need re-checking; these fees change
+           without notice. Surfaced in the admin portal, not here. */
+        const LICENSING_STALE_DAYS = 180;
+        function lvStaleRecords(data, now) {
+            if (!data) return [];
+            const cutoff = (now || Date.now()) - LICENSING_STALE_DAYS * 864e5;
+            return data.jurisdictions
+                .filter(j => {
+                    const t = Date.parse(j.lastVerified);
+                    return !isFinite(t) || t < cutoff;
+                })
+                .map(j => ({ code: j.code, name: j.name, lastVerified: j.lastVerified }));
+        }
+
+        /* Loads and shape-checks the fee file. nginx answers an unknown
+           path with index.html, so a 200 here is not proof of JSON —
+           validate before trusting it. */
+        function useLicensingFees(active, nonce) {
+            const [state, setState] = useState({ data: null, loading: false, error: null });
+            useEffect(() => {
+                if (!active || state.data || state.loading) return;
+                let cancelled = false;
+                setState({ data: null, loading: true, error: null });
+                fetch(LICENSING_DATA_URL, { headers: { 'Accept': 'application/json' } })
+                    .then(res => {
+                        if (!res.ok) throw new Error('The fee table returned HTTP ' + res.status + '.');
+                        return res.text();
+                    })
+                    .then(text => {
+                        let parsed;
+                        try { parsed = JSON.parse(text); }
+                        catch (e) { throw new Error('The fee table did not parse as JSON.'); }
+                        if (!parsed || !Array.isArray(parsed.jurisdictions) || !parsed.jurisdictions.length
+                            || typeof parsed.niprTransactionFee !== 'number' || !parsed.retaliatorySchedules) {
+                            throw new Error('The fee table is missing required fields.');
+                        }
+                        if (!cancelled) setState({ data: parsed, loading: false, error: null });
+                    })
+                    .catch(err => { if (!cancelled) setState({ data: null, loading: false, error: err.message }); });
+                return () => { cancelled = true; };
+            }, [active, nonce]);
+            return state;
+        }
+
+        /* A focusable marker plus a tooltip. The glyph, not the colour,
+           is what says "not confirmed"; the tooltip says why. */
+        const LvNote = ({ label, body, pending = false, below = false }) => (
+            <span className="lv-tipwrap">
+                <button type="button"
+                        className={pending ? 'lv-flag lv-flag-pending num' : 'lv-flag num'}
+                        aria-label={label}>{pending ? '†' : '*'}</button>
+                <span role="tooltip" className={below ? 'lv-tip lv-tip-below' : 'lv-tip'}>{body}</span>
+            </span>
+        );
+
+        const LV_COLUMNS = [
+            { key: 'rank',      label: 'Rank',                  align: 'right', width: '36px'  },
+            { key: 'name',      label: 'State',                 align: 'left',  width: 'auto'  },
+            { key: 'seniorPop', label: 'Ages 55–80 Population', align: 'right', width: '92px' },
+            { key: 'stateFee',  label: 'State Fee',             align: 'right', width: '68px'  },
+            { key: 'niprFee',   label: 'NIPR Fee',              align: 'right', width: '62px'  },
+            { key: 'totalFee',  label: 'Total Fee',             align: 'right', width: '68px'  },
+            { key: 'index',     label: 'Cost per 1,000 Seniors', align: 'right', width: '104px' }
+        ];
+
+        function LicensingValueTool({ data, loading, error, onRetry }) {
+            /* Resident state survives a reload. Read once, lazily, so a
+               blocked localStorage never breaks first paint. */
+            const [residentState, setResidentState] = useState(() => {
+                try {
+                    const saved = window.localStorage.getItem(LICENSING_STORAGE_KEY);
+                    if (saved && /^[A-Z]{2}$/.test(saved)) return saved;
+                } catch (e) { /* private mode, blocked storage — fall through */ }
+                return 'TX';
+            });
+            const [sort, setSort] = useState({ key: 'index', dir: 'asc' });
+            const [filter, setFilter] = useState('');
+
+            useEffect(() => {
+                try { window.localStorage.setItem(LICENSING_STORAGE_KEY, residentState); }
+                catch (e) { /* nothing to do; the page still works */ }
+            }, [residentState]);
+
+            const jurisdictions = data ? data.jurisdictions : [];
+
+            /* If the saved code is not in the file, fall back rather than
+               render an empty grid against a state that does not exist. */
+            const effectiveResident = React.useMemo(() => {
+                if (!jurisdictions.length) return residentState;
+                if (jurisdictions.some(j => j.code === residentState)) return residentState;
+                return jurisdictions[0].code;
+            }, [jurisdictions, residentState]);
+
+            const rows = React.useMemo(
+                () => (data ? lvBuildRows(data, effectiveResident) : []),
+                [data, effectiveResident]
+            );
+            const rampAlpha = React.useMemo(() => lvRampScale(rows), [rows]);
+
+            const residentName = React.useMemo(() => {
+                const j = jurisdictions.find(x => x.code === effectiveResident);
+                return j ? j.name : effectiveResident;
+            }, [jurisdictions, effectiveResident]);
+
+            const visible = React.useMemo(() => {
+                const q = filter.trim().toLowerCase();
+                const out = rows.filter(r =>
+                    !q || r.name.toLowerCase().includes(q) || r.code.toLowerCase().includes(q)
+                );
+                const dir = sort.dir === 'asc' ? 1 : -1;
+                return out.slice().sort((a, b) => {
+                    if (sort.key === 'name') return a.name.localeCompare(b.name) * dir;
+                    /* Unresolvable rows sink to the bottom either way —
+                       they have no number to sort on. */
+                    const av = a[sort.key], bv = b[sort.key];
+                    if (av == null && bv == null) return a.name.localeCompare(b.name);
+                    if (av == null) return 1;
+                    if (bv == null) return -1;
+                    if (av === bv) return a.name.localeCompare(b.name);
+                    return (av - bv) * dir;
+                });
+            }, [rows, filter, sort]);
+
+            const toggleSort = (key) => {
+                setSort(prev => prev.key === key
+                    /* Same column: flip. New column: start ascending,
+                       except the two that read better largest-first. */
+                    ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
+                    : { key, dir: key === 'seniorPop' ? 'desc' : 'asc' });
+            };
+
+            const unresolved = rows.filter(r => r.error !== null);
+            const fallbackCount = rows.filter(r => r.unverified).length;
+
+            /* Two columns of 25 at >=1280px. See the note in the
+               stylesheet: fifty rows in one column cannot fit 1440x900
+               at a legible row height, and the brief rules out both
+               pagination and a scroll region before density. */
+            const half = Math.ceil(visible.length / 2);
+            const halves = [visible.slice(0, half), visible.slice(half)];
+
+            const sortIndicator = (key) => {
+                if (sort.key !== key) return null;
+                return <span className="lv-caret" aria-hidden="true">{sort.dir === 'asc' ? '▲' : '▼'}</span>;
+            };
+            const ariaSort = (key) => (sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none');
+
+            const noteBody = (r) => {
+                const parts = [];
+                if (r.unverified) parts.push('This figure is a fallback, pending confirmation of the state’s retaliatory schedule. Treat it as provisional.');
+                r.notes.forEach(n => parts.push(n));
+                return parts.join(' ');
+            };
+            const noteLabel = (r) => (r.unverified
+                ? r.name + ': fee pending confirmation'
+                : r.name + ': see note');
+
+            const renderHead = () => (
+                <thead>
+                    <tr>
+                        {LV_COLUMNS.map(c => (
+                            <th key={c.key} scope="col"
+                                className={c.align === 'left' ? 'lv-al' : undefined}
+                                style={{ width: c.width }}
+                                aria-sort={ariaSort(c.key)}>
+                                <button type="button"
+                                        onClick={() => toggleSort(c.key)}
+                                        className={sort.key === c.key ? 'lv-sort is-active' : 'lv-sort'}>
+                                    <span className="lv-lbl">{c.label}</span>
+                                    {sortIndicator(c.key)}
+                                    <span className="sr-only">
+                                        {sort.key === c.key
+                                            ? ', sorted ' + (sort.dir === 'asc' ? 'ascending' : 'descending') + ', activate to reverse'
+                                            : ', activate to sort by this column'}
+                                    </span>
+                                </button>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+            );
+
+            const renderRow = (r, rowIdx) => (
+                <tr key={r.code}>
+                    <td className="lv-rank num">{r.rank == null ? '—' : r.rank}</td>
+                    <td className="lv-al">
+                        <span className="lv-name">{r.name}</span>
+                        {(r.unverified || r.notes.length > 0) && (
+                            <LvNote label={noteLabel(r)} body={noteBody(r)}
+                                    pending={r.unverified} below={rowIdx < 3} />
+                        )}
+                    </td>
+                    <td className="num lv-dim">{lvInt.format(r.seniorPop)}</td>
+                    <td className="num">{r.stateFee == null ? '—' : lvMoney.format(r.stateFee)}</td>
+                    <td className="num lv-dim">{lvMoney.format(r.niprFee)}</td>
+                    <td className="num">
+                        {r.totalFee == null ? '—' : lvMoney.format(r.totalFee)}
+                        {r.upperBound && <span className="sr-only"> (upper bound; this state prorates)</span>}
+                    </td>
+                    <td className="num lv-index"
+                        style={r.index == null ? undefined : { backgroundColor: 'rgb(var(--lv-ramp) / ' + rampAlpha(r.index) + ')' }}
+                        title={r.error || undefined}>
+                        {r.index == null ? 'Unavailable' : lvIndexFmt.format(r.index)}
+                    </td>
+                </tr>
+            );
+
+            /* ---- Mobile: state, value index and total lead; the rest is
+                   secondary. Normal scrolling below the tablet break. ---- */
+            const renderCard = (r) => (
+                <div className="lv-card" key={r.code}>
+                    <div className="flex items-baseline justify-between gap-3">
+                        <div className="flex items-baseline gap-2 min-w-0">
+                            <span className="num text-[11px] text-muted">{r.rank == null ? '—' : '#' + r.rank}</span>
+                            <span className="text-[15px] font-semibold text-ink truncate">{r.name}</span>
+                            {(r.unverified || r.notes.length > 0) && (
+                                <span className={r.unverified ? 'lv-flag lv-flag-pending num' : 'lv-flag num'}
+                                      aria-hidden="true">{r.unverified ? '†' : '*'}</span>
+                            )}
+                        </div>
+                        <span className="num text-[15px] font-bold text-ink shrink-0"
+                              style={r.index == null ? undefined : { backgroundColor: 'rgb(var(--lv-ramp) / ' + rampAlpha(r.index) + ')', borderRadius: '6px', padding: '1px 6px' }}>
+                            {r.index == null ? 'Unavailable' : lvIndexFmt.format(r.index)}
+                        </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted">Cost per 1,000 seniors</p>
+                    <dl className="mt-2.5 pt-2.5 border-t border-line grid grid-cols-3 gap-2 text-[11px]">
+                        <div>
+                            <dt className="text-muted">Total fee</dt>
+                            <dd className="num mt-0.5 font-semibold text-ink">{r.totalFee == null ? '—' : lvMoney.format(r.totalFee)}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-muted">State / NIPR</dt>
+                            <dd className="num mt-0.5 text-ink">
+                                {r.stateFee == null ? '—' : lvMoney.format(r.stateFee)} + {lvMoney.format(r.niprFee)}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt className="text-muted">Ages 55&#8211;80</dt>
+                            <dd className="num mt-0.5 text-ink">{lvInt.format(r.seniorPop)}</dd>
+                        </div>
+                    </dl>
+                    {(r.unverified || r.notes.length > 0) && (
+                        <p className="mt-2.5 pt-2.5 border-t border-line text-[11px] leading-[1.45] text-muted">
+                            <span className={r.unverified ? 'lv-flag lv-flag-pending num' : 'lv-flag num'}
+                                  aria-hidden="true">{r.unverified ? '†' : '*'}</span>{' '}
+                            {noteBody(r)}
+                        </p>
+                    )}
+                </div>
+            );
+
+            const selector = (
+                <div className="flex items-center gap-2.5">
+                    <label htmlFor="lv-resident" className="text-[13px] font-semibold text-ink whitespace-nowrap">
+                        Your resident state
+                    </label>
+                    <div className="relative">
+                        <select id="lv-resident"
+                                className="lv-select"
+                                value={effectiveResident}
+                                disabled={!jurisdictions.length}
+                                onChange={e => setResidentState(e.target.value)}>
+                            {jurisdictions.map(j => (
+                                <option key={j.code} value={j.code}>{j.name}</option>
+                            ))}
+                        </select>
+                        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-[15px] h-[15px] text-muted"
+                             viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                </div>
+            );
+
+            if (loading || (!data && !error)) {
+                return (
+                    <div className="lv-page px-5 sm:px-6 py-16">
+                        <div className="max-w-[1360px] mx-auto text-center">
+                            <p className="t-body" role="status">Loading the current fee table&hellip;</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div className="lv-page px-5 sm:px-6 py-16">
+                        <div className="max-w-[640px] mx-auto card shadow-card p-8 text-center">
+                            <h1 className="t-h3">The fee table could not be loaded</h1>
+                            <p className="t-body mt-3">
+                                This tool will not show estimated licensing fees, so there is nothing to
+                                display until the published table is available. {error}
+                            </p>
+                            <button type="button" onClick={onRetry} className="btn-secondary mt-6">Try again</button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="lv-page bg-white text-ink">
+                    <div className="lv-shell relative max-w-[1360px] mx-auto px-5 sm:px-6 pt-5 pb-4 flex flex-col">
+
+                        {/* ---- 1. HEADER STRIP ---- */}
+                        <div className="lv-sticky-select shrink-0">{selector}</div>
+                        <div className="shrink-0 mt-3 md:mt-4 xl:mt-0">
+                            <h1 className="t-h3">State Licensing Value</h1>
+                            <p className="t-body mt-1.5 max-w-[64rem] xl:max-w-[59rem] text-[13.5px] leading-[1.5]">
+                                This tool ranks every jurisdiction by what a non-resident producer
+                                licence costs against the number of residents aged 55 to 80 it puts
+                                within reach. Because most states charge a retaliatory fee matched to
+                                your home state, the same licence costs different amounts for
+                                different agents; select your resident state to see your own figures.
+                            </p>
+                        </div>
+
+                        {/* ---- 2. CONTROLS ROW ---- */}
+                        <div className="shrink-0 mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2">
+                            <div className="relative">
+                                <label htmlFor="lv-filter" className="sr-only">Filter by state name</label>
+                                <input id="lv-filter" type="search" className="lv-filter"
+                                       placeholder="Filter by state name"
+                                       value={filter}
+                                       onChange={e => setFilter(e.target.value)} />
+                                <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-[13px] h-[13px] text-muted"
+                                     viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2.2" />
+                                    <path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                                </svg>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 text-[11px] text-muted">
+                                <span className="font-medium text-ink">Sort</span>
+                                {LV_COLUMNS.filter(c => c.key !== 'niprFee').map(c => (
+                                    <button key={c.key} type="button" onClick={() => toggleSort(c.key)}
+                                            aria-pressed={sort.key === c.key}
+                                            className={sort.key === c.key
+                                                ? 'px-2 py-1 rounded-md border border-brandgreen bg-mint text-deepgreen font-semibold transition-colors'
+                                                : 'px-2 py-1 rounded-md border border-line hover:border-[#D3D8DE] hover:text-ink transition-colors'}>
+                                        {c.key === 'seniorPop' ? 'Population' : c.key === 'index' ? 'Value' : c.label}
+                                        {sort.key === c.key && (
+                                            <span className="lv-caret ml-1" aria-hidden="true">{sort.dir === 'asc' ? '▲' : '▼'}</span>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <p className="lv-legend flex items-center gap-1.5 xl:ml-auto" aria-hidden="true">
+                                <span>Better value</span>
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.30)' }} />
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.19)' }} />
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.10)' }} />
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.04)' }} />
+                                <span>Worse</span>
+                            </p>
+                        </div>
+
+                        <p className="shrink-0 mt-2 text-[11px] leading-[1.45] text-muted">
+                            Showing {visible.length} of {rows.length} jurisdictions, excluding your resident
+                            state of {residentName}.
+                            {fallbackCount > 0 && (
+                                <span> A dagger (<span className="lv-flag lv-flag-pending num" aria-hidden="true">†</span>) marks {fallbackCount} rows whose fee is a fallback pending confirmation; an asterisk (<span className="lv-flag num" aria-hidden="true">*</span>) marks a row carrying a caveat worth reading.</span>
+                            )}
+                            {' '}State fees change without notice, and NIPR&rsquo;s application screen is the
+                            authoritative amount at checkout.
+                        </p>
+
+                        {unresolved.length > 0 && (
+                            <p className="shrink-0 mt-2 text-[11px] font-medium text-deepgreen" role="alert">
+                                {unresolved.length} jurisdiction{unresolved.length === 1 ? '' : 's'} could not be
+                                resolved from the published data and are shown without a figure:{' '}
+                                {unresolved.map(r => r.code).join(', ')}.
+                            </p>
+                        )}
+
+                        {/* ---- 3. DATA GRID ---- */}
+                        {visible.length === 0 ? (
+                            <p className="mt-6 text-[13px] text-muted" role="status">
+                                No state matches &ldquo;{filter}&rdquo;.
+                            </p>
+                        ) : (
+                            <React.Fragment>
+                                {/* Desktop (>=1280px): two columns of 25, the whole list
+                                    inside one 900px-tall viewport. */}
+                                <div className="lv-grids hidden xl:grid mt-2.5 grid-cols-2 gap-x-7 items-start">
+                                    {halves.map((chunk, i) => (
+                                        chunk.length === 0 ? null : (
+                                            <table className="lv-table" key={i}>
+                                                <caption>
+                                                    Licensing cost by jurisdiction for an agent resident in {residentName};
+                                                    {i === 0 ? ' ranks 1 and up' : ' continued'}.
+                                                </caption>
+                                                {renderHead()}
+                                                <tbody>{chunk.map((r, idx) => renderRow(r, idx))}</tbody>
+                                            </table>
+                                        )
+                                    ))}
+                                </div>
+
+                                {/* Tablet: one table, page scrolls normally. */}
+                                <div className="hidden md:block xl:hidden mt-2.5">
+                                    <table className="lv-table">
+                                        <caption>
+                                            Licensing cost by jurisdiction for an agent resident in {residentName}.
+                                        </caption>
+                                        {renderHead()}
+                                        <tbody>{visible.map((r, idx) => renderRow(r, idx))}</tbody>
+                                    </table>
+                                </div>
+
+                                {/* Mobile: stacked cards. */}
+                                <div className="md:hidden mt-3">
+                                    {visible.map(renderCard)}
+                                </div>
+                            </React.Fragment>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
         function NetEnrollApp() {
             // Navigation States
             const [currentTab, setCurrentTab] = useState('marketing');
@@ -396,19 +1126,68 @@
             // The public marketing site is light mode. The authenticated portals
             // keep their existing dark surface, so chrome shared between them
             // switches on this one flag rather than being duplicated.
-            const isPublic = currentTab === 'marketing';
+            // Both public routes wear the light chrome; the portals keep the
+            // dark one. isMarketing stays separate for the things that belong
+            // to the landing page alone, such as the sticky phone CTA.
+            const isPublic = currentTab === 'marketing' || currentTab === 'licensing';
+            const isMarketing = currentTab === 'marketing';
+
+            /* ---- Real URLs for the two public routes ----
+               nginx already answers an unknown path with index.html, so a path
+               route needs no server change: read the path on mount, push it on
+               navigation, and keep the document title in step. */
+            const routeForPath = (p) =>
+                (p === LICENSING_ROUTE || p === LICENSING_ROUTE + '/') ? 'licensing' : 'marketing';
+
+            useEffect(() => {
+                setCurrentTab(routeForPath(window.location.pathname));
+                const onPop = () => setCurrentTab(routeForPath(window.location.pathname));
+                window.addEventListener('popstate', onPop);
+                return () => window.removeEventListener('popstate', onPop);
+            }, []);
+
+            const navigateTo = (tab) => {
+                const path = tab === 'licensing' ? LICENSING_ROUTE : '/';
+                if (window.location.pathname !== path) window.history.pushState({}, '', path);
+                setCurrentTab(tab);
+                setMobileNavOpen(false);
+                window.scrollTo({ top: 0 });
+            };
+
+            // Title, description and canonical follow the route, so a shared
+            // link and a crawler both see the pair that matches the page.
+            useEffect(() => {
+                if (currentTab !== 'marketing' && currentTab !== 'licensing') return;
+                const meta = document.querySelector('meta[name="description"]');
+                const canonical = document.querySelector('link[rel="canonical"]');
+                const next = currentTab === 'licensing' ? LICENSING_META : HOME_META;
+                document.title = next.title;
+                if (meta) meta.setAttribute('content', next.description);
+                if (canonical) canonical.setAttribute('href', 'https://netenroll.com' + (currentTab === 'licensing' ? LICENSING_ROUTE : '/'));
+            }, [currentTab]);
+
+            // The fee table is fetched only when the tool is actually open.
+            const [feeNonce, setFeeNonce] = useState(0);
+            const licensingFees = useLicensingFees(
+                currentTab === 'licensing' || currentTab === 'admin', feeNonce);
+
+            // These fees change without notice, so anything unverified for
+            // more than 180 days is called out rather than trusted quietly.
+            const staleFeeRecords = React.useMemo(
+                () => lvStaleRecords(licensingFees.data, Date.now()),
+                [licensingFees.data]);
 
             // The sticky phone CTA sat directly under the hero's own button on
             // first paint, which read as a duplicate. Reveal it once the hero
             // button is gone.
             const [showStickyCta, setShowStickyCta] = useState(false);
             useEffect(() => {
-                if (!isPublic) { setShowStickyCta(false); return; }
+                if (!isMarketing) { setShowStickyCta(false); return; }
                 const onScroll = () => setShowStickyCta(window.scrollY > 620);
                 onScroll();
                 window.addEventListener('scroll', onScroll, { passive: true });
                 return () => window.removeEventListener('scroll', onScroll);
-            }, [isPublic]);
+            }, [isMarketing]);
 
             // Dynamic Database Products Registry
             const [dbProducts, setDbProducts] = useState(INITIAL_DB_PRODUCTS);
@@ -526,7 +1305,7 @@
 
             const scrollToSection = (id) => {
                 if (currentTab !== 'marketing') {
-                    setCurrentTab('marketing');
+                    navigateTo('marketing');
                     setTimeout(() => {
                         const el = document.getElementById(id);
                         if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -859,6 +1638,9 @@
                                     <button onClick={() => scrollToSection('how-it-works')} className="hover:text-ink transition-colors">How It Works</button>
                                     <button onClick={() => scrollToSection('pricing')} className="hover:text-ink transition-colors">Pricing</button>
                                     <button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">FAQ</button>
+                                    <button onClick={() => navigateTo('licensing')}
+                                            aria-current={currentTab === 'licensing' ? 'page' : undefined}
+                                            className={currentTab === 'licensing' ? "text-ink transition-colors" : "hover:text-ink transition-colors"}>Licensing Value</button>
                                 </nav>
                             )}
 
@@ -912,6 +1694,11 @@
                                             <button key={id} onClick={() => { scrollToSection(id); setMobileNavOpen(false); }}
                                                     className="text-left py-2.5 hover:text-ink transition-colors">{label}</button>
                                         ))}
+                                        <button onClick={() => navigateTo('licensing')}
+                                                aria-current={currentTab === 'licensing' ? 'page' : undefined}
+                                                className={currentTab === 'licensing'
+                                                    ? "text-left py-2.5 text-ink transition-colors"
+                                                    : "text-left py-2.5 hover:text-ink transition-colors"}>Licensing Value</button>
                                     </nav>
                                 )}
                                 <div className="mt-4 pt-4 border-t border-line flex flex-col gap-2.5">
@@ -1758,6 +2545,14 @@
                             </div>
                         )}
 
+                        {/* 2b. STATE LICENSING VALUE TOOL — /licensing-value */}
+                        {currentTab === 'licensing' && (
+                            <LicensingValueTool data={licensingFees.data}
+                                                loading={licensingFees.loading}
+                                                error={licensingFees.error}
+                                                onRetry={() => setFeeNonce(n => n + 1)} />
+                        )}
+
                         {/* 3. AUTHENTICATED AGENT DASHBOARD */}
                         {currentTab === 'dashboard' && (
                             <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
@@ -2291,6 +3086,40 @@
 
                                 {adminSubTab === 'overview' && (
                                     <div className="space-y-8">
+
+                                        {/* Licensing fee table freshness. The public tool
+                                            shows these figures; this is where anyone finds
+                                            out they have gone stale. */}
+                                        {licensingFees.data && (
+                                            <div className={staleFeeRecords.length > 0
+                                                ? "bg-slate-900 border border-amber-500/40 p-5 rounded-2xl"
+                                                : "bg-slate-900 border border-slate-800 p-5 rounded-2xl"}>
+                                                <div className="flex items-start justify-between gap-4 flex-wrap">
+                                                    <div>
+                                                        <div className="text-xs text-slate-400 font-medium">Licensing Fee Table</div>
+                                                        <div className={staleFeeRecords.length > 0
+                                                            ? "text-lg font-bold text-amber-400 mt-1"
+                                                            : "text-lg font-bold text-emerald-400 mt-1"}>
+                                                            {staleFeeRecords.length > 0
+                                                                ? staleFeeRecords.length + ' of ' + licensingFees.data.jurisdictions.length + ' records need re-verification'
+                                                                : 'All ' + licensingFees.data.jurisdictions.length + ' records verified within ' + LICENSING_STALE_DAYS + ' days'}
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-[10px] text-slate-500 font-mono text-right">
+                                                        <div>schema v{licensingFees.data.schemaVersion}</div>
+                                                        <div>table dated {licensingFees.data.lastVerified}</div>
+                                                    </div>
+                                                </div>
+                                                {staleFeeRecords.length > 0 && (
+                                                    <ul className="mt-3 pt-3 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 text-[11px] font-mono text-slate-400">
+                                                        {staleFeeRecords.map(s => (
+                                                            <li key={s.code}>{s.code} &middot; {s.lastVerified || 'no date'}</li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        )}
+
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
                                                 <div className="text-xs text-slate-400 font-medium">Registered Agents</div>
@@ -2612,7 +3441,7 @@
 
                     {/* Mobile sticky CTA. Most traffic arrives from SMS on a phone,
                         so the primary action stays reachable without scrolling back. */}
-                    {isPublic && showStickyCta && (
+                    {isMarketing && showStickyCta && (
                         <div className="mobile-cta">
                             <button onClick={startSignup} className="btn-primary w-full">
                                 Start Receiving Calls
@@ -2622,7 +3451,9 @@
 
                     {/* FOOTER */}
                     {isPublic ? (
-                        <footer className="border-t border-line bg-white">
+                        <footer className={currentTab === 'licensing'
+                            ? "border-t border-line bg-white xl:hidden"
+                            : "border-t border-line bg-white"}>
                             <div className="max-w-[1180px] mx-auto px-5 sm:px-6 py-14">
                                 <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
                                     <div>

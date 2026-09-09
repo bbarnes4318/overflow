@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Published to the web root beside index.html by deploy.sh.
+
+  Both entries resolve to the same file: nginx answers an unknown path with
+  /index.html, and the app reads window.location.pathname to decide which of
+  the two public routes to render.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://netenroll.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://netenroll.com/licensing-value</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
