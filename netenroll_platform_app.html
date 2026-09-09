@@ -267,6 +267,13 @@
            on top of it — colour is never the only carrier of meaning. */
         .lv-index { font-weight: 650; letter-spacing: -0.02em; }
 
+        /* Every figure is somebody else's published number, and the row says
+           so: the state name is a link to the schedule it came from. Styled to
+           sit quiet at rest so 50 of them do not read as a wall of links. */
+        .lv-src { color: inherit; text-decoration: none; }
+        .lv-src:hover { text-decoration: underline; text-underline-offset: 2px; color: #087F5B; }
+        .lv-src:focus-visible { outline: 2px solid #087F5B; outline-offset: 1px; border-radius: 3px; }
+
         .lv-legend { font-size: 11px; color: #667085; }
         .lv-swatch {
             display: inline-block; width: 14px; height: 9px;
@@ -281,7 +288,6 @@
             cursor: help; border: 0; background: none; padding: 0 0 0 3px;
             vertical-align: 1px;
         }
-        .lv-flag-pending { color: #087F5B; font-weight: 700; }   /* deepgreen */
         .lv-flag:focus-visible { outline: 2px solid #087F5B; outline-offset: 1px; border-radius: 3px; }
 
         /* ---- Tooltip ---- */
@@ -513,6 +519,11 @@
         // this application does not have one, so it is not here.
         const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/cNifZg3677ZI12fdkR63K1i';
 
+        // Sign-in lives entirely in the agency portal. This site never collects
+        // a credential and holds no session, so every sign-in affordance is a
+        // plain link out to that host - same tab, since it is the same company.
+        const PORTAL_URL = 'https://agents.netenroll.com';
+
 
         const CheckMark = ({ className = '' }) => (
             <svg className={`w-[18px] h-[18px] mt-[3px] shrink-0 text-brandgreen ${className}`} viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -635,7 +646,6 @@
                     name: j.name,
                     seniorPop: j.seniorPopulation55to80,
                     niprFee: data.niprTransactionFee,
-                    unverified: !!j.feeIsFallback,
                     upperBound: !!j.prorated,
                     perLoa: !!j.perLineOfAuthority,
                     sourceUrl: j.sourceUrl,
@@ -737,11 +747,9 @@
 
         /* A focusable marker plus a tooltip. The glyph, not the colour,
            is what says "not confirmed"; the tooltip says why. */
-        const LvNote = ({ label, body, pending = false, below = false }) => (
+        const LvNote = ({ label, body, below = false }) => (
             <span className="lv-tipwrap">
-                <button type="button"
-                        className={pending ? 'lv-flag lv-flag-pending num' : 'lv-flag num'}
-                        aria-label={label}>{pending ? '†' : '*'}</button>
+                <button type="button" className="lv-flag num" aria-label={label}>*</button>
                 <span role="tooltip" className={below ? 'lv-tip lv-tip-below' : 'lv-tip'}>{body}</span>
             </span>
         );
@@ -823,7 +831,8 @@
             };
 
             const unresolved = rows.filter(r => r.error !== null);
-            const fallbackCount = rows.filter(r => r.unverified).length;
+            const notedCount = rows.filter(r => r.notes.length > 0).length;
+            const dataVerified = data ? data.lastVerified : '';
 
             /* Two columns of 25 at >=1280px. See the note in the
                stylesheet: fifty rows in one column cannot fit 1440x900
@@ -838,15 +847,14 @@
             };
             const ariaSort = (key) => (sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none');
 
-            const noteBody = (r) => {
-                const parts = [];
-                if (r.unverified) parts.push('This figure is a fallback, pending confirmation of the state’s retaliatory schedule. Treat it as provisional.');
-                r.notes.forEach(n => parts.push(n));
-                return parts.join(' ');
-            };
-            const noteLabel = (r) => (r.unverified
-                ? r.name + ': fee pending confirmation'
-                : r.name + ': see note');
+            const noteBody = (r) => r.notes.join(' ');
+            const noteLabel = (r) => r.name + ': see note';
+
+            // Provenance, per row. Every figure traces to a published NIPR or
+            // state schedule; none of it is ours, and the page should not read
+            // as though it were.
+            const sourceLabel = (r) => 'Published fee schedule for ' + r.name
+                + ' (verified ' + r.lastVerified + '), opens in a new tab';
 
             const renderHead = () => (
                 <thead>
@@ -877,10 +885,11 @@
                 <tr key={r.code}>
                     <td className="lv-rank num">{r.rank == null ? '—' : r.rank}</td>
                     <td className="lv-al">
-                        <span className="lv-name">{r.name}</span>
-                        {(r.unverified || r.notes.length > 0) && (
-                            <LvNote label={noteLabel(r)} body={noteBody(r)}
-                                    pending={r.unverified} below={rowIdx < 3} />
+                        <a className="lv-name lv-src" href={r.sourceUrl}
+                           target="_blank" rel="noopener noreferrer"
+                           title={sourceLabel(r)} aria-label={r.name + '. ' + sourceLabel(r)}>{r.name}</a>
+                        {r.notes.length > 0 && (
+                            <LvNote label={noteLabel(r)} body={noteBody(r)} below={rowIdx < 3} />
                         )}
                     </td>
                     <td className="num lv-dim">{lvInt.format(r.seniorPop)}</td>
@@ -888,7 +897,7 @@
                     <td className="num lv-dim">{lvMoney.format(r.niprFee)}</td>
                     <td className="num">
                         {r.totalFee == null ? '—' : lvMoney.format(r.totalFee)}
-                        {r.upperBound && <span className="sr-only"> (upper bound; this state prorates)</span>}
+                        {r.upperBound && <span className="sr-only"> (upper bound; the amount charged varies, see the note on this row)</span>}
                     </td>
                     <td className="num lv-index"
                         style={r.index == null ? undefined : { backgroundColor: 'rgb(var(--lv-ramp) / ' + rampAlpha(r.index) + ')' }}
@@ -906,9 +915,8 @@
                         <div className="flex items-baseline gap-2 min-w-0">
                             <span className="num text-[11px] text-muted">{r.rank == null ? '—' : '#' + r.rank}</span>
                             <span className="text-[15px] font-semibold text-ink truncate">{r.name}</span>
-                            {(r.unverified || r.notes.length > 0) && (
-                                <span className={r.unverified ? 'lv-flag lv-flag-pending num' : 'lv-flag num'}
-                                      aria-hidden="true">{r.unverified ? '†' : '*'}</span>
+                            {r.notes.length > 0 && (
+                                <span className="lv-flag num" aria-hidden="true">*</span>
                             )}
                         </div>
                         <span className="num text-[15px] font-bold text-ink shrink-0"
@@ -933,13 +941,17 @@
                             <dd className="num mt-0.5 text-ink">{lvInt.format(r.seniorPop)}</dd>
                         </div>
                     </dl>
-                    {(r.unverified || r.notes.length > 0) && (
-                        <p className="mt-2.5 pt-2.5 border-t border-line text-[11px] leading-[1.45] text-muted">
-                            <span className={r.unverified ? 'lv-flag lv-flag-pending num' : 'lv-flag num'}
-                                  aria-hidden="true">{r.unverified ? '†' : '*'}</span>{' '}
-                            {noteBody(r)}
-                        </p>
-                    )}
+                    <p className="mt-2.5 pt-2.5 border-t border-line text-[11px] leading-[1.45] text-muted">
+                        {r.notes.length > 0 && (
+                            <React.Fragment>
+                                <span className="lv-flag num" aria-hidden="true">*</span>{' '}
+                                {noteBody(r)}{' '}
+                            </React.Fragment>
+                        )}
+                        <a className="lv-src" href={r.sourceUrl} target="_blank" rel="noopener noreferrer"
+                           aria-label={sourceLabel(r)}>Published fee schedule</a>
+                        {' '}&middot; verified {r.lastVerified}
+                    </p>
                 </div>
             );
 
@@ -1052,17 +1064,18 @@
                         <p className="shrink-0 mt-2 text-[11px] leading-[1.45] text-muted">
                             Showing {visible.length} of {rows.length} jurisdictions, excluding your resident
                             state of {residentName}.
-                            {fallbackCount > 0 && (
-                                <span> A dagger (<span className="lv-flag lv-flag-pending num" aria-hidden="true">†</span>) marks {fallbackCount} rows whose fee is a fallback pending confirmation; an asterisk (<span className="lv-flag num" aria-hidden="true">*</span>) marks a row carrying a caveat worth reading.</span>
+                            {notedCount > 0 && (
+                                <span> An asterisk (<span className="lv-flag num" aria-hidden="true">*</span>) marks {notedCount} rows carrying a caveat worth reading.</span>
                             )}
-                            {' '}State fees change without notice, and NIPR&rsquo;s application screen is the
-                            authoritative amount at checkout.
+                            {' '}Each state name links to the published fee schedule it was read from,
+                            verified {dataVerified}. State fees change without notice, and NIPR&rsquo;s
+                            application screen is the authoritative amount at checkout.
                         </p>
 
                         {unresolved.length > 0 && (
                             <p className="shrink-0 mt-2 text-[11px] font-medium text-deepgreen" role="alert">
-                                {unresolved.length} jurisdiction{unresolved.length === 1 ? '' : 's'} could not be
-                                resolved from the published data and are shown without a figure:{' '}
+                                {unresolved.length} jurisdiction{unresolved.length === 1 ? ' could not be' : 's could not be'} resolved
+                                from the published data and {unresolved.length === 1 ? 'is' : 'are'} shown without a figure:{' '}
                                 {unresolved.map(r => r.code).join(', ')}.
                             </p>
                         )}
@@ -1645,12 +1658,17 @@
                             )}
 
                             <div className="hidden lg:flex items-center gap-2.5 shrink-0">
-                                <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); }}
-                                        className={isPublic
-                                            ? "text-[14px] font-medium text-muted hover:text-ink transition-colors px-3 py-2"
-                                            : "text-[13px] font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2"}>
-                                    {isPublic ? 'Sign In' : 'Agent Portal'}
-                                </button>
+                                {isPublic ? (
+                                    <a href={PORTAL_URL}
+                                       className="text-[14px] font-medium text-muted hover:text-ink transition-colors px-3 py-2">
+                                        Sign In
+                                    </a>
+                                ) : (
+                                    <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); }}
+                                            className="text-[13px] font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2">
+                                        Agent Portal
+                                    </button>
+                                )}
                                 {!isPublic && (
                                     <button onClick={() => { setCurrentUserRole('ADMIN'); setCurrentTab('admin'); }}
                                             className="text-[13px] font-semibold text-slate-400 hover:text-slate-200 transition-colors px-3 py-2">
@@ -1702,10 +1720,17 @@
                                     </nav>
                                 )}
                                 <div className="mt-4 pt-4 border-t border-line flex flex-col gap-2.5">
-                                    <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); setMobileNavOpen(false); }}
-                                            className="btn-secondary w-full">
-                                        {isPublic ? 'Sign In' : 'Agent Portal'}
-                                    </button>
+                                    {isPublic ? (
+                                        <a href={PORTAL_URL} onClick={() => setMobileNavOpen(false)}
+                                           className="btn-secondary w-full text-center">
+                                            Sign In
+                                        </a>
+                                    ) : (
+                                        <button onClick={() => { setCurrentUserRole('AGENT'); setCurrentTab('dashboard'); setMobileNavOpen(false); }}
+                                                className="btn-secondary w-full">
+                                            Agent Portal
+                                        </button>
+                                    )}
                                     <button onClick={() => { startSignup(); setMobileNavOpen(false); }} className="btn-primary w-full">
                                         Start Receiving Calls
                                     </button>
