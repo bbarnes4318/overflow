@@ -216,6 +216,15 @@ install -m 0644 "${REMOTE_DIR}/src/data/licensing-fees.json" "${WEB_ROOT}/licens
 echo "--> Published \$(wc -c < "${WEB_ROOT}/${INDEX_NAME}") bytes to ${WEB_ROOT}/${INDEX_NAME}"
 echo "--> Published legal documents: terms.html privacy.html tcpa-compliance.html legal.css"
 
+# Password-gated pages. Each is one static file served at /<name> through the
+# same \$uri.html rule as the legal documents; the gate is inside the file
+# (AES-encrypted body, unlocked in the browser), so nginx needs nothing extra.
+# Rebuild after editing the .src.html - see tools/gate-page.mjs.
+for gated in cpa-model.html; do
+  install -m 0644 "${REMOTE_DIR}/protected/\${gated}" "${WEB_ROOT}/\${gated}"
+done
+echo "--> Published gated pages: cpa-model.html"
+
 # 2a. The static site's own vhost. Written once, then left alone so certbot's
 # in-place TLS rewrite is not undone by the next deploy.
 if [ "${WEB_SERVICE}" = "nginx" ]; then

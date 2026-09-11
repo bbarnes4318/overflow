@@ -619,7 +619,7 @@
         };
 
         const LICENSING_META = {
-            title: 'State Licensing Value | Cost per 1,000 Seniors | NetEnroll',
+            title: 'Top Growth States: License Cost vs. Target Density | NetEnroll',
             description: 'Compare non-resident insurance licensing cost against the ages 55-80 population of every state. State fee, NIPR fee and cost per 1,000 seniors, ranked for your resident state.'
         };
 
@@ -658,7 +658,7 @@
 
         /* Build every row for one resident state. The resident state is
            excluded outright — an agent does not buy a non-resident
-           licence at home. */
+           license at home. */
         function lvBuildRows(data, residentCode) {
             const rows = [];
             data.jurisdictions.forEach(j => {
@@ -856,9 +856,6 @@
             const unresolved = rows.filter(r => r.error !== null);
             const notedCount = rows.filter(r => r.notes.length > 0).length;
             const dataVerified = data ? data.lastVerified : '';
-            // 46 of 51 are flat. The previous copy claimed the opposite.
-            const retaliatoryCount = data ? data.jurisdictions.filter(j => data.retaliatorySchedules[j.code]).length : 0;
-            const flatCount = jurisdictions.length - retaliatoryCount;
 
             /* Two columns of 25 at >=1280px. See the note in the
                stylesheet: fifty rows in one column cannot fit 1440x900
@@ -1038,7 +1035,7 @@
                              the whole point of the page; parked in the far corner it read as
                              decoration and people missed it. ---- */}
                         <div className="lv-head shrink-0">
-                            <h1 className="lv-title">State Licensing Value</h1>
+                            <h1 className="lv-title">Top Growth States: License Cost vs. Target Density</h1>
                             <div className="lv-sticky-select">{selector}</div>
                             <div className="lv-search">
                                 <label htmlFor="lv-filter" className="sr-only">Filter by state name</label>
@@ -1062,12 +1059,8 @@
                             </p>
                         </div>
 
-                        {/* Counts come from the data, so this sentence cannot drift out of
-                            step with the file the way the last one did. */}
                         <p className="lv-sub shrink-0">
-                            What a non-resident producer licence costs against the population aged 55
-                            to 80 it reaches. {retaliatoryCount} jurisdictions set their fee from your
-                            resident state; the other {flatCount} charge everyone the same.
+                            Identify high-yield states based on non-resident fees per 1k senior prospects.
                         </p>
 
                         <p className="lv-fine shrink-0">
@@ -1661,7 +1654,7 @@
                                     <button onClick={() => scrollToSection('faq')} className="hover:text-ink transition-colors">FAQ</button>
                                     <button onClick={() => navigateTo('licensing')}
                                             aria-current={currentTab === 'licensing' ? 'page' : undefined}
-                                            className={currentTab === 'licensing' ? "text-ink transition-colors" : "hover:text-ink transition-colors"}>Licensing Value</button>
+                                            className={currentTab === 'licensing' ? "text-ink transition-colors" : "hover:text-ink transition-colors"}>State License ROI</button>
                                 </nav>
                             )}
 
@@ -1724,7 +1717,7 @@
                                                 aria-current={currentTab === 'licensing' ? 'page' : undefined}
                                                 className={currentTab === 'licensing'
                                                     ? "text-left py-2.5 text-ink transition-colors"
-                                                    : "text-left py-2.5 hover:text-ink transition-colors"}>Licensing Value</button>
+                                                    : "text-left py-2.5 hover:text-ink transition-colors"}>State License ROI</button>
                                     </nav>
                                 )}
                                 <div className="mt-4 pt-4 border-t border-line flex flex-col gap-2.5">

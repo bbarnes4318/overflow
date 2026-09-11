@@ -16,7 +16,10 @@ const MAP = {
   '/sitemap.xml': { file: 'sitemap.xml', type: 'application/xml; charset=utf-8' },
   '/robots.txt': { file: 'robots.txt', type: 'text/plain; charset=utf-8' },
   '/netenroll-logo.png': { file: 'netenroll-logo.png', type: 'image/png' },
-  '/netenroll-logo-dark.png': { file: 'netenroll-logo-dark.png', type: 'image/png' }
+  '/netenroll-logo-dark.png': { file: 'netenroll-logo-dark.png', type: 'image/png' },
+  // Password-gated page: nginx serves the encrypted file at /cpa-model via $uri.html.
+  '/cpa-model': { file: 'protected/cpa-model.html', type: 'text/html; charset=utf-8' },
+  '/cpa-model.html': { file: 'protected/cpa-model.html', type: 'text/html; charset=utf-8' }
 };
 
 http.createServer((req, res) => {
