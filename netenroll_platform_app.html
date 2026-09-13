@@ -1013,12 +1013,12 @@
                                 obvious without reading a table. */}
                             <Reveal className="w-full max-w-[380px] mx-auto lg:mx-0 lg:justify-self-end">
                                 <div className="card shadow-lift px-6 sm:px-7 py-7">
-                                    <p className="text-[12px] font-semibold tracking-[0.13em] text-muted">WHAT ONE HIRE COSTS</p>
+                                    <p className="text-[12px] font-semibold tracking-[0.13em] text-muted">COST PER SIGNED PRODUCER</p>
                                     <div className="mt-6 space-y-5">
                                         {[
-                                            { label: 'Traditional headhunters', amount: '$10,000 to $25,000 per signed agent', pct: 100, ours: false },
-                                            { label: 'Job board ads (plus manual screening time)', amount: '$5,000 to $10,000 per active agent', pct: 40, ours: false },
-                                            { label: 'NetEnroll campaign', amount: '$450 to $500 per signed agent', pct: 4, ours: true }
+                                            { label: 'Traditional headhunters', amount: '$10,000 to $25,000', pct: 100, ours: false },
+                                            { label: 'Job board ads', amount: '$5,000 to $10,000', pct: 40, ours: false },
+                                            { label: 'NetEnroll campaign', amount: '$450 to $500', pct: 4, ours: true }
                                         ].map(b => (
                                             <div key={b.label}>
                                                 <div className="flex items-baseline justify-between gap-3">
@@ -1074,8 +1074,8 @@
 
                                 <ul className="space-y-4 lg:pt-2">
                                     {[
-                                        ['Success-Based Delivery', 'We source, screen, and schedule interviews until every contracted seat on your roster is filled with a signed agent.'],
-                                        ['30-Day Retention Guarantee', 'If a hired agent departs within 30 days for any reason, we replace them immediately at $0 additional cost.']
+                                        ['Performance-Based Delivery', 'We source, screen, and schedule interviews until every contracted seat on your roster is filled with a signed agent.'],
+                                        ['30-Day Replacement Guarantee', 'If a hired agent departs within 30 days for any reason, we replace them immediately at $0 additional charge.']
                                     ].map(([title, body]) => (
                                         <li key={title} className="flex items-start gap-3 text-[16px] leading-relaxed text-muted">
                                             <CheckMark /> <span><strong className="text-ink">{title}:</strong> {body}</span>
@@ -1115,8 +1115,7 @@
                                     ['License & NPN Validation', 'Verified active resident license, health line of authority, and matched NPN profile.'],
                                     ['Non-Resident Footprint', 'Full breakdown of active non-resident licenses across all target states.'],
                                     ['Marketplace Readiness', 'Verified FFM / state marketplace registration status for the current plan year.'],
-                                    ['Carrier & Volume History', 'Detailed profile of carrier appointments held and self-reported production history.'],
-                                    ['Pre-Interview Dossier', 'Complete producer profiles delivered in writing prior to every call.']
+                                    ['Carrier & Volume History', 'Detailed profile of carrier appointments held and self-reported production history.']
                                 ].map(([title, body]) => (
                                     <li key={title} className="flex items-start gap-3 text-[16px] leading-relaxed text-ink">
                                         <CheckMark /> <span><strong>{title}:</strong> {body}</span>
@@ -1124,7 +1123,7 @@
                                 ))}
                             </ul>
                             <p className="mt-10 pl-6 border-l-[3px] border-brandgreen text-[19px] sm:text-[22px] font-bold leading-snug tracking-[-0.02em] text-ink max-w-[40rem]">
-                                You get all of it in writing before the conversation, not after it.
+                                Pre-Interview Dossier: Complete producer profiles delivered in writing prior to every call.
                             </p>
                         </div>
                     </section>
@@ -1132,7 +1131,7 @@
                     {/* ---------------- 5. HOW IT RUNS ---------------- */}
                     <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto">
-                            <h2 className="t-h2">Recruiting workflow.</h2>
+                            <h2 className="t-h2">How a Campaign Runs</h2>
                             <ProcessSteps steps={[
                                 { num: '01', title: 'Define your target profile', body: 'Specify your target states, compensation model, required carrier lines, and roster size.' },
                                 { num: '02', title: 'Automated sourcing & vetting', body: 'We engage active health producers, conduct multi-point license checks, and verify marketplace registration.' },
@@ -1191,10 +1190,10 @@
                     <section id="recruiting-form" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-16 items-start">
                             <div className="max-w-[40rem]">
-                                <h2 className="t-h2">Lock in your seasonal roster before open enrollment.</h2>
+                                <h2 className="t-h2">Lock In Your Seasonal Roster Before Open Enrollment.</h2>
                                 <p className="t-lede mt-6">
-                                    Tell us the states, the count and what you're offering. We'll come back with
-                                    the schedule and the price.
+                                    Tell us the states, headcount, and compensation model. We'll return with your
+                                    campaign timeline and pricing.
                                 </p>
                             </div>
 
@@ -1226,7 +1225,7 @@
                                             {field('Agency Name', 'agency_name', text('agency_name', 'text', { autoComplete: 'organization' }))}
                                             {field('Licensed States Needed', 'states', text('states'))}
                                             {field('Target Producer Count', 'agent_count', select('agent_count', ['5 to 9', '10', '11 to 25', 'More than 25']))}
-                                            {field('Commission Split / Compensation Offer', 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
+                                            {field('Compensation / Commission Offer', 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
 
                                             <button type="button" onClick={goToStep2} className="btn-primary btn-lg w-full">
                                                 Continue
@@ -1238,7 +1237,7 @@
                                             {field('Full Name', 'contact_name', text('contact_name', 'text', { autoComplete: 'name' }))}
                                             <div className="grid sm:grid-cols-2 gap-5">
                                                 {field('Direct Email', 'email', text('email', 'email', { autoComplete: 'email' }))}
-                                                {field('Direct Phone Number', 'phone', text('phone', 'tel', { autoComplete: 'tel' }))}
+                                                {field('Direct Phone', 'phone', text('phone', 'tel', { autoComplete: 'tel' }))}
                                             </div>
                                             <div>
                                                 <label htmlFor="rc-notes" className="rc-label">Anything else we should know <span className="font-normal text-muted">(optional)</span></label>
@@ -1256,11 +1255,11 @@
                                                     Back
                                                 </button>
                                                 <button type="submit" disabled={sending} className="btn-primary btn-lg flex-1 disabled:opacity-60">
-                                                    {sending ? 'Sending' : 'Submit Campaign Request'}
+                                                    {sending ? 'Sending' : 'Launch Your Recruiting Campaign'}
                                                 </button>
                                             </div>
                                             <p className="text-[14px] leading-relaxed text-muted">
-                                                Our recruiting team reviews specs and responds within one business day with customized campaign scheduling.
+                                                We reply within one business day. Nothing runs until campaign specifications are fully agreed upon.
                                             </p>
                                         </div>
                                     </form>
