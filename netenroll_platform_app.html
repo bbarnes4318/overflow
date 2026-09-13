@@ -522,39 +522,35 @@
         const FAQS = [
             {
                 q: "How does billing work?",
-                a: "There is no charge for a delivered call. The fee is tied to an eligible submitted application. For the Final Expense program the rate is $199 per submitted application, for Medicare it is $125, and for ACA it is $100. There is no minimum purchase - a single application is a valid order."
+                a: "There's no charge for a delivered call. The fee is tied to a valid submitted application: $199 for final expense, $125 for Medicare, $100 for ACA. There's no minimum purchase, so a single application is a valid order."
             },
             {
                 q: "What counts as a submitted application?",
-                a: "An insurance application you complete and submit for a consumer from a NetEnroll call, recorded against your account with the carrier, policy number and applicant details. Eligibility follows the billing terms of the campaign you are enrolled in."
+                a: "A completed, eligible application submitted for a consumer we sent you. An incomplete file, a consumer who declines to proceed, or a call that ends before an application exists is not a billing event."
             },
             {
-                q: "Do I pay for calls that do not convert?",
-                a: "No. The call is not the billing event. Receiving a call, speaking with the consumer, and a consumer who does not move forward all carry no charge."
+                q: "Do I pay for calls that don't convert?",
+                a: "No. Call volume, call duration, and conversations that go nowhere carry no charge."
             },
             {
                 q: "Is there a minimum to get started?",
-                a: "No. One application is a valid order. There is no block to buy up front and no minimum spend. It is not a subscription and it does not renew on a schedule."
+                a: "No. One application is a valid order, and you can stop there."
             },
             {
                 q: "Are there monthly fees?",
-                a: "No. There is no monthly subscription and no separate charge for account access. What you pay is the per-application fee for the program you are enrolled in, with no minimum purchase."
+                a: "No subscription, no platform fee, no monthly minimum."
             },
             {
                 q: "How are calls routed?",
-                a: "Inbound calls are matched to an available agent who has selected the consumer's state and connected to the phone number on your account. Every call is recorded against your account for tracking."
+                a: "Consumers are matched to agents licensed in their state. Agencies decide how volume is distributed across their producers."
             },
             {
                 q: "Can agencies manage multiple agents?",
-                a: "Yes. An agency can have several producers on the platform, each with their own routing and their own call and application records, reported together at the agency level."
+                a: "Yes. Add your producers, route consumers to them, and see calls, applications and fees broken out by agent."
             },
             {
                 q: "Do I need an insurance license?",
-                a: "NetEnroll does not ask for a producer number and does not verify licensing. You are responsible for holding whatever licenses and authority the law requires for the business you conduct. Calls are routed to the states you select on your account."
-            },
-            {
-                q: "How quickly can I start?",
-                a: "Registration is a short form: whether you are a company or an individual, your contact details, the states you want calls from, the program you want, and a payment method. Once those are complete you can set your status to available and begin taking calls."
+                a: "Yes. NetEnroll works with licensed final expense agents and agencies only."
             }
         ];
 
@@ -830,27 +826,27 @@
 
         const RECRUITING_FAQS = [
             { q: 'Are these agents actually licensed?',
-              a: 'Yes. Every agent is checked against the public state license record for an active health line of authority before they reach you, and we record the National Producer Number. An agent whose license does not hold up never counts toward your campaign.' },
-            { q: 'What if you cannot find my agents?',
-              a: 'We keep recruiting until the count is filled. The campaign is not a set number of weeks and it is not a set number of calls, so there is no point at which we have run out of budget and stop. If a campaign is running slowly it is almost always the states or the compensation, and we will come back to you with what the market is telling us.' },
-            { q: 'What if an agent quits in the first month?',
-              a: 'Tell us and we replace them at no charge. Any agent who is not still with your agency thirty days after signing comes off your count.' },
-            { q: 'Why do I pay before you deliver?',
-              a: 'Because the calling starts before the first agent signs. What protects you is the count and the replacement, not a payment schedule. We owe you a set number of agents and we do not stop until you have them.' },
+              a: "Every agent is checked before they reach you: an active resident license with a health line of authority, non-resident licenses in the states you need, the National Producer Number matched against the license record, and the carrier appointments they already hold. You get it in writing." },
             { q: 'Where do these agents come from?',
-              a: 'We reach licensed health agents directly on our own calling platform. They are working agents, not a recycled list and not a pile another agency already turned down.' },
-            { q: 'What if an agent is not marketplace registered yet?',
-              a: 'We tell you before the conversation. The annual training is short for a returning agent and longer for someone new to the marketplace, and a licensed agent can get through it quickly. Whether you want agents who still have that step ahead of them is your call, and we screen either way.' },
+              a: "They're already selling. Most are between agencies, unhappy with their split, or writing other lines and want marketplace business this season." },
+            { q: "What if an agent isn't marketplace registered yet?",
+              a: 'We confirm registration for the plan year, or the date the agent will complete it, before you talk to them. You decide whether that date works for your season.' },
             { q: 'Can you recruit in specific states only?',
-              a: 'Yes. State coverage is part of the standard we agree before the campaign runs, including non-resident licensing where you need an agent writing in more than one state.' },
+              a: 'Yes. You set the states, including the non-resident licenses you need covered, and we recruit to that list.' },
+            { q: "What if you can't find my agents?",
+              a: "We keep recruiting until your count is filled. The campaign is measured in agents signed to your agency, so it isn't finished until they are." },
+            { q: 'What if an agent quits in the first month?',
+              a: "If they aren't still with you thirty days after signing, tell us. That agent comes off your count and we recruit a replacement at no charge." },
+            { q: 'Why do I pay before you deliver?',
+              a: 'Recruiting starts the day the campaign is funded. The calling, the license checks and the screening all happen before the first agent reaches your phone. The thirty-day replacement is what protects you after they do.' },
             { q: 'How fast does it start?',
-              a: 'Most campaigns start sending agents within a few business days of the standard being agreed. Between now and November 1 that matters more than it will in February.' },
+              a: "Campaigns start once we've agreed your standard and the campaign is funded." },
             { q: 'Do you recruit for Medicare or final expense as well?',
-              a: 'Yes. Marketplace agents are the focus here because the season is the tightest, but the same process runs for other health and life lines.' },
+              a: 'Yes. The process is the same. The license and appointment checks change with the line.' },
             { q: 'Do you keep any piece of what the agent writes?',
-              a: 'No. They are your agents, on your contracts, under your agency. We take the campaign fee and nothing else.' },
+              a: 'No. The agent signs under your agency, on your contract. The business is yours.' },
             { q: "Is my agency's information shared with other agencies?",
-              a: 'No. What you offer, what you pay and who you sign stays between us.' }
+              a: "No. What you're offering and who you sign stays between us." }
         ];
 
         /* The band above the hero, decided once from the date at load.
@@ -1014,14 +1010,14 @@
                             <Reveal className="max-w-[42rem]">
                                 <p className="eyebrow">Agent Recruiting</p>
                                 <h1 className="t-h1 mt-4">
-                                    Ten licensed ACA agents, signed to your agency,
-                                    <span className="block text-brandgreen">for $4,500.</span>
+                                    Ten licensed ACA agents signed to your agency.
+                                    <span className="block text-brandgreen">$4,500.</span>
                                 </h1>
                                 <p className="t-lede mt-6 max-w-[44rem]">
-                                    We recruit licensed health agents who sell on the marketplace. We verify the
-                                    license and the marketplace registration, put the agent on the phone with you,
-                                    and keep going until your count is filled. Any agent who does not last thirty
-                                    days is replaced at no charge.
+                                    We find health agents already selling on the marketplace, confirm the license
+                                    and the registration in writing, and put them on the phone with you. We keep
+                                    recruiting until your count is filled. Any agent who isn't still with you
+                                    after thirty days is replaced at no charge.
                                 </p>
                                 <CtaPair
                                     className="mt-8 flex flex-col sm:flex-row gap-3"
@@ -1029,7 +1025,7 @@
                                     secondary={{ label: 'See what we verify', href: '#recruiting-verify' }}
                                 />
                                 <p className="mt-6 text-[15px] text-muted">
-                                    That is $450 an agent. A recruiting firm charges ten thousand and up for the same hire.
+                                    That's $450 an agent. A recruiting firm charges ten thousand and up for the same hire.
                                 </p>
                             </Reveal>
 
@@ -1038,13 +1034,13 @@
                                 obvious without reading a table. */}
                             <Reveal className="w-full max-w-[380px] mx-auto lg:mx-0 lg:justify-self-end">
                                 <div className="card shadow-lift px-6 sm:px-7 py-7">
-                                    <p className="text-[12px] font-semibold tracking-[0.13em] text-muted">COST OF ONE COMPLETED HIRE</p>
+                                    <p className="text-[12px] font-semibold tracking-[0.13em] text-muted">WHAT ONE HIRE COSTS</p>
                                     <div className="mt-6 space-y-5">
                                         {[
-                                            { label: 'Traditional recruiting firm', amount: '$10,000–$25,000', pct: 100, ours: false },
-                                            { label: 'Job board hiring', amount: '$5,000–$10,000', pct: 40, ours: false },
-                                            { label: 'Direct outreach', amount: '$1,500–$3,000', pct: 13, ours: false },
-                                            { label: 'NetEnroll, 10 agents', amount: '$450', pct: 4, ours: true }
+                                            { label: 'Traditional recruiting firm', amount: '$10,000 to $25,000', pct: 100, ours: false },
+                                            { label: 'Job board hiring', amount: '$5,000 to $10,000', pct: 40, ours: false },
+                                            { label: 'Direct outreach programs', amount: '$1,500 to $3,000', pct: 13, ours: false },
+                                            { label: 'NetEnroll, ten-agent campaign', amount: '$450', pct: 4, ours: true }
                                         ].map(b => (
                                             <div key={b.label}>
                                                 <div className="flex items-baseline justify-between gap-3">
@@ -1058,7 +1054,7 @@
                                         ))}
                                     </div>
                                     <p className="mt-6 text-[12px] leading-relaxed text-muted">
-                                        Published industry benchmarks for the cost of one completed hire.
+                                        The first three are published industry benchmarks for one completed hire.
                                     </p>
                                 </div>
                             </Reveal>
@@ -1068,7 +1064,7 @@
                     {/* ---------------- 2. THE PRICE ---------------- */}
                     <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
                         <div className="max-w-[1200px] mx-auto">
-                            <h2 className="t-h2">What it costs</h2>
+                            <h2 className="t-h2">What it costs.</h2>
 
                             <div className="mt-9 grid lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-8 items-start">
                                 <div className="card shadow-lift px-6 sm:px-9 py-3 sm:py-4">
@@ -1090,7 +1086,7 @@
                                         'Five agents is the smallest campaign we run.',
                                         'Paid in full when the campaign starts.',
                                         'We recruit until your count is filled. The campaign is measured in agents signed to your agency, not calls made or interviews held.',
-                                        'Any agent who signs with you and is not still with you thirty days later is replaced at no charge.'
+                                        "Any agent who signs with you and isn't still there thirty days later is replaced at no charge."
                                     ].map(t => (
                                         <li key={t} className="flex items-start gap-3 text-[16px] leading-relaxed text-muted">
                                             <CheckMark /> <span>{t}</span>
@@ -1105,13 +1101,13 @@
                     <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto">
                             <div className="max-w-[46rem]">
-                                <h2 className="t-h2">We were a phone platform before we were a recruiter.</h2>
+                                <h2 className="t-h2">We were running the phones long before we were recruiting.</h2>
                                 <p className="t-lede mt-6">
-                                    We run the calls for insurance sales every day, on our own equipment and our own
-                                    carrier connections. A recruiting firm charging ten thousand dollars a placement is
-                                    paying a person by the hour to do what we do on a dialer. That is the entire
-                                    difference in the price, and it is why five agents costs you twenty five hundred
-                                    dollars instead of fifty thousand.
+                                    NetEnroll runs insurance sales calls every day, on our own equipment and our
+                                    own carrier connections. Reaching licensed agents at volume isn't a project we
+                                    take on for you. It's what the platform already does. A recruiting firm
+                                    charging ten thousand dollars a placement is paying a person by the hour to do
+                                    what a dialer does, and that is the entire difference in the price.
                                 </p>
                             </div>
                         </div>
@@ -1120,16 +1116,16 @@
                     {/* ---------------- 4. WHAT WE VERIFY ---------------- */}
                     <section id="recruiting-verify" className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
                         <div className="max-w-[1200px] mx-auto">
-                            <h2 className="t-h2 max-w-[44rem]">What we confirm before an agent gets on your phone</h2>
+                            <h2 className="t-h2 max-w-[44rem]">What we confirm before an agent gets on your phone.</h2>
                             <ul className="mt-9 grid md:grid-cols-2 gap-x-10 gap-y-4 max-w-[64rem]">
                                 {[
-                                    'An active resident state license with an approved health line of authority',
-                                    'The National Producer Number, matched to the license record',
-                                    'Non-resident licenses in every state you need covered',
-                                    'Marketplace registration for the plan year, or the date the agent will complete it',
-                                    'The carrier appointments the agent already holds',
-                                    'What they sold last season and how much of it, in their own words',
-                                    'Whether they are leaving an agency, and what happens to the business they wrote there'
+                                    'An active resident license with an approved health line of authority.',
+                                    'Non-resident licenses in every state you need covered.',
+                                    'The National Producer Number, matched against the license record.',
+                                    'The carrier appointments the agent already holds.',
+                                    "Marketplace registration for the plan year, or the date they'll finish it.",
+                                    "Whether they're leaving an agency, and what happens to the business they wrote there.",
+                                    'What they sold last season and how much of it, in their own words.'
                                 ].map(t => (
                                     <li key={t} className="flex items-start gap-3 text-[16px] leading-relaxed text-ink">
                                         <CheckMark /> <span>{t}</span>
@@ -1137,7 +1133,7 @@
                                 ))}
                             </ul>
                             <p className="mt-10 pl-6 border-l-[3px] border-brandgreen text-[19px] sm:text-[22px] font-bold leading-snug tracking-[-0.02em] text-ink max-w-[40rem]">
-                                You get that in writing before the conversation, not after it.
+                                You get all of it in writing before the conversation, not after it.
                             </p>
                         </div>
                     </section>
@@ -1145,23 +1141,23 @@
                     {/* ---------------- 5. HOW IT RUNS ---------------- */}
                     <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto">
-                            <h2 className="t-h2">How a campaign runs</h2>
+                            <h2 className="t-h2">How a campaign runs.</h2>
                             <ProcessSteps steps={[
-                                { num: '01', title: 'We agree your standard.', body: 'The states you need covered, how many agents you want, what you are offering them, and what rules an agent out. We recruit to your standard, not a generic one.' },
-                                { num: '02', title: 'We call licensed agents in your states.', body: 'These are people already in the business. Agents between agencies, agents unhappy with their split, agents selling other lines who want marketplace business this season. Nobody is waiting to discover a job posting.' },
-                                { num: '03', title: 'We screen them and send them to you.', body: 'Agents who clear your standard and the license check are connected to you live or scheduled inside the hours you give us. Interview as many as you want. The campaign is not measured in interviews, so there is no cost to turning one down.' },
+                                { num: '01', title: 'We agree your standard.', body: "The states you need covered, how many agents you want, what you're offering them, and what rules an agent out. We recruit to your standard, not a generic one." },
+                                { num: '02', title: 'We find licensed agents in your states.', body: 'These agents are already in the business. Most are between agencies, unhappy with their split, or writing other lines and want marketplace business this season. Nobody is sitting at home waiting to be discovered by a job posting.' },
+                                { num: '03', title: 'We screen them and send them to you.', body: "Agents who clear your standard and the license check are connected to you live or scheduled inside the hours you give us. Interview as many as you want. Turning one down costs you nothing, because the campaign isn't measured in interviews." },
                                 { num: '04', title: 'You sign your agents.', body: 'You make the offer, on your contract, under your agency. Each agent who signs counts toward your campaign, and we keep recruiting until the count is filled.' }
                             ]} />
                         </div>
                     </section>
 
                     {/* ---------------- 6. THIRTY DAY REPLACEMENT ---------------- */}
-                    <DarkBand headline="Your pipeline should not stop because one producer does.">
+                    <DarkBand headline="One producer leaving shouldn't cost you the campaign.">
                         <div className="max-w-[46rem]">
                             <p className="t-lede mt-6" style={{ color: '#cbd5e1' }}>
-                                If an agent signs with your agency and is not still there thirty days later, tell us
-                                and we recruit a replacement at no charge. It does not matter whether they left or you
-                                let them go. That agent comes off your count and we go back to work.
+                                If an agent signs with you and isn't still there thirty days later, tell us. That
+                                agent comes off your count and we go back to work at no charge. It doesn't matter
+                                whether they left or you let them go.
                             </p>
                             <p className="mt-6 text-[17px] sm:text-[18px] font-semibold leading-relaxed text-white">
                                 We make it right with another agent. There are no refunds and no credits, because
@@ -1173,13 +1169,13 @@
                     {/* ---------------- 7. WHAT WE NEED ---------------- */}
                     <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto">
-                            <h2 className="t-h2">What we need from you</h2>
+                            <h2 className="t-h2">What we need from you.</h2>
                             <ul className="mt-9 grid md:grid-cols-2 gap-5 lg:gap-6">
                                 {[
                                     'Carrier contracts ready, so an agent can be appointed the week they sign.',
-                                    'Calls, leads or a book for them to work from day one. Agents leave quickly when there is nothing in front of them.',
                                     'Interviews taken within two business days. Good agents are talking to more than one agency.',
-                                    'A straight answer on who signed and who did not, so we know where your count stands.'
+                                    "Calls, leads or a book for them to work from day one. Agents leave quickly when there's nothing in front of them.",
+                                    "A straight answer on who signed and who didn't, so we know where your count stands."
                                 ].map(t => (
                                     <li key={t} className="card p-6 sm:p-7 flex items-start gap-3 text-[16px] leading-relaxed text-ink">
                                         <CheckMark /> <span>{t}</span>
@@ -1203,18 +1199,22 @@
                     <section id="recruiting-form" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-16 items-start">
                             <div className="max-w-[40rem]">
-                                <h2 className="t-h2">Open enrollment opens November 1. The agents who will sell it are being recruited right now.</h2>
+                                <h2 className="t-h2">The agents who will sell open enrollment are being recruited right now.</h2>
                                 <p className="t-lede mt-6">
-                                    Tell us the states, the count and what you are offering, and we will come back
-                                    with the schedule and the price.
+                                    Tell us the states, the count and what you're offering. We'll come back with
+                                    the schedule and the price.
                                 </p>
                             </div>
 
                             <div className="card shadow-lift p-6 sm:p-9">
                                 {sent ? (
-                                    <p className="text-[18px] leading-relaxed font-medium text-ink" role="status">
-                                        Thank you. We have your request and will reply within one business day.
-                                    </p>
+                                    <div role="status">
+                                        <p className="text-[18px] font-bold text-ink">We have it.</p>
+                                        <p className="mt-2 text-[16px] leading-relaxed text-muted">
+                                            We'll come back within one business day with the schedule and the price
+                                            for the count you asked for.
+                                        </p>
+                                    </div>
                                 ) : (
                                     <form onSubmit={submit} onKeyDown={handleFormKeyDown} noValidate className="space-y-6">
                                         <div className="flex items-center gap-3"
@@ -1234,7 +1234,7 @@
                                             {field('Agency name', 'agency_name', text('agency_name', 'text', { autoComplete: 'organization' }))}
                                             {field('States you need agents licensed in', 'states', text('states'))}
                                             {field('How many agents you want to sign', 'agent_count', select('agent_count', ['5 to 9', '10', '11 to 25', 'More than 25']))}
-                                            {field('What you are offering an agent', 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
+                                            {field("What you're offering an agent", 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
                                             {field('When you need them selling', 'timing', select('timing', ['Immediately', 'Before November 1', 'During open enrollment', 'After January']))}
 
                                             <button type="button" onClick={goToStep2} className="btn-primary btn-lg w-full">
@@ -1269,7 +1269,7 @@
                                                 </button>
                                             </div>
                                             <p className="text-[14px] leading-relaxed text-muted">
-                                                We reply within one business day. Nothing runs until we have agreed the standard with you.
+                                                We reply within one business day. Nothing runs until we've agreed the standard with you.
                                             </p>
                                         </div>
                                     </form>
@@ -2431,17 +2431,17 @@
                                     <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.6fr_1fr] gap-10 lg:gap-12 items-center">
 
                                         <Reveal>
-                                            <p className="eyebrow">Final Expense Growth Platform</p>
+                                            <p className="eyebrow">Final Expense Applications</p>
 
                                             <h1 className="t-h1 mt-4">
-                                                Stop buying calls.
-                                                <span className="block text-brandgreen">Start buying applications.</span>
+                                                You have never once sold a phone call.
                                             </h1>
 
                                             <p className="t-lede mt-6 max-w-[40rem]">
-                                                NetEnroll connects licensed agents with consumers looking for final
-                                                expense coverage and charges only when a valid application is
-                                                submitted, not when the phone rings.
+                                                So stop buying them. NetEnroll routes live final expense consumers to
+                                                your agents and charges {FEE_DISPLAY} when an application is
+                                                submitted. The call costs nothing. The conversation costs nothing. The
+                                                consumer who doesn't move forward costs nothing.
                                             </p>
 
                                             {/* The price is the offer. It does not go in a card further down. */}
@@ -2449,7 +2449,7 @@
                                                 className="mt-7 pl-6 border-l-[3px] border-brandgreen"
                                                 amount={FEE_DISPLAY}
                                                 unit="per submitted application"
-                                                fine="No per-call charge. No minimum purchase."
+                                                fine="No per-call charge. No minimum purchase. Buy one and see."
                                             />
 
                                             <CtaPair
@@ -2471,7 +2471,7 @@
                                                 <div className="px-6 py-3.5 border-b border-line flex items-center justify-between gap-3">
                                                     <span className="text-[12px] font-semibold tracking-[0.13em] text-muted">CAMPAIGN ECONOMICS</span>
                                                     <span className="shrink-0 rounded-full border border-line bg-soft px-2.5 py-1 text-[11px] font-medium text-muted">
-                                                        Illustrative example
+                                                        Illustration of the billing model
                                                     </span>
                                                 </div>
 
@@ -2479,7 +2479,7 @@
                                                     <dl className="divide-y divide-line text-[14.5px]">
                                                         {[
                                                             ['Calls received', '10'],
-                                                            ['Consumers who did not move forward', '9'],
+                                                            ["Consumers who didn't move forward", '9'],
                                                             ['Applications submitted', '1']
                                                         ].map(([label, value]) => (
                                                             <div key={label} className="flex items-baseline justify-between gap-4 py-3">
@@ -2508,7 +2508,7 @@
                                                     </div>
 
                                                     <p className="mt-5 text-[14px] font-medium text-ink text-center">
-                                                        You pay once the business happens.
+                                                        You pay once, at the end, for the one that counted.
                                                     </p>
                                                 </div>
                                             </div>
@@ -2520,7 +2520,7 @@
                                 <section id="final-expense" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
                                         <div className="max-w-[46rem]">
-                                            <h2 className="t-h2">Money should leave your account after value is created, not before.</h2>
+                                            <h2 className="t-h2">The bill should arrive after the business, not before it.</h2>
                                         </div>
 
                                         {/* Unmistakably different in weight: the traditional model
@@ -2529,15 +2529,15 @@
                                         <Reveal className="mt-11 grid lg:grid-cols-[1fr_1.1fr] gap-6 lg:gap-8 items-stretch">
                                             <div className="rounded-2xl border border-line px-7 sm:px-9 py-8 sm:py-9">
                                                 <p className="text-[12.5px] font-semibold tracking-[0.13em] text-red-800/60">
-                                                    Traditional pay-per-call
+                                                    Pay per call
                                                 </p>
-                                                <ul className="mt-6 space-y-4">
+                                                <p className="mt-4 text-[16px] font-semibold text-ink/70">You buy activity.</p>
+                                                <ul className="mt-4 space-y-4">
                                                     {[
-                                                        'You pay for every delivered call',
-                                                        'You pay for calls nobody answers',
-                                                        'You pay for consumers who do not qualify',
-                                                        'You pay for conversations that go nowhere',
-                                                        'By the time an application is submitted, you have already paid'
+                                                        'A call becomes billable the second it connects',
+                                                        'A wrong number costs the same as a serious consumer',
+                                                        'You pay nine times over to reach the one who submits',
+                                                        'By the time an application exists, the money is already spent'
                                                     ].map(t => (
                                                         <li key={t} className="flex items-start gap-3 text-[15px] leading-snug text-muted/80">
                                                             <span className="mt-[2px] w-[17px] h-[17px] shrink-0 rounded-full border border-red-300 text-red-400 flex items-center justify-center text-[10px] font-bold leading-none" aria-hidden="true">&times;</span>
@@ -2549,9 +2549,12 @@
 
                                             <div className="rounded-2xl bg-dark-900 shadow-lift px-7 sm:px-10 py-10 sm:py-12 flex flex-col justify-center text-center lg:text-left">
                                                 <p className="text-[12.5px] font-semibold tracking-[0.13em] text-brand-400">NetEnroll</p>
-                                                <p className="mt-6 text-[27px] sm:text-[31px] leading-tight font-bold tracking-[-0.02em] text-white">
-                                                    You pay for one thing:
-                                                    <span className="block text-brand-400">a valid submitted application.</span>
+                                                <p className="mt-6 text-[19px] sm:text-[21px] font-bold text-white">You buy outcomes.</p>
+                                                <p className="mt-4 text-[22px] sm:text-[25px] leading-snug font-bold tracking-[-0.015em] text-white">
+                                                    One line item: a valid submitted application, {FEE_DISPLAY}.
+                                                </p>
+                                                <p className="mt-3 text-[16px] leading-relaxed text-slate-300">
+                                                    Everything that happens before it is free.
                                                 </p>
                                             </div>
                                         </Reveal>
@@ -2561,7 +2564,7 @@
                                             <dl className="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-line">
                                                 {[
                                                     ['Ten calls delivered', '$0', false],
-                                                    ['Nine that went nowhere', '$0', false],
+                                                    ["Nine consumers who didn't move forward", '$0', false],
                                                     ['One submitted application', FEE_DISPLAY, true]
                                                 ].map(([label, value, isFee]) => (
                                                     <div key={label} className="px-5 sm:px-7 py-7 flex flex-col items-center sm:items-start text-center sm:text-left">
@@ -2577,9 +2580,9 @@
                                         </p>
 
                                         <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem] mx-auto text-center">
-                                            The ten-call volume and the single application are an illustration of the
-                                            billing model, not NetEnroll performance figures. Results vary by agent,
-                                            market and demand. No conversion rate is implied or guaranteed.
+                                            The ten-call volume and the single application illustrate how billing
+                                            works. They are not NetEnroll performance figures. Results vary by agent,
+                                            market and demand, and no conversion rate is implied or guaranteed.
                                         </p>
                                     </div>
                                 </section>
@@ -2587,22 +2590,22 @@
                                 {/* ---------------- 3. PROCESS, THREE STEPS ---------------- */}
                                 <section id="how-it-works" className="border-y border-line bg-soft px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
-                                        <h2 className="t-h2 max-w-[44rem]">From consumer to application.</h2>
+                                        <h2 className="t-h2 max-w-[44rem]">Three steps. You pay at the third.</h2>
                                         <ProcessSteps steps={[
-                                            { num: '01', title: 'Connect', body: 'Receive live final expense calls, matched to the states you are licensed in.' },
-                                            { num: '02', title: 'Convert', body: 'Your agent works the conversation and completes the application.' },
-                                            { num: '03', title: 'Pay', body: 'NetEnroll bills only for valid submitted applications.' }
+                                            { num: '01', title: 'Connect', body: "Live final expense consumers reach your agents, matched to the states you're licensed in." },
+                                            { num: '02', title: 'Convert', body: 'Your agent runs the conversation the way they always have and writes the application.' },
+                                            { num: '03', title: 'Pay', body: `The application is submitted. That is the moment the ${FEE_DISPLAY} applies, and the only moment anything applies.` }
                                         ]} />
                                     </div>
                                 </section>
 
                                 {/* ---------------- 4. RISK REVERSAL ---------------- */}
-                                <DarkBand id="pricing" headline="Move the risk off your marketing budget.">
+                                <DarkBand id="pricing" headline="Count the things we can charge you for. There is one.">
                                     <Reveal className="mt-10 grid sm:grid-cols-3 gap-9 sm:gap-6 text-center sm:text-left">
                                         {[
                                             ['$0', 'PER DELIVERED CALL'],
                                             ['$0', 'MONTHLY MINIMUM'],
-                                            ['$0', 'FOR CALLS THAT DO NOT CONVERT']
+                                            ['$0', "FOR CONSUMERS WHO DON'T MOVE FORWARD"]
                                         ].map(([amount, label]) => (
                                             <div key={label}>
                                                 <div className="num text-[3.1rem] sm:text-[3.6rem] leading-none font-bold text-white">{amount}</div>
@@ -2628,7 +2631,7 @@
                                             ))}
                                         </dl>
                                         <p className="mt-8 text-[14.5px] text-slate-400">
-                                            No minimum purchase. A single application is a valid order.
+                                            No minimum purchase. One application is a valid order.
                                         </p>
                                     </div>
                                 </DarkBand>
@@ -2637,7 +2640,10 @@
                                 <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
                                         <div className="max-w-[44rem]">
-                                            <h2 className="t-h2">See exactly where your acquisition dollars go.</h2>
+                                            <h2 className="t-h2">Every charge on this screen has an application behind it.</h2>
+                                            <p className="t-lede mt-5">
+                                                Calls, applications, agents, conversion and fees, by day and by producer.
+                                            </p>
                                         </div>
 
                                         {/* Stylised interface. Every figure below is sample data and says so. */}
@@ -2709,16 +2715,16 @@
                                         {[
                                             {
                                                 tag: 'FOR INDEPENDENT AGENTS',
-                                                title: 'Focus on selling.',
-                                                body: 'Spend less time worrying about paying for every phone call and more time working the consumers who are ready to move forward.',
-                                                items: ['Live final expense calls routed to you', 'State matching', 'Call tracking', 'Application tracking'],
+                                                title: "Sell. That's the entire job.",
+                                                body: "Consumers reach you, matched to the states you're licensed in. Your calls and your applications are tracked without you keeping a spreadsheet, and your cost per sale is a number you already know before you pick up.",
+                                                items: ['Live final expense calls', 'State matching', 'Call tracking', 'Application tracking'],
                                                 cta: 'Start as an Agent'
                                             },
                                             {
                                                 tag: 'FOR AGENCIES',
-                                                title: 'Give your producers another acquisition channel.',
-                                                body: 'Route final expense calls to your producers while keeping call activity and applications organized in one platform.',
-                                                items: ['Agent management', 'Call routing', 'State matching', 'Call tracking and application tracking', 'Reporting'],
+                                                title: "Give your producers volume that doesn't eat the budget first.",
+                                                body: 'Route consumers to the producers you choose, see what each of them does with the volume, and pay on applications instead of on activity. An agent having a slow week costs you nothing.',
+                                                items: ['Agent management', 'Call routing', 'State matching', 'Call tracking', 'Application tracking', 'Reporting'],
                                                 cta: 'Start Receiving Calls'
                                             }
                                         ].map(seg => (
@@ -2754,10 +2760,10 @@
                                 {/* ---------------- 8. CLOSING CTA ---------------- */}
                                 <section className="bg-mint px-5 sm:px-6 py-[58px] lg:py-[74px]">
                                     <div className="max-w-[760px] mx-auto text-center">
-                                        <h2 className="t-h2">Ready to stop paying for every call?</h2>
+                                        <h2 className="t-h2">Buy one application and judge us on it.</h2>
                                         <p className="t-lede mt-5 max-w-[38rem] mx-auto">
-                                            Start receiving final expense calls and tie your acquisition cost to the
-                                            application instead of the phone call.
+                                            No minimum, no monthly fee, nothing to cancel. One submitted application
+                                            at {FEE_DISPLAY} is a complete order.
                                         </p>
                                         <PriceAnchor className="mt-8 flex flex-col items-center" size="sm" amount={FEE_DISPLAY} unit="per submitted application" />
                                         <button onClick={startSignup} className="btn-primary btn-lg mt-8">
