@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Growth States: License Cost vs. Target Density | NetEnroll</title>
+<meta name="description" content="Compare non-resident insurance licensing cost against the ages 55-80 population of every state. State fee, NIPR fee and cost per 1,000 seniors, ranked for your resident state.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="canonical" href="https://netenroll.com/licensing-value">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NetEnroll">
+<meta property="og:url" content="https://netenroll.com/licensing-value">
+<meta property="og:title" content="Top Growth States: License Cost vs. Target Density">
+<meta property="og:description" content="Non-resident licensing cost per 1,000 seniors, ranked for your resident state. Every figure sourced to a published fee schedule.">
+<meta property="og:image" content="https://netenroll.com/og-final-expense.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site.css">
+
+<!-- The tool is the one piece of the public site still written in JSX and
+     laid out with Tailwind utilities. It is a data grid, not a page that has
+     to paint before JavaScript arrives, so it keeps its runtime. Everything
+     around it (header, footer) is the static site's own markup. -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        corePlugins: { preflight: false },
+        theme: { extend: { colors: {
+            ink: '#111827', muted: '#667085', line: '#E6E9ED', soft: '#F8FAF9', mint: '#ECFDF5',
+            brandgreen: '#10B981', deepgreen: '#087F5B'
+        } } }
+    }
+</script>
+<style>
+    /* Grid-local styles, carried over unchanged from the original tool. The
+       marketing type scale is deliberately large; fifty rows need smaller
+       steps, so this layer defines its own from the same tokens. */
+    .t-h3 { font-size: clamp(1.25rem, 1.9vw, 1.55rem); line-height: 1.25; letter-spacing: -0.02em; font-weight: 650; color: #111827; }
+    .t-body { font-size: 16px; line-height: 1.62; color: #667085; }
+    .card { background: #fff; border: 1px solid #E6E9ED; border-radius: 16px; }
+    .shadow-card { box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 10px 30px -14px rgba(16,24,40,.14); }
+    .lv-page .num { font-family: inherit; font-variant-numeric: tabular-nums; letter-spacing: -0.035em; }
+    .lv-page .btn-secondary { min-height: 44px; }
+           STATE LICENSING VALUE TOOL  (/licensing-value)
+           A high-density grid, not a marketing section. The type
+           scale above is deliberately large for a page read in five
+           seconds; fifty rows need smaller steps, so this layer
+           defines its own — from the same tokens, no new hues.
+
+           Desktop target is 1440x900 with no vertical scroll. Fifty
+           rows in ONE column cannot meet that at legible type (it
+           works out to ~12px a row), so at >=1280px the grid runs as
+           two columns of 25. Nothing is paginated and nothing hides.
+           ========================================================= */
+
+        /* Ramp hue = brandgreen #10B981, the one brand green, varied
+           only by alpha. Declared once so no component invents its own. */
+        .lv-page { --lv-ramp: 16 185 129; }
+
+        /* The tool owns the viewport under the sticky header, which measures
+           67px: h-[66px] on the inner row plus the header's own 1px border. */
+        @media (min-width: 1280px) {
+            .lv-shell { height: calc(100vh - 69px); display: flex; flex-direction: column; }
+            .lv-grids { flex: 1 1 auto; min-height: 0; }
+
+            /* The tables fill the height the flex column hands them and share
+               it out across their own rows, so the grid fits without a
+               scrollbar on a short laptop as well as on a 900px desktop and
+               nothing has to know how tall the header happens to be. */
+            .lv-grids { align-items: stretch; }
+            .lv-grids table { height: 100%; }
+            .lv-grids .lv-table tbody td { height: 16px; }
+        }
+
+        /* Title, the primary control and search on one line. */
+        .lv-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
+        .lv-title {
+            font-size: 20px; font-weight: 700; letter-spacing: -0.022em;
+            color: #111827; line-height: 1.2; margin: 0;
+        }
+        .lv-search { position: relative; }
+        .lv-legend { font-size: 11px; color: #667085; display: flex; align-items: center; gap: 5px; margin-left: auto; }
+        .lv-sub { font-size: 13px; line-height: 1.45; color: #667085; margin-top: 7px; max-width: 78rem; }
+        .lv-fine { font-size: 11px; line-height: 1.4; color: #667085; margin-top: 5px; }
+
+        /* ---- Resident-state selector: the primary control ----
+           Same 10px radius and #E6E9ED line as .btn-secondary, sized
+           up a step so it reads as the main input, not a footnote. */
+        .lv-select {
+            appearance: none; -webkit-appearance: none;
+            background-color: #ECFDF5;                       /* mint */
+            color: #064e3b;                                  /* brand.900 */
+            border: 1.5px solid #10B981;                     /* brandgreen */
+            border-radius: 10px;
+            font-size: 15px; font-weight: 650; letter-spacing: -0.01em;
+            padding: 8px 36px 8px 12px;
+            box-shadow: 0 1px 2px rgba(16,24,40,.05);
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 15px 15px;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+        .lv-select:hover { background-color: #d1fae5; }   /* brand.100 */
+        .lv-select:focus-visible {
+            outline: 2px solid #087F5B;                      /* deepgreen */
+            outline-offset: 2px; border-color: #087F5B;
+        }
+
+        /* ---- Text filter ---- */
+        .lv-filter {
+            background-color: #fff; color: #111827;
+            border: 1px solid #E6E9ED; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            padding: 7px 11px 7px 30px; width: 212px;
+            transition: border-color .18s ease;
+        }
+        .lv-filter::placeholder { color: #667085; font-weight: 400; }   /* muted */
+        .lv-filter:hover { border-color: #D3D8DE; }
+        .lv-filter:focus-visible { outline: 2px solid #087F5B; outline-offset: 2px; border-color: #087F5B; }
+
+        /* ---- The grid ---- */
+        .lv-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+        .lv-table caption {
+            position: absolute; width: 1px; height: 1px;
+            overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+        }
+
+        .lv-table thead th {
+            position: sticky; top: 0; z-index: 1;
+            background: #F8FAF9;                             /* soft */
+            border-bottom: 1px solid #E6E9ED;
+            padding: 0; height: 34px;
+            font-size: 10.5px; font-weight: 600;
+            letter-spacing: 0.045em; text-transform: uppercase;
+            color: #667085;                                  /* muted */
+            text-align: right; vertical-align: bottom;
+        }
+        .lv-table thead th.lv-al { text-align: left; }
+
+        /* Each header is a real button, so sorting is keyboard-reachable. */
+        .lv-sort {
+            display: flex; align-items: center; gap: 3px;
+            width: 100%; height: 34px; padding: 0 7px 4px;
+            justify-content: flex-end;
+            font: inherit; color: inherit; letter-spacing: inherit;
+            text-transform: inherit; background: none; border: 0;
+            cursor: pointer; transition: color .15s ease;
+        }
+        .lv-al .lv-sort { justify-content: flex-start; }
+        .lv-lbl { text-align: right; line-height: 1.2; }
+        .lv-al .lv-lbl { text-align: left; }
+        .lv-sort:hover { color: #111827; }
+        .lv-sort:focus-visible { outline: 2px solid #087F5B; outline-offset: -2px; border-radius: 4px; }
+        .lv-sort.is-active { color: #087F5B; }
+        .lv-caret { font-size: 8px; line-height: 1; }
+
+        .lv-table tbody td {
+            height: 23px; padding: 0 7px; line-height: 1.3;
+            border-bottom: 1px solid #F1F3F5;
+            font-size: 11.5px; color: #111827;
+            text-align: right; white-space: nowrap;
+            overflow: visible;
+        }
+        .lv-table tbody td.lv-al { text-align: left; }
+        .lv-table tbody tr:last-child td { border-bottom: 0; }
+        .lv-table tbody tr:hover td { background-color: #F8FAF9; }     /* soft */
+        .lv-rank { color: #667085; font-size: 10.5px; }
+        .lv-name { font-weight: 550; letter-spacing: -0.01em; }
+        .lv-dim  { color: #667085; }
+
+        /* The value index. The tint is redundant to the number printed
+           on top of it — colour is never the only carrier of meaning. */
+        .lv-index { font-weight: 650; letter-spacing: -0.02em; }
+
+        /* Every figure is somebody else's published number, and the row says
+           so: the state name is a link to the schedule it came from. Styled to
+           sit quiet at rest so 50 of them do not read as a wall of links. */
+        .lv-src { color: inherit; text-decoration: none; }
+        .lv-src:hover { text-decoration: underline; text-underline-offset: 2px; color: #087F5B; }
+        .lv-src:focus-visible { outline: 2px solid #087F5B; outline-offset: 1px; border-radius: 3px; }
+
+        .lv-swatch {
+            display: inline-block; width: 14px; height: 9px;
+            border-radius: 2px; border: 1px solid #E6E9ED; vertical-align: -1px;
+        }
+
+        /* ---- Pending-confirmation marker ----
+           A dagger, not a colour: the glyph carries the meaning and
+           the tooltip carries the explanation. */
+        .lv-flag {
+            font-size: 10px; line-height: 1; color: #667085;   /* muted */
+            cursor: help; border: 0; background: none; padding: 0 0 0 3px;
+            vertical-align: 1px;
+        }
+        .lv-flag:focus-visible { outline: 2px solid #087F5B; outline-offset: 1px; border-radius: 3px; }
+
+        /* ---- Tooltip ---- */
+        .lv-tipwrap { position: relative; display: inline-block; }
+        .lv-tip {
+            position: absolute; bottom: calc(100% + 6px); left: -8px; z-index: 30;
+            width: min(236px, calc(100vw - 32px)); padding: 8px 10px;
+            background: #111827;                              /* ink */
+            color: #fff; border-radius: 8px;
+            font-size: 11px; font-weight: 450; line-height: 1.45;
+            letter-spacing: 0; text-align: left; text-transform: none;
+            white-space: normal; pointer-events: none;
+            opacity: 0; transform: translateY(2px);
+            transition: opacity .14s ease, transform .14s ease;
+            box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 10px 30px -14px rgba(16,24,40,.14);
+        }
+        .lv-tipwrap:hover .lv-tip,
+        .lv-tipwrap:focus-within .lv-tip { opacity: 1; transform: translateY(0); }
+        /* Rows near the top of the grid open their tooltip downward. */
+        .lv-tip.lv-tip-below { bottom: auto; top: calc(100% + 6px); transform: translateY(-2px); }
+        .lv-tipwrap:hover .lv-tip-below,
+        .lv-tipwrap:focus-within .lv-tip-below { transform: translateY(0); }
+
+        /* ---- Mobile card layout ---- */
+        .lv-card { background: #fff; border: 1px solid #E6E9ED; border-radius: 12px; padding: 12px 13px; }
+        .lv-card + .lv-card { margin-top: 8px; }
+
+        /* Selector stays reachable while the cards scroll. */
+        .lv-sticky-select {
+            position: sticky; top: 69px; z-index: 20;
+            background: rgba(255,255,255,.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid #E6E9ED;
+            margin: 0 -20px; padding: 12px 20px;
+        }
+        @media (min-width: 768px) {
+            .lv-sticky-select {
+                position: static; margin: 0; padding: 0;
+                border-bottom: 0; background: none; backdrop-filter: none;
+            }
+        }
+        /* Below the tablet break the header row generates no box of its own, so
+           the sticky selector resolves against .lv-shell -- which is as tall as
+           the whole card list -- instead of against a 40px row it would scroll
+           straight out of. */
+        @media (max-width: 767px) {
+            .lv-head { display: contents; }
+            .lv-title { font-size: 22px; }
+        }
+
+</style>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+    <div class="wrap">
+        <a class="brand" href="/" aria-label="NetEnroll home">
+            <img src="/netenroll-logo.png" width="918" height="179" alt="NetEnroll">
+        </a>
+        <nav class="nav" aria-label="Primary">
+            <a href="/">Final Expense</a>
+            <a href="/aca-agent-recruiting">Agent Recruiting</a>
+            <a href="/licensing-value" aria-current="page">State License Tool</a>
+        </nav>
+        <div class="header-actions">
+            <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
+            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="header">Get started</a>
+        </div>
+        <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
+            <svg class="open" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg class="close" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+    </div>
+    <div class="mobile-nav" id="mobile-nav" hidden>
+        <a href="/">Final Expense</a>
+        <a href="/aca-agent-recruiting">Agent Recruiting</a>
+        <a href="/licensing-value" aria-current="page">State License Tool</a>
+        <a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in</a>
+        <div class="cta-row">
+            <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="mobile-nav">Get started</a>
+        </div>
+    </div>
+</header>
+
+<main id="main">
+    <div id="root">
+        <div class="lv-page px-5 sm:px-6 py-16"><div class="max-w-[1360px] mx-auto text-center"><p class="t-body" role="status">Loading the current fee table&hellip;</p></div></div>
+    </div>
+</main>
+
+<footer class="site-footer xl:hidden">
+    <div class="wrap">
+        <div class="foot-legal" style="margin-top:0;padding-top:0;border-top:0">
+            <p>&copy; 2026 PVN LLC. All rights reserved. NetEnroll is a service of PVN LLC. &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/tcpa-compliance">TCPA &amp; Compliance</a></p>
+            <address style="font-style:normal">2800 N 6th Street #796, Saint Augustine, FL 32084 &middot; <a href="tel:+19045128487">904-512-8487</a></address>
+        </div>
+    </div>
+</footer>
+
+<script src="/site.js" defer></script>
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const LICENSING_DATA_URL = '/licensing-fees.json';
+    const LICENSING_STORAGE_KEY = 'netenroll.licensingValue.residentState';
+
+        /* ---- Formatters. Tabular numerals come from .num. ---- */
+        const lvInt = new Intl.NumberFormat('en-US');
+        const lvMoney = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        /* Four places, not two: at two decimals every row reads $0.00
+           and the column that justifies this page becomes useless. */
+        const lvIndexFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 4, maximumFractionDigits: 4 });
+
+        /* ---- Fee resolution, exactly the order the data spec sets ----
+           A schedule that is missing the resident state is a data error,
+           not a cue to fall back: the published retaliatory schedules do
+           not follow any arithmetic rule, so a guess would be a wrong
+           number wearing a confident face. Throw, and let the caller
+           surface it. */
+        function lvResolveStateFee(data, residentCode, target) {
+            const schedule = data.retaliatorySchedules[target.code];
+            if (schedule) {
+                const fee = schedule[residentCode];
+                if (typeof fee !== 'number') {
+                    throw new Error(
+                        'Retaliatory schedule for ' + target.code +
+                        ' has no entry for resident state ' + residentCode + '.'
+                    );
+                }
+                return { fee, source: 'schedule' };
+            }
+            if (typeof target.flatFee !== 'number') {
+                throw new Error(
+                    target.code + ' has neither a retaliatory schedule nor a base fee.'
+                );
+            }
+            return { fee: target.flatFee, source: 'flat' };
+        }
+
+        /* Build every row for one resident state. The resident state is
+           excluded outright — an agent does not buy a non-resident
+           license at home. */
+        function lvBuildRows(data, residentCode) {
+            const rows = [];
+            data.jurisdictions.forEach(j => {
+                if (j.code === residentCode) return;
+                const noteKeys = (data.noteRefs && data.noteRefs[j.code]) || [];
+                const base = {
+                    code: j.code,
+                    name: j.name,
+                    seniorPop: j.seniorPopulation55to80,
+                    niprFee: data.niprTransactionFee,
+                    upperBound: !!j.prorated,
+                    perLoa: !!j.perLineOfAuthority,
+                    sourceUrl: j.sourceUrl,
+                    lastVerified: j.lastVerified,
+                    notes: noteKeys.map(k => data.notes[k]).filter(Boolean)
+                };
+                try {
+                    const { fee, source } = lvResolveStateFee(data, residentCode, j);
+                    const totalFee = fee + data.niprTransactionFee;
+                    rows.push(Object.assign(base, {
+                        stateFee: fee,
+                        feeSource: source,
+                        totalFee,
+                        index: totalFee / (j.seniorPopulation55to80 / 1000),
+                        error: null
+                    }));
+                } catch (err) {
+                    rows.push(Object.assign(base, {
+                        stateFee: null, feeSource: null, totalFee: null,
+                        index: null, error: err.message
+                    }));
+                }
+            });
+
+            /* Rank is the standing by value index, cheapest first. It is
+               deliberately independent of the active sort, so sorting by
+               state name still shows each state's place. */
+            const ranked = rows.filter(r => r.error === null)
+                               .slice()
+                               .sort((a, b) => a.index - b.index);
+            ranked.forEach((r, i) => { r.rank = i + 1; });
+            rows.filter(r => r.error !== null).forEach(r => { r.rank = null; });
+            return rows;
+        }
+
+        /* Tint scale for the value-index column. Alpha only, over the one
+           brand green. Computed across the FULL row set rather than the
+           filtered one, so typing in the filter never re-colours the
+           states left on screen. Log-compressed because the raw spread is
+           heavily skewed — the small-population states run orders of
+           magnitude above the median and would otherwise flatten
+           everything else to one indistinguishable wash. */
+        function lvRampScale(rows) {
+            const vals = rows.filter(r => r.index > 0).map(r => r.index);
+            if (!vals.length) return () => 0;
+            const lo = Math.log(Math.min.apply(null, vals));
+            const hi = Math.log(Math.max.apply(null, vals));
+            const span = hi - lo;
+            return v => {
+                if (!(v > 0)) return 0;
+                const t = span > 0 ? (Math.log(v) - lo) / span : 0;
+                return +(0.04 + 0.26 * (1 - t)).toFixed(3);
+            };
+        }
+
+        /* Records older than 180 days need re-checking; these fees change
+           without notice. Surfaced in the admin portal, not here. */
+        const LICENSING_STALE_DAYS = 180;
+        function lvStaleRecords(data, now) {
+            if (!data) return [];
+            const cutoff = (now || Date.now()) - LICENSING_STALE_DAYS * 864e5;
+            return data.jurisdictions
+                .filter(j => {
+                    const t = Date.parse(j.lastVerified);
+                    return !isFinite(t) || t < cutoff;
+                })
+                .map(j => ({ code: j.code, name: j.name, lastVerified: j.lastVerified }));
+        }
+
+        /* Loads and shape-checks the fee file. nginx answers an unknown
+           path with index.html, so a 200 here is not proof of JSON —
+           validate before trusting it. */
+        function useLicensingFees(active, nonce) {
+            const [state, setState] = useState({ data: null, loading: false, error: null });
+            useEffect(() => {
+                if (!active || state.data || state.loading) return;
+                let cancelled = false;
+                setState({ data: null, loading: true, error: null });
+                fetch(LICENSING_DATA_URL, { headers: { 'Accept': 'application/json' } })
+                    .then(res => {
+                        if (!res.ok) throw new Error('The fee table returned HTTP ' + res.status + '.');
+                        return res.text();
+                    })
+                    .then(text => {
+                        let parsed;
+                        try { parsed = JSON.parse(text); }
+                        catch (e) { throw new Error('The fee table did not parse as JSON.'); }
+                        if (!parsed || !Array.isArray(parsed.jurisdictions) || !parsed.jurisdictions.length
+                            || typeof parsed.niprTransactionFee !== 'number' || !parsed.retaliatorySchedules) {
+                            throw new Error('The fee table is missing required fields.');
+                        }
+                        if (!cancelled) setState({ data: parsed, loading: false, error: null });
+                    })
+                    .catch(err => { if (!cancelled) setState({ data: null, loading: false, error: err.message }); });
+                return () => { cancelled = true; };
+            }, [active, nonce]);
+            return state;
+        }
+
+        /* A focusable marker plus a tooltip. The glyph, not the colour,
+           is what says "not confirmed"; the tooltip says why. */
+        const LvNote = ({ label, body, below = false }) => (
+            <span className="lv-tipwrap">
+                <button type="button" className="lv-flag num" aria-label={label}>*</button>
+                <span role="tooltip" className={below ? 'lv-tip lv-tip-below' : 'lv-tip'}>{body}</span>
+            </span>
+        );
+
+        const LV_COLUMNS = [
+            { key: 'rank',      label: 'Rank',                  align: 'right', width: '36px'  },
+            { key: 'name',      label: 'State',                 align: 'left',  width: 'auto'  },
+            { key: 'seniorPop', label: 'Ages 55–80 Population', align: 'right', width: '92px' },
+            { key: 'stateFee',  label: 'State Fee',             align: 'right', width: '68px'  },
+            { key: 'niprFee',   label: 'NIPR Fee',              align: 'right', width: '62px'  },
+            { key: 'totalFee',  label: 'Total Fee',             align: 'right', width: '68px'  },
+            { key: 'index',     label: 'Cost per 1,000 Seniors', align: 'right', width: '104px' }
+        ];
+
+        function LicensingValueTool({ data, loading, error, onRetry }) {
+            /* Resident state survives a reload. Read once, lazily, so a
+               blocked localStorage never breaks first paint. */
+            const [residentState, setResidentState] = useState(() => {
+                try {
+                    const saved = window.localStorage.getItem(LICENSING_STORAGE_KEY);
+                    if (saved && /^[A-Z]{2}$/.test(saved)) return saved;
+                } catch (e) { /* private mode, blocked storage — fall through */ }
+                return 'TX';
+            });
+            const [sort, setSort] = useState({ key: 'index', dir: 'asc' });
+            const [filter, setFilter] = useState('');
+
+            useEffect(() => {
+                try { window.localStorage.setItem(LICENSING_STORAGE_KEY, residentState); }
+                catch (e) { /* nothing to do; the page still works */ }
+            }, [residentState]);
+
+            const jurisdictions = data ? data.jurisdictions : [];
+
+            /* If the saved code is not in the file, fall back rather than
+               render an empty grid against a state that does not exist. */
+            const effectiveResident = React.useMemo(() => {
+                if (!jurisdictions.length) return residentState;
+                if (jurisdictions.some(j => j.code === residentState)) return residentState;
+                return jurisdictions[0].code;
+            }, [jurisdictions, residentState]);
+
+            const rows = React.useMemo(
+                () => (data ? lvBuildRows(data, effectiveResident) : []),
+                [data, effectiveResident]
+            );
+            const rampAlpha = React.useMemo(() => lvRampScale(rows), [rows]);
+
+            const residentName = React.useMemo(() => {
+                const j = jurisdictions.find(x => x.code === effectiveResident);
+                return j ? j.name : effectiveResident;
+            }, [jurisdictions, effectiveResident]);
+
+            const visible = React.useMemo(() => {
+                const q = filter.trim().toLowerCase();
+                const out = rows.filter(r =>
+                    !q || r.name.toLowerCase().includes(q) || r.code.toLowerCase().includes(q)
+                );
+                const dir = sort.dir === 'asc' ? 1 : -1;
+                return out.slice().sort((a, b) => {
+                    if (sort.key === 'name') return a.name.localeCompare(b.name) * dir;
+                    /* Unresolvable rows sink to the bottom either way —
+                       they have no number to sort on. */
+                    const av = a[sort.key], bv = b[sort.key];
+                    if (av == null && bv == null) return a.name.localeCompare(b.name);
+                    if (av == null) return 1;
+                    if (bv == null) return -1;
+                    if (av === bv) return a.name.localeCompare(b.name);
+                    return (av - bv) * dir;
+                });
+            }, [rows, filter, sort]);
+
+            const toggleSort = (key) => {
+                setSort(prev => prev.key === key
+                    /* Same column: flip. New column: start ascending,
+                       except the two that read better largest-first. */
+                    ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
+                    : { key, dir: key === 'seniorPop' ? 'desc' : 'asc' });
+            };
+
+            const unresolved = rows.filter(r => r.error !== null);
+            const notedCount = rows.filter(r => r.notes.length > 0).length;
+            const dataVerified = data ? data.lastVerified : '';
+
+            /* Two columns of 25 at >=1280px. See the note in the
+               stylesheet: fifty rows in one column cannot fit 1440x900
+               at a legible row height, and the brief rules out both
+               pagination and a scroll region before density. */
+            const half = Math.ceil(visible.length / 2);
+            const halves = [visible.slice(0, half), visible.slice(half)];
+
+            const sortIndicator = (key) => {
+                if (sort.key !== key) return null;
+                return <span className="lv-caret" aria-hidden="true">{sort.dir === 'asc' ? '▲' : '▼'}</span>;
+            };
+            const ariaSort = (key) => (sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none');
+
+            const noteBody = (r) => r.notes.join(' ');
+            const noteLabel = (r) => r.name + ': see note';
+
+            // Provenance, per row. Every figure traces to a published NIPR or
+            // state schedule; none of it is ours, and the page should not read
+            // as though it were.
+            const sourceLabel = (r) => 'Published fee schedule for ' + r.name
+                + ' (verified ' + r.lastVerified + '), opens in a new tab';
+
+            const renderHead = () => (
+                <thead>
+                    <tr>
+                        {LV_COLUMNS.map(c => (
+                            <th key={c.key} scope="col"
+                                className={c.align === 'left' ? 'lv-al' : undefined}
+                                style={{ width: c.width }}
+                                aria-sort={ariaSort(c.key)}>
+                                <button type="button"
+                                        onClick={() => toggleSort(c.key)}
+                                        className={sort.key === c.key ? 'lv-sort is-active' : 'lv-sort'}>
+                                    <span className="lv-lbl">{c.label}</span>
+                                    {sortIndicator(c.key)}
+                                    <span className="sr-only">
+                                        {sort.key === c.key
+                                            ? ', sorted ' + (sort.dir === 'asc' ? 'ascending' : 'descending') + ', activate to reverse'
+                                            : ', activate to sort by this column'}
+                                    </span>
+                                </button>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+            );
+
+            const renderRow = (r, rowIdx) => (
+                <tr key={r.code}>
+                    <td className="lv-rank num">{r.rank == null ? '—' : r.rank}</td>
+                    <td className="lv-al">
+                        <a className="lv-name lv-src" href={r.sourceUrl}
+                           target="_blank" rel="noopener noreferrer"
+                           title={sourceLabel(r)} aria-label={r.name + '. ' + sourceLabel(r)}>{r.name}</a>
+                        {r.notes.length > 0 && (
+                            <LvNote label={noteLabel(r)} body={noteBody(r)} below={rowIdx < 3} />
+                        )}
+                    </td>
+                    <td className="num lv-dim">{lvInt.format(r.seniorPop)}</td>
+                    <td className="num">{r.stateFee == null ? '—' : lvMoney.format(r.stateFee)}</td>
+                    <td className="num lv-dim">{lvMoney.format(r.niprFee)}</td>
+                    <td className="num">
+                        {r.totalFee == null ? '—' : lvMoney.format(r.totalFee)}
+                        {r.upperBound && <span className="sr-only"> (upper bound; the amount charged varies, see the note on this row)</span>}
+                    </td>
+                    <td className="num lv-index"
+                        style={r.index == null ? undefined : { backgroundColor: 'rgb(var(--lv-ramp) / ' + rampAlpha(r.index) + ')' }}
+                        title={r.error || undefined}>
+                        {r.index == null ? 'Unavailable' : lvIndexFmt.format(r.index)}
+                    </td>
+                </tr>
+            );
+
+            /* ---- Mobile: state, value index and total lead; the rest is
+                   secondary. Normal scrolling below the tablet break. ---- */
+            const renderCard = (r) => (
+                <div className="lv-card" key={r.code}>
+                    <div className="flex items-baseline justify-between gap-3">
+                        <div className="flex items-baseline gap-2 min-w-0">
+                            <span className="num text-[11px] text-muted">{r.rank == null ? '—' : '#' + r.rank}</span>
+                            <span className="text-[15px] font-semibold text-ink truncate">{r.name}</span>
+                            {r.notes.length > 0 && (
+                                <span className="lv-flag num" aria-hidden="true">*</span>
+                            )}
+                        </div>
+                        <span className="num text-[15px] font-bold text-ink shrink-0"
+                              style={r.index == null ? undefined : { backgroundColor: 'rgb(var(--lv-ramp) / ' + rampAlpha(r.index) + ')', borderRadius: '6px', padding: '1px 6px' }}>
+                            {r.index == null ? 'Unavailable' : lvIndexFmt.format(r.index)}
+                        </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted">Cost per 1,000 seniors</p>
+                    <dl className="mt-2.5 pt-2.5 border-t border-line grid grid-cols-3 gap-2 text-[11px]">
+                        <div>
+                            <dt className="text-muted">Total fee</dt>
+                            <dd className="num mt-0.5 font-semibold text-ink">{r.totalFee == null ? '—' : lvMoney.format(r.totalFee)}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-muted">State / NIPR</dt>
+                            <dd className="num mt-0.5 text-ink">
+                                {r.stateFee == null ? '—' : lvMoney.format(r.stateFee)} + {lvMoney.format(r.niprFee)}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt className="text-muted">Ages 55&#8211;80</dt>
+                            <dd className="num mt-0.5 text-ink">{lvInt.format(r.seniorPop)}</dd>
+                        </div>
+                    </dl>
+                    <p className="mt-2.5 pt-2.5 border-t border-line text-[11px] leading-[1.45] text-muted">
+                        {r.notes.length > 0 && (
+                            <React.Fragment>
+                                <span className="lv-flag num" aria-hidden="true">*</span>{' '}
+                                {noteBody(r)}{' '}
+                            </React.Fragment>
+                        )}
+                        <a className="lv-src" href={r.sourceUrl} target="_blank" rel="noopener noreferrer"
+                           aria-label={sourceLabel(r)}>Published fee schedule</a>
+                        {' '}&middot; verified {r.lastVerified}
+                    </p>
+                </div>
+            );
+
+            const selector = (
+                <div className="flex items-center gap-2.5">
+                    <label htmlFor="lv-resident" className="text-[13px] font-semibold text-ink whitespace-nowrap">
+                        Your resident state
+                    </label>
+                    <div className="relative">
+                        <select id="lv-resident"
+                                className="lv-select"
+                                value={effectiveResident}
+                                disabled={!jurisdictions.length}
+                                onChange={e => setResidentState(e.target.value)}>
+                            {jurisdictions.map(j => (
+                                <option key={j.code} value={j.code}>{j.name}</option>
+                            ))}
+                        </select>
+                        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-[15px] h-[15px] text-muted"
+                             viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                </div>
+            );
+
+            if (loading || (!data && !error)) {
+                return (
+                    <div className="lv-page px-5 sm:px-6 py-16">
+                        <div className="max-w-[1360px] mx-auto text-center">
+                            <p className="t-body" role="status">Loading the current fee table&hellip;</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div className="lv-page px-5 sm:px-6 py-16">
+                        <div className="max-w-[640px] mx-auto card shadow-card p-8 text-center">
+                            <h1 className="t-h3">The fee table could not be loaded</h1>
+                            <p className="t-body mt-3">
+                                This tool will not show estimated licensing fees, so there is nothing to
+                                display until the published table is available. {error}
+                            </p>
+                            <button type="button" onClick={onRetry} className="btn-secondary mt-6">Try again</button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="lv-page bg-white text-ink">
+                    <div className="lv-shell relative max-w-[1360px] mx-auto px-5 sm:px-6 pt-3.5 pb-3 flex flex-col">
+
+                        {/* ---- 1. HEADER: title, the control that drives the page, search ----
+                             The resident-state selector sits beside the title because it is
+                             the whole point of the page; parked in the far corner it read as
+                             decoration and people missed it. ---- */}
+                        <div className="lv-head shrink-0">
+                            <h1 className="lv-title">Top Growth States: License Cost vs. Target Density</h1>
+                            <div className="lv-sticky-select">{selector}</div>
+                            <div className="lv-search">
+                                <label htmlFor="lv-filter" className="sr-only">Filter by state name</label>
+                                <input id="lv-filter" type="search" className="lv-filter"
+                                       placeholder="Filter states"
+                                       value={filter}
+                                       onChange={e => setFilter(e.target.value)} />
+                                <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-[13px] h-[13px] text-muted"
+                                     viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2.2" />
+                                    <path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                                </svg>
+                            </div>
+                            <p className="lv-legend" aria-hidden="true">
+                                <span>Better value</span>
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.30)' }} />
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.19)' }} />
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.10)' }} />
+                                <span className="lv-swatch" style={{ backgroundColor: 'rgb(var(--lv-ramp) / 0.04)' }} />
+                                <span>Worse</span>
+                            </p>
+                        </div>
+
+                        <p className="lv-sub shrink-0">
+                            Rank state non-resident licenses by cost per 1,000 seniors to maximize your agent footprint.
+                        </p>
+
+                        <p className="lv-fine shrink-0">
+                            Showing {visible.length} of {rows.length}, excluding {residentName}.
+                            {notedCount > 0 && (
+                                <span> An asterisk (<span className="lv-flag num" aria-hidden="true">*</span>) marks {notedCount} rows with a caveat.</span>
+                            )}
+                            {' '}Each state name links to its published fee schedule, verified {dataVerified}.
+                            Fees change without notice; NIPR&rsquo;s application screen is the authoritative
+                            amount at checkout.
+                        </p>
+
+                        {unresolved.length > 0 && (
+                            <p className="lv-fine shrink-0 font-medium text-deepgreen" role="alert">
+                                {unresolved.length} jurisdiction{unresolved.length === 1 ? ' could not be' : 's could not be'} resolved
+                                from the published data and {unresolved.length === 1 ? 'is' : 'are'} shown without a figure:{' '}
+                                {unresolved.map(r => r.code).join(', ')}.
+                            </p>
+                        )}
+
+                        {/* ---- 3. DATA GRID ---- */}
+                        {visible.length === 0 ? (
+                            <p className="mt-6 text-[13px] text-muted" role="status">
+                                No state matches &ldquo;{filter}&rdquo;.
+                            </p>
+                        ) : (
+                            <React.Fragment>
+                                {/* Desktop (>=1280px): two columns of 25, the whole list
+                                    inside one 900px-tall viewport. */}
+                                <div className="lv-grids hidden xl:grid mt-2.5 grid-cols-2 gap-x-7">
+                                    {halves.map((chunk, i) => (
+                                        chunk.length === 0 ? null : (
+                                            <table className="lv-table" key={i}>
+                                                <caption>
+                                                    Licensing cost by jurisdiction for an agent resident in {residentName};
+                                                    {i === 0 ? ' ranks 1 and up' : ' continued'}.
+                                                </caption>
+                                                {renderHead()}
+                                                <tbody>{chunk.map((r, idx) => renderRow(r, idx))}</tbody>
+                                            </table>
+                                        )
+                                    ))}
+                                </div>
+
+                                {/* Tablet: one table, page scrolls normally. */}
+                                <div className="hidden md:block xl:hidden mt-2.5">
+                                    <table className="lv-table">
+                                        <caption>
+                                            Licensing cost by jurisdiction for an agent resident in {residentName}.
+                                        </caption>
+                                        {renderHead()}
+                                        <tbody>{visible.map((r, idx) => renderRow(r, idx))}</tbody>
+                                    </table>
+                                </div>
+
+                                {/* Mobile: stacked cards. */}
+                                <div className="md:hidden mt-3">
+                                    {visible.map(renderCard)}
+                                </div>
+                            </React.Fragment>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+    function App() {
+        const [nonce, setNonce] = useState(0);
+        const fees = useLicensingFees(true, nonce);
+        return <LicensingValueTool data={fees.data} loading={fees.loading} error={fees.error} onRetry={() => setNonce(n => n + 1)} />;
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

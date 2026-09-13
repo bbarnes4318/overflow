@@ -23,8 +23,8 @@ BRANCH="main"
 
 REMOTE_DIR="/opt/netenroll"              # where the clone lives
 WEB_ROOT="/var/www/netenroll.com"        # what the static vhost serves
-APP_FILE="netenroll_platform_app.html"
-INDEX_NAME="index.html"                  # file is renamed to this in WEB_ROOT
+APP_FILE="index.html"
+INDEX_NAME="index.html"
 WEB_SERVICE="nginx"                      # <PLACEHOLDER> nginx | caddy | apache2
 HEALTH_URL="https://netenroll.com"       # URL to verify after deploy
 # The static site answers on the apex and www; both need a certificate.
@@ -110,9 +110,9 @@ SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o ConnectTimeout=10
 TARGET="${DEPLOY_USER}@${SERVER_IP}"
 
 # ─── Remote deploy script ─────────────────────────────────────────────────────
-# The app is a single self-contained HTML file loading React/Tailwind from CDNs.
-# There is no build step and no dependency install — deploying means getting the
-# file into WEB_ROOT and reloading the web server.
+# The public site is static HTML, one stylesheet and one script. There is no
+# build step — deploying means copying the files into WEB_ROOT and reloading
+# the web server. The licensing tool keeps its React/Babel runtime from CDNs.
 REMOTE_CMDS=$(cat <<EOF
 set -euo pipefail
 
@@ -194,11 +194,16 @@ if [ -f "${WEB_ROOT}/${INDEX_NAME}" ]; then
 fi
 install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 
-# The page references these by relative path, so they must sit beside it in the
-# web root. Installing only the HTML leaves a broken image in the header.
-for asset in netenroll-logo.png netenroll-logo-dark.png robots.txt sitemap.xml; do
+# The other public routes and everything the pages reference by path. Each is
+# served at /<name> (or /<name> minus .html) through nginx's try_files rule.
+for asset in aca-agent-recruiting.html licensing-value.html site.css site.js \
+             favicon.svg favicon.png apple-touch-icon.png \
+             og-final-expense.png og-recruiting.png \
+             netenroll-logo.png netenroll-logo-dark.png robots.txt sitemap.xml; do
   install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
 done
+# The old single-file app was published as index.html and is now replaced by
+# the static index.html above; nothing else to remove.
 
 
 # Terms, Privacy and TCPA are standalone HTML served by path, not tabs inside
@@ -240,13 +245,15 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
 
   # A location block added to nginx-site.conf AFTER the vhost was first
   # installed never reaches the live file, because the live file is certbot's
-  # rewrite and is left alone above. Splice the recruiting proxy in, once,
+  # rewrite and is left alone above. Splice each missing block in, once,
   # ahead of the vhost's access_log line - which sits in the server block
   # certbot upgraded to 443 - and leave it alone on every later run.
+  # The marker is the block's first line, matched literally.
   VHOST="/etc/nginx/sites-available/${SITE_HOSTS[0]}"
-  if ! grep -q 'location = /api/recruiting-inquiry' "\$VHOST"; then
+  splice_location() {
+    if grep -qF "\$1" "\$VHOST"; then return; fi
     BLOCK_FILE="\$(mktemp)"
-    sed -n '/location = \/api\/recruiting-inquiry/,/^    }/p' \
+    awk -v m="\$1" 'index(\$0, m) { on = 1 } on { print } on && /^    }/ { exit }' \
         "${REMOTE_DIR}/deploy/nginx-site.conf" > "\$BLOCK_FILE"
     if [ -s "\$BLOCK_FILE" ]; then
       echo >> "\$BLOCK_FILE"
@@ -256,10 +263,12 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
           done = 1
         }
         { print }' "\$VHOST" > "\$VHOST.new" && mv "\$VHOST.new" "\$VHOST"
-      echo "--> added the /api/recruiting-inquiry proxy to the live vhost"
+      echo "--> added to the live vhost: \$1"
     fi
     rm -f "\$BLOCK_FILE"
-  fi
+  }
+  splice_location 'location = /api/recruiting-inquiry'
+  splice_location 'location ~ ^/(aca-agent-recruiting|licensing-value|site\.css|site\.js)$'
   # Ubuntu's stock catch-all would otherwise answer for these names.
   rm -f /etc/nginx/sites-enabled/default
 fi
