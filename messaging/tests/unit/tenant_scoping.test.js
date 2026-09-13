@@ -60,6 +60,9 @@ const ALLOWED_GLOBAL = new Map([
    'legacy duplicate merge of a row the loop already read'],
   ['UPDATE conversations SET last_message_text = ?, last_message_at = ? WHERE id = ?',
    'legacy duplicate merge of a row the loop already read'],
+
+  ['INSERT INTO recruiting_inquiries (source, agency_name, contact_name, email, phone, states, agent_count, offer, timing, notes, client_ip) VALUES (@source, @agency_name, @contact_name, @email, @phone, @states, @agent_count, @offer, @timing, @notes, @client_ip)',
+   'anonymous public form owned by the platform, not a tenant; "notes" here is a column, not the notes table'],
 ]);
 
 /** Queue-worker reads are global: every row they return carries its tenant_id. */

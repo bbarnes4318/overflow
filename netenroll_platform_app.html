@@ -155,6 +155,41 @@
         @media (max-width: 767px) { .pad-for-cta { padding-bottom: 84px; } }
 
         /* =========================================================
+           AGENT RECRUITING  (/aca-agent-recruiting)
+           Marketing type scale throughout. Only the form controls
+           need a class of their own: the light site has no input
+           style yet, and .lv-filter is sized for a data grid.
+           ========================================================= */
+        .rc-input {
+            display: block; width: 100%;
+            background-color: #fff; color: #111827;
+            border: 1px solid #E6E9ED; border-radius: 10px;
+            font-size: 16px; line-height: 1.4;              /* 16px: no iOS zoom on focus */
+            padding: 12px 14px;
+            transition: border-color .18s ease;
+        }
+        .rc-input::placeholder { color: #667085; }
+        .rc-input:hover { border-color: #D3D8DE; }
+        .rc-input:focus-visible { outline: 2px solid #087F5B; outline-offset: 2px; border-color: #087F5B; }
+        select.rc-input {
+            appearance: none; -webkit-appearance: none;
+            padding-right: 40px;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><path d='M4 6l4 4 4-4' stroke='%23667085' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+            background-repeat: no-repeat; background-position: right 14px center; background-size: 15px 15px;
+        }
+        .rc-label { display: block; font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 6px; }
+
+        /* Two-column price rows. No header row: the cells are the table. */
+        .rc-table { width: 100%; border-collapse: collapse; }
+        .rc-table td { padding: 16px 0; border-bottom: 1px solid #E6E9ED; vertical-align: baseline; }
+        .rc-table tr:last-child td { border-bottom: 0; }
+        .rc-table td + td { text-align: right; white-space: nowrap; padding-left: 16px; }
+
+        /* Full-width band above the hero. The height is reserved even when
+           the band has nothing to say, so the hero never shifts. */
+        .rc-band { min-height: 46px; display: flex; align-items: center; justify-content: center; }
+
+        /* =========================================================
            STATE LICENSING VALUE TOOL  (/licensing-value)
            A high-density grid, not a marketing section. The type
            scale above is deliberately large for a page read in five
@@ -622,6 +657,427 @@
             title: 'Top Growth States: License Cost vs. Target Density | NetEnroll',
             description: 'Compare non-resident insurance licensing cost against the ages 55-80 population of every state. State fee, NIPR fee and cost per 1,000 seniors, ranked for your resident state.'
         };
+
+        /* =========================================================
+           AGENT RECRUITING — /aca-agent-recruiting
+
+           Sells a prepaid recruiting campaign to ACA agency owners.
+           Every figure on the page is written here once; the copy is
+           the offer, so nothing below computes a price.
+           ========================================================= */
+
+        const RECRUITING_ROUTE = '/aca-agent-recruiting';
+        const RECRUITING_API = '/api/recruiting-inquiry';
+
+        const RECRUITING_META = {
+            title: 'Recruit Licensed ACA Agents | Agent Recruiting for Marketplace Agencies | NetEnroll',
+            description: 'We recruit licensed health agents and sign them to your agency. Ten agents for $4,500. Any agent who does not last thirty days is replaced at no charge.'
+        };
+
+        const RECRUITING_FAQS = [
+            { q: 'Are these agents actually licensed?',
+              a: 'Yes. Every agent is checked against the public state license record for an active health line of authority before they reach you, and we record the National Producer Number. An agent whose license does not hold up never counts toward your campaign.' },
+            { q: 'What if you cannot find my agents?',
+              a: 'We keep recruiting until the count is filled. The campaign is not a set number of weeks and it is not a set number of calls, so there is no point at which we have run out of budget and stop. If a campaign is running slowly it is almost always the states or the compensation, and we will come back to you with what the market is telling us.' },
+            { q: 'What if an agent quits in the first month?',
+              a: 'Tell us and we replace them at no charge. Any agent who is not still with your agency thirty days after signing comes off your count.' },
+            { q: 'Why do I pay before you deliver?',
+              a: 'Because the calling starts before the first agent signs. What protects you is the count and the replacement, not a payment schedule. We owe you a set number of agents and we do not stop until you have them.' },
+            { q: 'Where do these agents come from?',
+              a: 'We reach licensed health agents directly on our own calling platform. They are working agents, not a recycled list and not a pile another agency already turned down.' },
+            { q: 'What if an agent is not marketplace registered yet?',
+              a: 'We tell you before the conversation. The annual training is short for a returning agent and longer for someone new to the marketplace, and a licensed agent can get through it quickly. Whether you want agents who still have that step ahead of them is your call, and we screen either way.' },
+            { q: 'Can you recruit in specific states only?',
+              a: 'Yes. State coverage is part of the standard we agree before the campaign runs, including non-resident licensing where you need an agent writing in more than one state.' },
+            { q: 'How fast does it start?',
+              a: 'Most campaigns start sending agents within a few business days of the standard being agreed. Between now and November 1 that matters more than it will in February.' },
+            { q: 'Do you recruit for Medicare or final expense as well?',
+              a: 'Yes. Marketplace agents are the focus here because the season is the tightest, but the same process runs for other health and life lines.' },
+            { q: 'Do you keep any piece of what the agent writes?',
+              a: 'No. They are your agents, on your contracts, under your agency. We take the campaign fee and nothing else.' },
+            { q: "Is my agency's information shared with other agencies?",
+              a: 'No. What you offer, what you pay and who you sign stays between us.' }
+        ];
+
+        /* The band above the hero, decided once from the date at load.
+           Days are counted between local midnights, so the number does not
+           tick over mid-afternoon. Returns null once the season is over;
+           the caller still reserves the band's height. */
+        function recruitingBand(now) {
+            const day = 24 * 60 * 60 * 1000;
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const until = (y, m, d) => Math.round((new Date(y, m, d) - today) / day);
+            const days = (n) => n === 1 ? '1 day' : n + ' days';
+            if (today < new Date(2026, 10, 1)) {
+                return 'Open enrollment opens November 1. ' + days(until(2026, 10, 1)) + ' to get your agents signed, registered and selling.';
+            }
+            if (today <= new Date(2026, 11, 15)) {
+                return 'Open enrollment is open. ' + days(until(2026, 11, 15)) + ' until the December 15 deadline for January 1 coverage.';
+            }
+            if (today <= new Date(2027, 0, 15)) {
+                return days(until(2027, 0, 15)) + ' left in open enrollment.';
+            }
+            return null;
+        }
+
+        function AgentRecruitingPage() {
+            const [openFaq, setOpenFaq] = useState(-1);
+            const [sent, setSent] = useState(false);
+            const [sending, setSending] = useState(false);
+            const [formError, setFormError] = useState('');
+            const band = React.useMemo(() => recruitingBand(new Date()), []);
+
+            // FAQPage structured data lives in the head, beside the meta the
+            // router already maintains, and leaves with the page.
+            useEffect(() => {
+                const el = document.createElement('script');
+                el.type = 'application/ld+json';
+                el.text = JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'FAQPage',
+                    mainEntity: RECRUITING_FAQS.map(f => ({
+                        '@type': 'Question', name: f.q,
+                        acceptedAnswer: { '@type': 'Answer', text: f.a }
+                    }))
+                });
+                document.head.appendChild(el);
+                return () => el.remove();
+            }, []);
+
+            // Uncontrolled inputs: on a failed send the form stays mounted, so
+            // every value the owner typed is still there to resend.
+            const submit = async (e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+                setSending(true);
+                setFormError('');
+                try {
+                    const res = await fetch(RECRUITING_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ source: 'aca-agent-recruiting', ...Object.fromEntries(new FormData(form)) })
+                    });
+                    if (!res.ok) {
+                        const body = await res.json().catch(() => ({}));
+                        throw new Error(body.error || 'The request could not be sent.');
+                    }
+                    setSent(true);
+                } catch (err) {
+                    setFormError((err.message || 'The request could not be sent.') +
+                        ' Your answers are still here; please try again, or call 904-512-8487.');
+                } finally {
+                    setSending(false);
+                }
+            };
+
+            const field = (label, name, control) => (
+                <div>
+                    <label htmlFor={'rc-' + name} className="rc-label">{label}</label>
+                    {control}
+                </div>
+            );
+            const text = (name, type = 'text', extra = {}) => (
+                <input id={'rc-' + name} name={name} type={type} required className="rc-input" {...extra} />
+            );
+            const select = (name, options) => (
+                <select id={'rc-' + name} name={name} required defaultValue="" className="rc-input">
+                    <option value="" disabled>Choose one</option>
+                    {options.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+            );
+
+            return (
+                <div className="bg-white text-ink">
+
+                    {/* ---------------- URGENCY BAND ---------------- */}
+                    <div className="rc-band bg-mint border-b border-brandgreen/20 px-5 text-center" role={band ? 'status' : undefined} aria-hidden={band ? undefined : 'true'}>
+                        {band && <p className="text-[14px] sm:text-[15px] font-medium text-deepgreen">{band}</p>}
+                    </div>
+
+                    {/* ---------------- 1. HERO ---------------- */}
+                    <section className="px-5 sm:px-6 pt-10 pb-12 lg:pt-[60px] lg:pb-[64px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <div className="max-w-[52rem] reveal">
+                                <p className="eyebrow">Agent Recruiting</p>
+                                <h1 className="t-h1 mt-4">
+                                    Ten licensed ACA agents, signed to your agency,
+                                    <span className="block text-brandgreen">for $4,500.</span>
+                                </h1>
+                                <p className="t-lede mt-6 max-w-[44rem]">
+                                    We recruit licensed health agents who sell on the marketplace. We verify the
+                                    license and the marketplace registration, put the agent on the phone with you,
+                                    and keep going until your count is filled. Any agent who does not last thirty
+                                    days is replaced at no charge.
+                                </p>
+                                <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                                    <a href="#recruiting-form" className="btn-primary btn-lg">Start a recruiting campaign</a>
+                                    <a href="#recruiting-verify" className="btn-secondary">See what we verify</a>
+                                </div>
+                                <p className="mt-6 text-[15px] text-muted">
+                                    That is $450 an agent. A recruiting firm charges ten thousand and up for the same hire.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 2. THE PRICE ---------------- */}
+                    <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <h2 className="t-h2">What it costs</h2>
+
+                            <div className="mt-9 grid lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-8 items-start">
+                                <div className="card shadow-lift px-6 sm:px-9 py-3 sm:py-4">
+                                    <table className="rc-table">
+                                        <caption className="sr-only">Campaign price by number of agents</caption>
+                                        <tbody>
+                                            {[['5 to 9 agents', '$2,500'], ['10 agents', '$4,500'], ['Each agent after 10', '$400']].map(([count, price]) => (
+                                                <tr key={count}>
+                                                    <td className="text-[16px] font-medium text-ink">{count}</td>
+                                                    <td className="num text-[1.9rem] sm:text-[2.2rem] font-bold leading-none text-deepgreen">{price}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <ul className="space-y-4 lg:pt-2">
+                                    {[
+                                        'Five agents is the smallest campaign we run.',
+                                        'Paid in full when the campaign starts.',
+                                        'We recruit until your count is filled. The campaign is measured in agents signed to your agency, not calls made or interviews held.',
+                                        'Any agent who signs with you and is not still with you thirty days later is replaced at no charge.'
+                                    ].map(t => (
+                                        <li key={t} className="flex items-start gap-3 text-[16px] leading-relaxed text-muted">
+                                            <CheckMark /> <span>{t}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="mt-[54px] pt-[46px] border-t border-line">
+                                <h3 className="t-h3">What the same hire costs elsewhere</h3>
+                                <div className="mt-7 card px-6 sm:px-9 py-1 sm:py-2 max-w-[860px]">
+                                    <table className="rc-table">
+                                        <caption className="sr-only">Cost of one completed hire by recruiting method</caption>
+                                        <tbody>
+                                            {[
+                                                ['Traditional recruiting firm', '$10,000 to $25,000 per hire', false],
+                                                ['Job board hiring', '$5,000 to $10,000 per hire', false],
+                                                ['Direct outreach programs', '$1,500 to $3,000 per hire', false],
+                                                ['NetEnroll, ten agent campaign', '$450 per hire', true]
+                                            ].map(([method, cost, ours]) => (
+                                                <tr key={method}>
+                                                    <td className={ours ? 'text-[16px] font-semibold text-ink' : 'text-[16px] text-muted'}>{method}</td>
+                                                    <td className={`num text-[15px] sm:text-[16px] font-semibold !whitespace-normal ${ours ? 'text-deepgreen' : 'text-ink'}`}>{cost}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p className="mt-4 text-[13px] leading-relaxed text-muted max-w-[54rem]">
+                                    The first three are published industry benchmarks for the cost of one completed hire.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 3. WHY THE PRICE ---------------- */}
+                    <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <div className="max-w-[46rem]">
+                                <h2 className="t-h2">We were a phone platform before we were a recruiter.</h2>
+                                <p className="t-lede mt-6">
+                                    We run the calls for insurance sales every day, on our own equipment and our own
+                                    carrier connections. Reaching licensed agents at volume is not a project we take on
+                                    for you. It is what the platform already does.
+                                </p>
+                                <p className="t-lede mt-5">
+                                    A recruiting firm charging ten thousand dollars a placement is paying a person by
+                                    the hour to do what we do on a dialer. That is the entire difference in the price,
+                                    and it is why five agents costs you twenty five hundred dollars instead of fifty
+                                    thousand.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 4. WHAT WE VERIFY ---------------- */}
+                    <section id="recruiting-verify" className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <h2 className="t-h2 max-w-[44rem]">What we confirm before an agent gets on your phone</h2>
+                            <ul className="mt-9 grid md:grid-cols-2 gap-x-10 gap-y-4 max-w-[64rem]">
+                                {[
+                                    'An active resident state license with an approved health line of authority',
+                                    'The National Producer Number, matched to the license record',
+                                    'Non-resident licenses in every state you need covered',
+                                    'Marketplace registration for the plan year, or the date the agent will complete it',
+                                    'The carrier appointments the agent already holds',
+                                    'What they sold last season and how much of it, in their own words',
+                                    'Whether they are leaving an agency, and what happens to the business they wrote there'
+                                ].map(t => (
+                                    <li key={t} className="flex items-start gap-3 text-[16px] leading-relaxed text-ink">
+                                        <CheckMark /> <span>{t}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="mt-10 pl-6 border-l-[3px] border-brandgreen text-[19px] sm:text-[22px] font-bold leading-snug tracking-[-0.02em] text-ink max-w-[40rem]">
+                                You get that in writing before the conversation, not after it.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 5. HOW IT RUNS ---------------- */}
+                    <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <h2 className="t-h2">How a campaign runs</h2>
+                            <ol className="mt-11 grid sm:grid-cols-2 lg:grid-cols-4 gap-9 lg:gap-8 step-rule">
+                                {[
+                                    ['01', 'We agree your standard.', 'The states you need covered, how many agents you want, what you are offering them, and what rules an agent out. We recruit to your standard, not a generic one.'],
+                                    ['02', 'We call licensed agents in your states.', 'These are people already in the business. Agents between agencies, agents unhappy with their split, agents selling other lines who want marketplace business this season. Nobody is waiting to discover a job posting.'],
+                                    ['03', 'We screen them and send them to you.', 'Agents who clear your standard and the license check are connected to you live or scheduled inside the hours you give us. Interview as many as you want. The campaign is not measured in interviews, so there is no cost to turning one down.'],
+                                    ['04', 'You sign your agents.', 'You make the offer, on your contract, under your agency. Each agent who signs counts toward your campaign, and we keep recruiting until the count is filled.']
+                                ].map(([num, title, body]) => (
+                                    <li key={num} className="relative">
+                                        <span className="num relative z-10 w-[46px] h-[46px] rounded-full bg-white border-2 border-mint ring-1 ring-line flex items-center justify-center text-[16px] font-bold text-deepgreen">
+                                            {num}
+                                        </span>
+                                        <h3 className="mt-5 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</h3>
+                                        <p className="mt-2.5 text-[15.5px] leading-relaxed text-muted">{body}</p>
+                                    </li>
+                                ))}
+                            </ol>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 6. THIRTY DAY REPLACEMENT ---------------- */}
+                    <section className="border-y border-line bg-mint px-5 sm:px-6 py-[54px] lg:py-[70px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <div className="max-w-[46rem]">
+                                <h2 className="t-h2">The thirty day replacement</h2>
+                                <p className="t-lede mt-6">
+                                    If an agent signs with your agency and is not still with you thirty days later,
+                                    tell us and we recruit a replacement at no charge. It does not matter whether they
+                                    left or you let them go. That agent comes off your count and we go back to work.
+                                </p>
+                                <p className="mt-6 text-[17px] sm:text-[18px] font-semibold leading-relaxed text-ink">
+                                    We make it right with another agent. There are no refunds and no credits, because
+                                    what you bought is agents.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 7. WHAT WE NEED ---------------- */}
+                    <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
+                        <div className="max-w-[1200px] mx-auto">
+                            <h2 className="t-h2">What we need from you</h2>
+                            <ul className="mt-9 grid md:grid-cols-2 gap-5 lg:gap-6">
+                                {[
+                                    'Carrier contracts ready, so an agent can be appointed the week they sign.',
+                                    'Calls, leads or a book for them to work from day one. Agents leave quickly when there is nothing in front of them.',
+                                    'Interviews taken within two business days. Good agents are talking to more than one agency.',
+                                    'A straight answer on who signed and who did not, so we know where your count stands.'
+                                ].map(t => (
+                                    <li key={t} className="card p-6 sm:p-7 flex items-start gap-3 text-[16px] leading-relaxed text-ink">
+                                        <CheckMark /> <span>{t}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 8. FAQ ---------------- */}
+                    <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
+                        <div className="max-w-[1040px] mx-auto">
+                            <h2 className="t-h2">Questions agency owners ask</h2>
+                            <div className="mt-9 grid lg:grid-cols-2 gap-5 items-start">
+                                {[RECRUITING_FAQS.slice(0, Math.ceil(RECRUITING_FAQS.length / 2)), RECRUITING_FAQS.slice(Math.ceil(RECRUITING_FAQS.length / 2))].map((group, gi) => (
+                                    <div key={gi} className="card divide-y divide-line overflow-hidden">
+                                        {group.map((faq, j) => {
+                                            const idx = gi * Math.ceil(RECRUITING_FAQS.length / 2) + j;
+                                            const open = openFaq === idx;
+                                            return (
+                                                <div key={idx}>
+                                                    <h3>
+                                                        <button type="button"
+                                                                onClick={() => setOpenFaq(open ? -1 : idx)}
+                                                                aria-expanded={open}
+                                                                aria-controls={'rc-faq-' + idx}
+                                                                className="w-full text-left px-6 py-[18px] flex items-start justify-between gap-4 hover:bg-soft transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-deepgreen focus-visible:-outline-offset-2">
+                                                            <span className="text-[16px] font-medium leading-snug text-ink">{faq.q}</span>
+                                                            <span className={`mt-0.5 shrink-0 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>
+                                                                <PlusMark />
+                                                            </span>
+                                                        </button>
+                                                    </h3>
+                                                    <div id={'rc-faq-' + idx} className={`faq-panel ${open ? 'faq-open' : ''}`}>
+                                                        <div>
+                                                            <p className="px-6 pb-6 text-[15px] leading-relaxed text-muted">{faq.a}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ---------------- 9. FINAL CTA + FORM ---------------- */}
+                    <section id="recruiting-form" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
+                        <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-16 items-start">
+                            <div className="max-w-[40rem]">
+                                <h2 className="t-h2">Open enrollment opens November 1. The agents who will sell it are being recruited right now.</h2>
+                                <p className="t-lede mt-6">
+                                    Tell us the states, the count and what you are offering, and we will come back
+                                    with the schedule and the price.
+                                </p>
+                            </div>
+
+                            <div className="card shadow-lift p-6 sm:p-9">
+                                {sent ? (
+                                    <p className="text-[18px] leading-relaxed font-medium text-ink" role="status">
+                                        Thank you. We have your request and will reply within one business day.
+                                    </p>
+                                ) : (
+                                    <form onSubmit={submit} className="space-y-5">
+                                        {field('Agency name', 'agency_name', text('agency_name', 'text', { autoComplete: 'organization' }))}
+                                        {field('Your name', 'contact_name', text('contact_name', 'text', { autoComplete: 'name' }))}
+                                        <div className="grid sm:grid-cols-2 gap-5">
+                                            {field('Email', 'email', text('email', 'email', { autoComplete: 'email' }))}
+                                            {field('Phone', 'phone', text('phone', 'tel', { autoComplete: 'tel' }))}
+                                        </div>
+                                        {field('States you need agents licensed in', 'states', text('states'))}
+                                        {field('How many agents you want to sign', 'agent_count', select('agent_count', ['5 to 9', '10', '11 to 25', 'More than 25']))}
+                                        {field('What you are offering an agent', 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
+                                        {field('When you need them selling', 'timing', select('timing', ['Immediately', 'Before November 1', 'During open enrollment', 'After January']))}
+                                        <div>
+                                            <label htmlFor="rc-notes" className="rc-label">Anything else we should know <span className="font-normal text-muted">(optional)</span></label>
+                                            <textarea id="rc-notes" name="notes" rows="4" maxLength="4000" className="rc-input"></textarea>
+                                        </div>
+
+                                        {formError && (
+                                            <p role="alert" className="text-[14.5px] leading-relaxed text-red-700 bg-red-50 border border-red-200 rounded-[10px] px-4 py-3">
+                                                {formError}
+                                            </p>
+                                        )}
+
+                                        <button type="submit" disabled={sending} className="btn-primary btn-lg w-full disabled:opacity-60">
+                                            {sending ? 'Sending' : 'Start a recruiting campaign'}
+                                        </button>
+                                        <p className="text-[14px] leading-relaxed text-muted">
+                                            We reply within one business day. Nothing runs until we have agreed the standard with you.
+                                        </p>
+                                    </form>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        }
 
         /* ---- Formatters. Tabular numerals come from .num. ---- */
         const lvInt = new Intl.NumberFormat('en-US');
@@ -1143,15 +1599,20 @@
             // Both public routes wear the light chrome; the portals keep the
             // dark one. isMarketing stays separate for the things that belong
             // to the landing page alone, such as the sticky phone CTA.
-            const isPublic = currentTab === 'marketing' || currentTab === 'licensing';
+            const isPublic = currentTab === 'marketing' || currentTab === 'licensing' || currentTab === 'recruiting';
             const isMarketing = currentTab === 'marketing';
 
             /* ---- Real URLs for the two public routes ----
                nginx already answers an unknown path with index.html, so a path
                route needs no server change: read the path on mount, push it on
                navigation, and keep the document title in step. */
-            const routeForPath = (p) =>
-                (p === LICENSING_ROUTE || p === LICENSING_ROUTE + '/') ? 'licensing' : 'marketing';
+            const routeForPath = (p) => {
+                if (p === LICENSING_ROUTE || p === LICENSING_ROUTE + '/') return 'licensing';
+                if (p === RECRUITING_ROUTE || p === RECRUITING_ROUTE + '/') return 'recruiting';
+                return 'marketing';
+            };
+            const pathForRoute = (tab) =>
+                tab === 'licensing' ? LICENSING_ROUTE : tab === 'recruiting' ? RECRUITING_ROUTE : '/';
 
             useEffect(() => {
                 setCurrentTab(routeForPath(window.location.pathname));
@@ -1161,7 +1622,7 @@
             }, []);
 
             const navigateTo = (tab) => {
-                const path = tab === 'licensing' ? LICENSING_ROUTE : '/';
+                const path = pathForRoute(tab);
                 if (window.location.pathname !== path) window.history.pushState({}, '', path);
                 setCurrentTab(tab);
                 setMobileNavOpen(false);
@@ -1171,13 +1632,14 @@
             // Title, description and canonical follow the route, so a shared
             // link and a crawler both see the pair that matches the page.
             useEffect(() => {
-                if (currentTab !== 'marketing' && currentTab !== 'licensing') return;
+                if (!isPublic) return;
                 const meta = document.querySelector('meta[name="description"]');
                 const canonical = document.querySelector('link[rel="canonical"]');
-                const next = currentTab === 'licensing' ? LICENSING_META : HOME_META;
+                const next = currentTab === 'licensing' ? LICENSING_META
+                    : currentTab === 'recruiting' ? RECRUITING_META : HOME_META;
                 document.title = next.title;
                 if (meta) meta.setAttribute('content', next.description);
-                if (canonical) canonical.setAttribute('href', 'https://netenroll.com' + (currentTab === 'licensing' ? LICENSING_ROUTE : '/'));
+                if (canonical) canonical.setAttribute('href', 'https://netenroll.com' + pathForRoute(currentTab));
             }, [currentTab]);
 
             // The fee table is fetched only when the tool is actually open.
@@ -1655,6 +2117,9 @@
                                     <button onClick={() => navigateTo('licensing')}
                                             aria-current={currentTab === 'licensing' ? 'page' : undefined}
                                             className={currentTab === 'licensing' ? "text-ink transition-colors" : "hover:text-ink transition-colors"}>State License ROI</button>
+                                    <button onClick={() => navigateTo('recruiting')}
+                                            aria-current={currentTab === 'recruiting' ? 'page' : undefined}
+                                            className={currentTab === 'recruiting' ? "text-ink transition-colors" : "hover:text-ink transition-colors"}>Agent Recruiting</button>
                                 </nav>
                             )}
 
@@ -1718,6 +2183,11 @@
                                                 className={currentTab === 'licensing'
                                                     ? "text-left py-2.5 text-ink transition-colors"
                                                     : "text-left py-2.5 hover:text-ink transition-colors"}>State License ROI</button>
+                                        <button onClick={() => navigateTo('recruiting')}
+                                                aria-current={currentTab === 'recruiting' ? 'page' : undefined}
+                                                className={currentTab === 'recruiting'
+                                                    ? "text-left py-2.5 text-ink transition-colors"
+                                                    : "text-left py-2.5 hover:text-ink transition-colors"}>Agent Recruiting</button>
                                     </nav>
                                 )}
                                 <div className="mt-4 pt-4 border-t border-line flex flex-col gap-2.5">
@@ -2578,6 +3048,9 @@
                                                 error={licensingFees.error}
                                                 onRetry={() => setFeeNonce(n => n + 1)} />
                         )}
+
+                        {/* 2c. AGENT RECRUITING — /aca-agent-recruiting */}
+                        {currentTab === 'recruiting' && <AgentRecruitingPage />}
 
                         {/* 3. AUTHENTICATED AGENT DASHBOARD */}
                         {currentTab === 'dashboard' && (
@@ -3494,6 +3967,7 @@
                                         <h3 className="text-[13px] font-semibold text-ink">Products</h3>
                                         <ul className="mt-4 space-y-2.5 text-sm text-muted">
                                             <li><button onClick={() => scrollToSection('final-expense')} className="hover:text-ink transition-colors">Final Expense</button></li>
+                                            <li><button onClick={() => navigateTo('recruiting')} className="hover:text-ink transition-colors">Agent Recruiting</button></li>
                                         </ul>
                                     </div>
 

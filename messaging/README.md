@@ -64,6 +64,12 @@ on first run only — after that the stored values win, and are edited from
 Gateway Settings in the UI. Message variation stays off until it is enabled
 there.
 
+`RECRUITING_INQUIRY_EMAIL` and the `SMTP_*` values serve the public form on
+netenroll.com/aca-agent-recruiting, which nginx proxies to
+`POST /api/recruiting-inquiry` here. Every inquiry is stored in
+`recruiting_inquiries` before the email is attempted, so a mail outage never
+loses one; with no address set they are stored and not sent.
+
 ## Tests
 
 ```bash
