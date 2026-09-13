@@ -110,14 +110,7 @@
         .card-hover { transition: box-shadow .2s ease, border-color .2s ease; }
         .card-hover:hover { border-color: #D3D8DE; box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 14px 34px -16px rgba(16,24,40,.18); }
 
-        /* Connector between the hero flow rows */
-        .flow-tick { height: 14px; position: relative; }
-        .flow-tick::before {
-            content: ''; position: absolute; left: 13px; top: -1px; bottom: -1px;
-            width: 1px; background: #E6E9ED;
-        }
-
-        /* The rule that links the four numbered steps on desktop */
+        /* The rule that links the numbered steps on desktop */
         .step-rule { position: relative; }
         @media (min-width: 1024px) {
             .step-rule::before {
@@ -137,8 +130,14 @@
         .reveal { animation: reveal .5s ease both; }
         .reveal-2 { animation: reveal .5s ease .08s both; }
         @keyframes reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* Scroll-triggered reveal, low amplitude, fires once per element. */
+        .reveal-onscroll { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .55s ease; }
+        .reveal-onscroll.is-in { opacity: 1; transform: none; }
+
         @media (prefers-reduced-motion: reduce) {
             .reveal, .reveal-2 { animation: none; }
+            .reveal-onscroll { opacity: 1; transform: none; transition: none; }
             .faq-panel { transition: none; }
             html { scroll-behavior: auto; }
         }
@@ -475,11 +474,11 @@
                 features: ['12-18 min average call length', 'High purchase intent seniors', '100% TCPA opt-in verified consent'],
                 status: 'ACTIVE'
             },
-            { 
+            {
                 id: 'prod_med',
                 code: 'MEDICARE',
-                name: 'Medicare Advantage & Supplement', 
-                fee: 120, 
+                name: 'Medicare Advantage & Supplement',
+                fee: 125,
                 tagline: 'Eligible Medicare Beneficiaries',
                 description: 'Inbound beneficiaries looking to compare plan benefits during AEP, SEP, or Turning-65 windows.',
                 features: ['CMS disclaimer compliant', 'SOA & call recording friendly', 'Matched to the states you select'],
@@ -523,23 +522,23 @@
         const FAQS = [
             {
                 q: "How does billing work?",
-                a: "There is no charge for a delivered call. The fee is tied to an eligible submitted application. For the Final Expense program the rate is $199 per submitted application, for Medicare it is $120, and for ACA it is $100. There is no minimum purchase - a single application is a valid order."
-            },
-            {
-                q: "Do I pay for every call?",
-                a: "No. The call is not the billing event. Receiving a call, speaking with the consumer, and the length of the conversation carry no per-call charge."
-            },
-            {
-                q: "What is the minimum to get started?",
-                a: "One application. There is no block to buy up front and no minimum spend. It is not a subscription and it does not renew on a schedule."
+                a: "There is no charge for a delivered call. The fee is tied to an eligible submitted application. For the Final Expense program the rate is $199 per submitted application, for Medicare it is $125, and for ACA it is $100. There is no minimum purchase - a single application is a valid order."
             },
             {
                 q: "What counts as a submitted application?",
                 a: "An insurance application you complete and submit for a consumer from a NetEnroll call, recorded against your account with the carrier, policy number and applicant details. Eligibility follows the billing terms of the campaign you are enrolled in."
             },
             {
-                q: "Do I need an insurance license?",
-                a: "NetEnroll does not ask for a producer number and does not verify licensing. You are responsible for holding whatever licenses and authority the law requires for the business you conduct. Calls are routed to the states you select on your account."
+                q: "Do I pay for calls that do not convert?",
+                a: "No. The call is not the billing event. Receiving a call, speaking with the consumer, and a consumer who does not move forward all carry no charge."
+            },
+            {
+                q: "Is there a minimum to get started?",
+                a: "No. One application is a valid order. There is no block to buy up front and no minimum spend. It is not a subscription and it does not renew on a schedule."
+            },
+            {
+                q: "Are there monthly fees?",
+                a: "No. There is no monthly subscription and no separate charge for account access. What you pay is the per-application fee for the program you are enrolled in, with no minimum purchase."
             },
             {
                 q: "How are calls routed?",
@@ -550,17 +549,19 @@
                 a: "Yes. An agency can have several producers on the platform, each with their own routing and their own call and application records, reported together at the agency level."
             },
             {
-                q: "How quickly can I start?",
-                a: "Registration is a short form: whether you are a company or an individual, your contact details, the states you want calls from, the program you want, and a payment method. Once those are complete you can set your status to available and begin taking calls."
+                q: "Do I need an insurance license?",
+                a: "NetEnroll does not ask for a producer number and does not verify licensing. You are responsible for holding whatever licenses and authority the law requires for the business you conduct. Calls are routed to the states you select on your account."
             },
             {
-                q: "Are there monthly fees?",
-                a: "No. There is no monthly subscription and no separate charge for account access. What you pay is the per-application fee for the program you are enrolled in, with no minimum purchase."
+                q: "How quickly can I start?",
+                a: "Registration is a short form: whether you are a company or an individual, your contact details, the states you want calls from, the program you want, and a payment method. Once those are complete you can set your status to available and begin taking calls."
             }
         ];
 
         // Pricing is read from the product catalogue, never hard-coded in copy.
         const FINAL_EXPENSE_FEE = (INITIAL_DB_PRODUCTS.find(p => p.code === 'FINAL_EXPENSE') || {}).fee;
+        const MEDICARE_FEE = (INITIAL_DB_PRODUCTS.find(p => p.code === 'MEDICARE') || {}).fee;
+        const ACA_FEE = (INITIAL_DB_PRODUCTS.find(p => p.code === 'ACA_HEALTH') || {}).fee;
 
         // The rate is a firm number now, not a "from" price, so no "+".
         const FEE_DISPLAY = `$${FINAL_EXPENSE_FEE}`;
@@ -613,23 +614,176 @@
             </svg>
         );
 
-        // Line icons for the trust strip. Drawn inline so the strip renders with
-        // the page rather than after an icon-font round trip.
-        const TrustIcon = ({ name }) => {
-            const paths = {
-                call: <path d="M6.2 3.5h3l1.4 3.5-2 1.2a10.5 10.5 0 0 0 5.2 5.2l1.2-2 3.5 1.4v3a1.7 1.7 0 0 1-1.9 1.7C10.4 17 4 10.6 3.5 5.4A1.7 1.7 0 0 1 5.2 3.5z" />,
-                shield: <path d="M12 3.2l6.3 2.4v5.1c0 4-2.6 7.2-6.3 8.4-3.7-1.2-6.3-4.4-6.3-8.4V5.6z M9.2 11.6l2 2 3.6-3.9" />,
-                chart: <path d="M4 19.2h16 M7.4 15.6V10 M12 15.6V5.4 M16.6 15.6v-3.4" />,
-                doc: <path d="M6.5 3.4h7.2l4.3 4.3v13H6.5z M13.4 3.4v4.6h4.6 M9.6 12.4h5.2 M9.6 15.8h5.2" />
-            };
+        /* =========================================================
+           SHARED MARKETING COMPONENTS
+           Consumed by both the Final Expense page and the ACA
+           recruiting page, so a change to one lands on both.
+           ========================================================= */
+
+        // Fires once, the first time the wrapped element enters the
+        // viewport. Reduced-motion visitors see the final state with no
+        // transition rather than nothing at all.
+        function useInView(threshold = 0.2) {
+            const ref = useRef(null);
+            const [inView, setInView] = useState(false);
+            useEffect(() => {
+                const el = ref.current;
+                if (!el) return;
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setInView(true); return; }
+                const obs = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) { setInView(true); obs.disconnect(); }
+                }, { threshold });
+                obs.observe(el);
+                return () => obs.disconnect();
+            }, []);
+            return [ref, inView];
+        }
+
+        const Reveal = ({ children, className = '', as: Tag = 'div' }) => {
+            const [ref, inView] = useInView();
+            return <Tag ref={ref} className={`reveal-onscroll ${inView ? 'is-in' : ''} ${className}`}>{children}</Tag>;
+        };
+
+        // Counts from 0 to `value` once `active` is true. Reduced-motion
+        // visitors, and anyone re-rendering after the count already ran,
+        // just get the target number with no animation.
+        function useCountUp(value, active, duration = 900) {
+            const [display, setDisplay] = useState(0);
+            const done = useRef(false);
+            useEffect(() => {
+                if (!active || done.current) return;
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    setDisplay(value); done.current = true; return;
+                }
+                done.current = true;
+                const start = performance.now();
+                let frame;
+                const tick = (now) => {
+                    const t = Math.min(1, (now - start) / duration);
+                    setDisplay(value * (1 - Math.pow(1 - t, 3)));
+                    if (t < 1) frame = requestAnimationFrame(tick);
+                };
+                frame = requestAnimationFrame(tick);
+                return () => cancelAnimationFrame(frame);
+            }, [active, value, duration]);
+            return display;
+        }
+
+        // Self-triggering: counts up the moment it scrolls into view, no
+        // wiring required from the section around it.
+        const CountUp = ({ value, decimals = 0, prefix = '', suffix = '' }) => {
+            const [ref, inView] = useInView(0.4);
+            const n = useCountUp(value, inView);
             return (
-                <svg className="w-[22px] h-[22px] shrink-0 text-deepgreen" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    {paths[name]}
-                </svg>
+                <span ref={ref} className="num">{prefix}{n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>
             );
         };
 
+        // The price is the offer, so it is drawn the same way everywhere
+        // it appears: one big figure, its unit, and a fine line of terms.
+        const PriceAnchor = ({ amount, unit, fine, size = 'lg', className = '' }) => (
+            <div className={className}>
+                <div className="flex items-baseline gap-3.5 flex-wrap">
+                    <span className={`num font-bold leading-[0.9] text-deepgreen ${size === 'lg' ? 'text-[3.4rem] sm:text-[3.9rem]' : 'text-[2.8rem]'}`}>
+                        {amount}
+                    </span>
+                    {unit && <span className="text-[15.5px] font-semibold text-ink">{unit}</span>}
+                </div>
+                {fine && <p className="mt-3 text-[14.5px] text-muted">{fine}</p>}
+            </div>
+        );
+
+        // One dominant action, one quiet one. Both render as a button when
+        // no href is given, and as a link when one is - the same pair
+        // shows up over a scroll handler in one hero and a real anchor
+        // in another.
+        const CtaPair = ({ primary, secondary, className = 'flex flex-col sm:flex-row gap-3' }) => {
+            const Btn = ({ cfg, cls }) => cfg.href
+                ? <a href={cfg.href} onClick={cfg.onClick} className={cls}>{cfg.label}</a>
+                : <button type="button" onClick={cfg.onClick} className={cls}>{cfg.label}</button>;
+            return (
+                <div className={className}>
+                    {primary && <Btn cfg={primary} cls={`btn-primary btn-lg ${primary.className || ''}`} />}
+                    {secondary && <Btn cfg={secondary} cls={`btn-secondary ${secondary.className || ''}`} />}
+                </div>
+            );
+        };
+
+        // Two-column FAQ accordion. Each column is its own <div>, so
+        // opening a question only ever reflows its own column - not the
+        // one beside it.
+        const FaqAccordion = ({ faqs, openIndex, onToggle, idPrefix }) => {
+            const half = Math.ceil(faqs.length / 2);
+            const groups = [faqs.slice(0, half), faqs.slice(half)];
+            return (
+                <div className="grid lg:grid-cols-2 gap-5 items-start">
+                    {groups.map((group, gi) => (
+                        <div key={gi} className="card divide-y divide-line overflow-hidden">
+                            {group.map((faq, j) => {
+                                const idx = gi * half + j;
+                                const open = openIndex === idx;
+                                const panelId = `${idPrefix}-faq-${idx}`;
+                                return (
+                                    <div key={idx}>
+                                        <h3>
+                                            <button type="button"
+                                                    onClick={() => onToggle(open ? -1 : idx)}
+                                                    aria-expanded={open}
+                                                    aria-controls={panelId}
+                                                    className="w-full text-left px-6 py-[18px] flex items-start justify-between gap-4 hover:bg-soft transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-deepgreen focus-visible:-outline-offset-2">
+                                                <span className="text-[16px] font-medium leading-snug text-ink">{faq.q}</span>
+                                                <span className={`mt-0.5 shrink-0 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>
+                                                    <PlusMark />
+                                                </span>
+                                            </button>
+                                        </h3>
+                                        <div id={panelId} className={`faq-panel ${open ? 'faq-open' : ''}`}>
+                                            <div>
+                                                <p className="px-6 pb-6 text-[15px] leading-relaxed text-muted">{faq.a}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // Numbered steps, horizontal on desktop with a connecting rule,
+        // stacked on mobile. Used for both the three-step billing flow
+        // and the four-step recruiting flow.
+        const ProcessSteps = ({ steps }) => (
+            <ol className={`mt-11 grid sm:grid-cols-2 gap-9 lg:gap-8 step-rule ${steps.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
+                {steps.map(({ num, title, body }) => (
+                    <li key={num} className="relative">
+                        <span className="num relative z-10 w-[46px] h-[46px] rounded-full bg-white border-2 border-mint ring-1 ring-line flex items-center justify-center text-[16px] font-bold text-deepgreen">
+                            {num}
+                        </span>
+                        <h3 className="mt-5 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</h3>
+                        <p className="mt-2.5 text-[15.5px] leading-relaxed text-muted">{body}</p>
+                    </li>
+                ))}
+            </ol>
+        );
+
+        // The dark, high-contrast trust anchor. Both the risk-reversal
+        // band and the thirty-day replacement section are this same
+        // shell - full-bleed, near-black, brand green for emphasis only.
+        // .eyebrow and .t-h2 hard-code their own (light-mode) text color, and
+        // the Tailwind CDN stylesheet loads before that custom CSS - so a
+        // co-occurring text-* utility of equal specificity would lose the
+        // cascade. An inline style always wins, no new class needed.
+        const DarkBand = ({ eyebrow, headline, children, id, className = '' }) => (
+            <section id={id} className={`bg-dark-900 text-white px-5 sm:px-6 py-[54px] lg:py-[74px] ${className}`}>
+                <div className="max-w-[1200px] mx-auto">
+                    {eyebrow && <p className="eyebrow" style={{ color: '#34d399' }}>{eyebrow}</p>}
+                    {headline && <h2 className="t-h2 mt-3 max-w-[46rem]" style={{ color: '#fff' }}>{headline}</h2>}
+                    {children}
+                </div>
+            </section>
+        );
 
         /* =========================================================
            STATE LICENSING VALUE TOOL — /licensing-value
@@ -720,11 +874,17 @@
             return null;
         }
 
+        // Fields that belong to step 1 of the recruiting form. Used to scope
+        // validation to the step the visitor is actually on.
+        const RECRUITING_STEP1_FIELDS = ['agency_name', 'states', 'agent_count', 'offer', 'timing'];
+
         function AgentRecruitingPage() {
             const [openFaq, setOpenFaq] = useState(-1);
             const [sent, setSent] = useState(false);
             const [sending, setSending] = useState(false);
             const [formError, setFormError] = useState('');
+            const [step, setStep] = useState(1);
+            const [fieldErrors, setFieldErrors] = useState({});
             const band = React.useMemo(() => recruitingBand(new Date()), []);
 
             // FAQPage structured data lives in the head, beside the meta the
@@ -771,34 +931,87 @@
                 }
             };
 
-            const field = (label, name, control) => (
+            // Inline, on-blur validation. Reads the field's own HTML5
+            // constraints rather than duplicating them in JS, so a
+            // required/type/pattern change only ever has to happen once.
+            const validateField = (el) => {
+                if (!el || !el.name) return true;
+                const msg = el.validity.valid ? '' : (el.validationMessage || 'This field is required.');
+                setFieldErrors(prev => ({ ...prev, [el.name]: msg }));
+                return el.validity.valid;
+            };
+
+            const field = (label, name, control, optional = false) => (
                 <div>
-                    <label htmlFor={'rc-' + name} className="rc-label">{label}</label>
+                    <label htmlFor={'rc-' + name} className="rc-label">
+                        {label}{optional && <span className="font-normal text-muted"> (optional)</span>}
+                    </label>
                     {control}
+                    {fieldErrors[name] && (
+                        <p id={'rc-' + name + '-error'} role="alert" className="mt-1.5 text-[13px] text-red-700">
+                            {fieldErrors[name]}
+                        </p>
+                    )}
                 </div>
             );
             const text = (name, type = 'text', extra = {}) => (
-                <input id={'rc-' + name} name={name} type={type} required className="rc-input" {...extra} />
+                <input id={'rc-' + name} name={name} type={type} required className="rc-input"
+                       onBlur={e => validateField(e.target)}
+                       aria-invalid={!!fieldErrors[name]}
+                       aria-describedby={fieldErrors[name] ? 'rc-' + name + '-error' : undefined}
+                       {...extra} />
             );
             const select = (name, options) => (
-                <select id={'rc-' + name} name={name} required defaultValue="" className="rc-input">
+                <select id={'rc-' + name} name={name} required defaultValue="" className="rc-input"
+                        onBlur={e => validateField(e.target)}
+                        aria-invalid={!!fieldErrors[name]}
+                        aria-describedby={fieldErrors[name] ? 'rc-' + name + '-error' : undefined}>
                     <option value="" disabled>Choose one</option>
                     {options.map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
             );
+
+            // Step 1 -> 2 only proceeds once every step-1 field validates.
+            // Fields stay mounted across both steps (just hidden), so
+            // nothing typed is lost going forward or back.
+            const tryAdvanceToStep2 = (form) => {
+                const invalid = RECRUITING_STEP1_FIELDS
+                    .map(name => form.elements.namedItem(name))
+                    .filter(el => !validateField(el));
+                if (invalid.length) { invalid[0].focus(); return false; }
+                setStep(2);
+                return true;
+            };
+            const goToStep2 = (e) => tryAdvanceToStep2(e.currentTarget.form);
+
+            // The form's real submit button lives in step 2's markup, just
+            // hidden - which still makes it the form's implicit submit
+            // target. Without this, pressing Enter on a step-1 field would
+            // try to submit the whole form instead of advancing a step.
+            const handleFormKeyDown = (e) => {
+                if (e.key === 'Enter' && step === 1 && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    tryAdvanceToStep2(e.currentTarget);
+                }
+            };
 
             return (
                 <div className="bg-white text-ink">
 
                     {/* ---------------- URGENCY BAND ---------------- */}
                     <div className="rc-band bg-mint border-b border-brandgreen/20 px-5 text-center" role={band ? 'status' : undefined} aria-hidden={band ? undefined : 'true'}>
-                        {band && <p className="text-[14px] sm:text-[15px] font-medium text-deepgreen">{band}</p>}
+                        {band && (
+                            <p className="flex items-center justify-center gap-2.5 text-[14px] sm:text-[15px] font-medium text-deepgreen">
+                                <span className="w-[7px] h-[7px] shrink-0 rounded-full bg-brandgreen" aria-hidden="true"></span>
+                                {band}
+                            </p>
+                        )}
                     </div>
 
                     {/* ---------------- 1. HERO ---------------- */}
                     <section className="px-5 sm:px-6 pt-10 pb-12 lg:pt-[60px] lg:pb-[64px]">
-                        <div className="max-w-[1200px] mx-auto">
-                            <div className="max-w-[52rem] reveal">
+                        <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.5fr_1fr] gap-10 lg:gap-14 items-center">
+                            <Reveal className="max-w-[42rem]">
                                 <p className="eyebrow">Agent Recruiting</p>
                                 <h1 className="t-h1 mt-4">
                                     Ten licensed ACA agents, signed to your agency,
@@ -810,14 +1023,45 @@
                                     and keep going until your count is filled. Any agent who does not last thirty
                                     days is replaced at no charge.
                                 </p>
-                                <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                                    <a href="#recruiting-form" className="btn-primary btn-lg">Start a recruiting campaign</a>
-                                    <a href="#recruiting-verify" className="btn-secondary">See what we verify</a>
-                                </div>
+                                <CtaPair
+                                    className="mt-8 flex flex-col sm:flex-row gap-3"
+                                    primary={{ label: 'Start a recruiting campaign', href: '#recruiting-form' }}
+                                    secondary={{ label: 'See what we verify', href: '#recruiting-verify' }}
+                                />
                                 <p className="mt-6 text-[15px] text-muted">
                                     That is $450 an agent. A recruiting firm charges ten thousand and up for the same hire.
                                 </p>
-                            </div>
+                            </Reveal>
+
+                            {/* The strongest proof on the page, moved above the fold: the same
+                                hire costs elsewhere, on the same scale, so the gap at $450 is
+                                obvious without reading a table. */}
+                            <Reveal className="w-full max-w-[380px] mx-auto lg:mx-0 lg:justify-self-end">
+                                <div className="card shadow-lift px-6 sm:px-7 py-7">
+                                    <p className="text-[12px] font-semibold tracking-[0.13em] text-muted">COST OF ONE COMPLETED HIRE</p>
+                                    <div className="mt-6 space-y-5">
+                                        {[
+                                            { label: 'Traditional recruiting firm', amount: '$10,000–$25,000', pct: 100, ours: false },
+                                            { label: 'Job board hiring', amount: '$5,000–$10,000', pct: 40, ours: false },
+                                            { label: 'Direct outreach', amount: '$1,500–$3,000', pct: 13, ours: false },
+                                            { label: 'NetEnroll, 10 agents', amount: '$450', pct: 4, ours: true }
+                                        ].map(b => (
+                                            <div key={b.label}>
+                                                <div className="flex items-baseline justify-between gap-3">
+                                                    <span className={`text-[13px] ${b.ours ? 'font-semibold text-ink' : 'text-muted'}`}>{b.label}</span>
+                                                    <span className={`num text-[13.5px] font-bold shrink-0 ${b.ours ? 'text-deepgreen' : 'text-ink/60'}`}>{b.amount}</span>
+                                                </div>
+                                                <div className="mt-1.5 h-[9px] rounded-full bg-line overflow-hidden">
+                                                    <div className={`h-full rounded-full ${b.ours ? 'bg-brandgreen' : 'bg-ink/25'}`} style={{ width: b.pct + '%' }}></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="mt-6 text-[12px] leading-relaxed text-muted">
+                                        Published industry benchmarks for the cost of one completed hire.
+                                    </p>
+                                </div>
+                            </Reveal>
                         </div>
                     </section>
 
@@ -854,31 +1098,6 @@
                                     ))}
                                 </ul>
                             </div>
-
-                            <div className="mt-[54px] pt-[46px] border-t border-line">
-                                <h3 className="t-h3">What the same hire costs elsewhere</h3>
-                                <div className="mt-7 card px-6 sm:px-9 py-1 sm:py-2 max-w-[860px]">
-                                    <table className="rc-table">
-                                        <caption className="sr-only">Cost of one completed hire by recruiting method</caption>
-                                        <tbody>
-                                            {[
-                                                ['Traditional recruiting firm', '$10,000 to $25,000 per hire', false],
-                                                ['Job board hiring', '$5,000 to $10,000 per hire', false],
-                                                ['Direct outreach programs', '$1,500 to $3,000 per hire', false],
-                                                ['NetEnroll, ten agent campaign', '$450 per hire', true]
-                                            ].map(([method, cost, ours]) => (
-                                                <tr key={method}>
-                                                    <td className={ours ? 'text-[16px] font-semibold text-ink' : 'text-[16px] text-muted'}>{method}</td>
-                                                    <td className={`num text-[15px] sm:text-[16px] font-semibold !whitespace-normal ${ours ? 'text-deepgreen' : 'text-ink'}`}>{cost}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <p className="mt-4 text-[13px] leading-relaxed text-muted max-w-[54rem]">
-                                    The first three are published industry benchmarks for the cost of one completed hire.
-                                </p>
-                            </div>
                         </div>
                     </section>
 
@@ -889,14 +1108,10 @@
                                 <h2 className="t-h2">We were a phone platform before we were a recruiter.</h2>
                                 <p className="t-lede mt-6">
                                     We run the calls for insurance sales every day, on our own equipment and our own
-                                    carrier connections. Reaching licensed agents at volume is not a project we take on
-                                    for you. It is what the platform already does.
-                                </p>
-                                <p className="t-lede mt-5">
-                                    A recruiting firm charging ten thousand dollars a placement is paying a person by
-                                    the hour to do what we do on a dialer. That is the entire difference in the price,
-                                    and it is why five agents costs you twenty five hundred dollars instead of fifty
-                                    thousand.
+                                    carrier connections. A recruiting firm charging ten thousand dollars a placement is
+                                    paying a person by the hour to do what we do on a dialer. That is the entire
+                                    difference in the price, and it is why five agents costs you twenty five hundred
+                                    dollars instead of fifty thousand.
                                 </p>
                             </div>
                         </div>
@@ -931,42 +1146,29 @@
                     <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                         <div className="max-w-[1200px] mx-auto">
                             <h2 className="t-h2">How a campaign runs</h2>
-                            <ol className="mt-11 grid sm:grid-cols-2 lg:grid-cols-4 gap-9 lg:gap-8 step-rule">
-                                {[
-                                    ['01', 'We agree your standard.', 'The states you need covered, how many agents you want, what you are offering them, and what rules an agent out. We recruit to your standard, not a generic one.'],
-                                    ['02', 'We call licensed agents in your states.', 'These are people already in the business. Agents between agencies, agents unhappy with their split, agents selling other lines who want marketplace business this season. Nobody is waiting to discover a job posting.'],
-                                    ['03', 'We screen them and send them to you.', 'Agents who clear your standard and the license check are connected to you live or scheduled inside the hours you give us. Interview as many as you want. The campaign is not measured in interviews, so there is no cost to turning one down.'],
-                                    ['04', 'You sign your agents.', 'You make the offer, on your contract, under your agency. Each agent who signs counts toward your campaign, and we keep recruiting until the count is filled.']
-                                ].map(([num, title, body]) => (
-                                    <li key={num} className="relative">
-                                        <span className="num relative z-10 w-[46px] h-[46px] rounded-full bg-white border-2 border-mint ring-1 ring-line flex items-center justify-center text-[16px] font-bold text-deepgreen">
-                                            {num}
-                                        </span>
-                                        <h3 className="mt-5 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</h3>
-                                        <p className="mt-2.5 text-[15.5px] leading-relaxed text-muted">{body}</p>
-                                    </li>
-                                ))}
-                            </ol>
+                            <ProcessSteps steps={[
+                                { num: '01', title: 'We agree your standard.', body: 'The states you need covered, how many agents you want, what you are offering them, and what rules an agent out. We recruit to your standard, not a generic one.' },
+                                { num: '02', title: 'We call licensed agents in your states.', body: 'These are people already in the business. Agents between agencies, agents unhappy with their split, agents selling other lines who want marketplace business this season. Nobody is waiting to discover a job posting.' },
+                                { num: '03', title: 'We screen them and send them to you.', body: 'Agents who clear your standard and the license check are connected to you live or scheduled inside the hours you give us. Interview as many as you want. The campaign is not measured in interviews, so there is no cost to turning one down.' },
+                                { num: '04', title: 'You sign your agents.', body: 'You make the offer, on your contract, under your agency. Each agent who signs counts toward your campaign, and we keep recruiting until the count is filled.' }
+                            ]} />
                         </div>
                     </section>
 
                     {/* ---------------- 6. THIRTY DAY REPLACEMENT ---------------- */}
-                    <section className="border-y border-line bg-mint px-5 sm:px-6 py-[54px] lg:py-[70px]">
-                        <div className="max-w-[1200px] mx-auto">
-                            <div className="max-w-[46rem]">
-                                <h2 className="t-h2">The thirty day replacement</h2>
-                                <p className="t-lede mt-6">
-                                    If an agent signs with your agency and is not still with you thirty days later,
-                                    tell us and we recruit a replacement at no charge. It does not matter whether they
-                                    left or you let them go. That agent comes off your count and we go back to work.
-                                </p>
-                                <p className="mt-6 text-[17px] sm:text-[18px] font-semibold leading-relaxed text-ink">
-                                    We make it right with another agent. There are no refunds and no credits, because
-                                    what you bought is agents.
-                                </p>
-                            </div>
+                    <DarkBand headline="Your pipeline should not stop because one producer does.">
+                        <div className="max-w-[46rem]">
+                            <p className="t-lede mt-6" style={{ color: '#cbd5e1' }}>
+                                If an agent signs with your agency and is not still there thirty days later, tell us
+                                and we recruit a replacement at no charge. It does not matter whether they left or you
+                                let them go. That agent comes off your count and we go back to work.
+                            </p>
+                            <p className="mt-6 text-[17px] sm:text-[18px] font-semibold leading-relaxed text-white">
+                                We make it right with another agent. There are no refunds and no credits, because
+                                what you bought is agents.
+                            </p>
                         </div>
-                    </section>
+                    </DarkBand>
 
                     {/* ---------------- 7. WHAT WE NEED ---------------- */}
                     <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
@@ -991,36 +1193,8 @@
                     <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
                         <div className="max-w-[1040px] mx-auto">
                             <h2 className="t-h2">Questions agency owners ask</h2>
-                            <div className="mt-9 grid lg:grid-cols-2 gap-5 items-start">
-                                {[RECRUITING_FAQS.slice(0, Math.ceil(RECRUITING_FAQS.length / 2)), RECRUITING_FAQS.slice(Math.ceil(RECRUITING_FAQS.length / 2))].map((group, gi) => (
-                                    <div key={gi} className="card divide-y divide-line overflow-hidden">
-                                        {group.map((faq, j) => {
-                                            const idx = gi * Math.ceil(RECRUITING_FAQS.length / 2) + j;
-                                            const open = openFaq === idx;
-                                            return (
-                                                <div key={idx}>
-                                                    <h3>
-                                                        <button type="button"
-                                                                onClick={() => setOpenFaq(open ? -1 : idx)}
-                                                                aria-expanded={open}
-                                                                aria-controls={'rc-faq-' + idx}
-                                                                className="w-full text-left px-6 py-[18px] flex items-start justify-between gap-4 hover:bg-soft transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-deepgreen focus-visible:-outline-offset-2">
-                                                            <span className="text-[16px] font-medium leading-snug text-ink">{faq.q}</span>
-                                                            <span className={`mt-0.5 shrink-0 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>
-                                                                <PlusMark />
-                                                            </span>
-                                                        </button>
-                                                    </h3>
-                                                    <div id={'rc-faq-' + idx} className={`faq-panel ${open ? 'faq-open' : ''}`}>
-                                                        <div>
-                                                            <p className="px-6 pb-6 text-[15px] leading-relaxed text-muted">{faq.a}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ))}
+                            <div className="mt-9">
+                                <FaqAccordion faqs={RECRUITING_FAQS} openIndex={openFaq} onToggle={setOpenFaq} idPrefix="rc" />
                             </div>
                         </div>
                     </section>
@@ -1042,34 +1216,62 @@
                                         Thank you. We have your request and will reply within one business day.
                                     </p>
                                 ) : (
-                                    <form onSubmit={submit} className="space-y-5">
-                                        {field('Agency name', 'agency_name', text('agency_name', 'text', { autoComplete: 'organization' }))}
-                                        {field('Your name', 'contact_name', text('contact_name', 'text', { autoComplete: 'name' }))}
-                                        <div className="grid sm:grid-cols-2 gap-5">
-                                            {field('Email', 'email', text('email', 'email', { autoComplete: 'email' }))}
-                                            {field('Phone', 'phone', text('phone', 'tel', { autoComplete: 'tel' }))}
-                                        </div>
-                                        {field('States you need agents licensed in', 'states', text('states'))}
-                                        {field('How many agents you want to sign', 'agent_count', select('agent_count', ['5 to 9', '10', '11 to 25', 'More than 25']))}
-                                        {field('What you are offering an agent', 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
-                                        {field('When you need them selling', 'timing', select('timing', ['Immediately', 'Before November 1', 'During open enrollment', 'After January']))}
-                                        <div>
-                                            <label htmlFor="rc-notes" className="rc-label">Anything else we should know <span className="font-normal text-muted">(optional)</span></label>
-                                            <textarea id="rc-notes" name="notes" rows="4" maxLength="4000" className="rc-input"></textarea>
+                                    <form onSubmit={submit} onKeyDown={handleFormKeyDown} noValidate className="space-y-6">
+                                        <div className="flex items-center gap-3"
+                                             role="progressbar" aria-valuemin={1} aria-valuemax={2} aria-valuenow={step}
+                                             aria-label="Recruiting form progress">
+                                            <div className="flex-1 h-[3px] rounded-full bg-line overflow-hidden">
+                                                <div className="h-full bg-brandgreen transition-[width] duration-300 ease-out"
+                                                     style={{ width: step === 1 ? '50%' : '100%' }}></div>
+                                            </div>
+                                            <span className="text-[12.5px] font-medium text-muted shrink-0">Step {step} of 2</span>
                                         </div>
 
-                                        {formError && (
-                                            <p role="alert" className="text-[14.5px] leading-relaxed text-red-700 bg-red-50 border border-red-200 rounded-[10px] px-4 py-3">
-                                                {formError}
+                                        {/* Both steps stay mounted - hidden, not unmounted - so a value
+                                            typed on step 1 is still there if the visitor comes back to it. */}
+                                        <div hidden={step !== 1} className="space-y-5">
+                                            <h3 className="text-[15px] font-semibold text-ink">What you need</h3>
+                                            {field('Agency name', 'agency_name', text('agency_name', 'text', { autoComplete: 'organization' }))}
+                                            {field('States you need agents licensed in', 'states', text('states'))}
+                                            {field('How many agents you want to sign', 'agent_count', select('agent_count', ['5 to 9', '10', '11 to 25', 'More than 25']))}
+                                            {field('What you are offering an agent', 'offer', select('offer', ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding']))}
+                                            {field('When you need them selling', 'timing', select('timing', ['Immediately', 'Before November 1', 'During open enrollment', 'After January']))}
+
+                                            <button type="button" onClick={goToStep2} className="btn-primary btn-lg w-full">
+                                                Continue
+                                            </button>
+                                        </div>
+
+                                        <div hidden={step !== 2} className="space-y-5">
+                                            <h3 className="text-[15px] font-semibold text-ink">How we reach you</h3>
+                                            {field('Your name', 'contact_name', text('contact_name', 'text', { autoComplete: 'name' }))}
+                                            <div className="grid sm:grid-cols-2 gap-5">
+                                                {field('Email', 'email', text('email', 'email', { autoComplete: 'email' }))}
+                                                {field('Phone', 'phone', text('phone', 'tel', { autoComplete: 'tel' }))}
+                                            </div>
+                                            <div>
+                                                <label htmlFor="rc-notes" className="rc-label">Anything else we should know <span className="font-normal text-muted">(optional)</span></label>
+                                                <textarea id="rc-notes" name="notes" rows="4" maxLength="4000" className="rc-input"></textarea>
+                                            </div>
+
+                                            {formError && (
+                                                <p role="alert" className="text-[14.5px] leading-relaxed text-red-700 bg-red-50 border border-red-200 rounded-[10px] px-4 py-3">
+                                                    {formError}
+                                                </p>
+                                            )}
+
+                                            <div className="flex gap-3">
+                                                <button type="button" onClick={() => setStep(1)} className="btn-secondary shrink-0">
+                                                    Back
+                                                </button>
+                                                <button type="submit" disabled={sending} className="btn-primary btn-lg flex-1 disabled:opacity-60">
+                                                    {sending ? 'Sending' : 'Start a recruiting campaign'}
+                                                </button>
+                                            </div>
+                                            <p className="text-[14px] leading-relaxed text-muted">
+                                                We reply within one business day. Nothing runs until we have agreed the standard with you.
                                             </p>
-                                        )}
-
-                                        <button type="submit" disabled={sending} className="btn-primary btn-lg w-full disabled:opacity-60">
-                                            {sending ? 'Sending' : 'Start a recruiting campaign'}
-                                        </button>
-                                        <p className="text-[14px] leading-relaxed text-muted">
-                                            We reply within one business day. Nothing runs until we have agreed the standard with you.
-                                        </p>
+                                        </div>
                                     </form>
                                 )}
                             </div>
@@ -1590,7 +1792,7 @@
             const [adminSubTab, setAdminSubTab] = useState('overview');
 
             const [selectedVertical, setSelectedVertical] = useState('Final Expense Life Insurance');
-            const [openFaq, setOpenFaq] = useState(0);
+            const [openFaq, setOpenFaq] = useState(-1);
             const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
             // The public marketing site is light mode. The authenticated portals
@@ -2224,395 +2426,222 @@
                         {currentTab === 'marketing' && (
                             <div className="bg-white text-ink pad-for-cta">
 
-                                {/* ---------------- HERO ---------------- */}
+                                {/* ---------------- 1. HERO ---------------- */}
                                 <section className="px-5 sm:px-6 pt-9 pb-10 lg:pt-[52px] lg:pb-[44px]">
-                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.75fr_1fr] gap-10 lg:gap-12 items-center">
+                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-[1.6fr_1fr] gap-10 lg:gap-12 items-center">
 
-                                        <div className="reveal">
-                                            <p className="eyebrow">Final Expense Calls</p>
+                                        <Reveal>
+                                            <p className="eyebrow">Final Expense Growth Platform</p>
 
                                             <h1 className="t-h1 mt-4">
-                                                Stop paying for every&nbsp;call.
-                                                <span className="block text-brandgreen">Pay when an application is&nbsp;submitted.</span>
+                                                Stop buying calls.
+                                                <span className="block text-brandgreen">Start buying applications.</span>
                                             </h1>
 
-                                            <p className="t-lede mt-6 max-w-[38rem]">
-                                                Get connected with consumers looking for final expense coverage without
-                                                the traditional per-call charge. You pay when an eligible insurance
-                                                application is submitted.
+                                            <p className="t-lede mt-6 max-w-[40rem]">
+                                                NetEnroll connects licensed agents with consumers looking for final
+                                                expense coverage and charges only when a valid application is
+                                                submitted, not when the phone rings.
                                             </p>
 
                                             {/* The price is the offer. It does not go in a card further down. */}
-                                            <div className="mt-7 pl-6 border-l-[3px] border-brandgreen">
-                                                <div className="flex items-baseline gap-3.5 flex-wrap">
-                                                    <span className="num text-[3.4rem] sm:text-[3.9rem] leading-[0.9] font-bold text-deepgreen">
-                                                        {FEE_DISPLAY}
-                                                    </span>
-                                                    <span className="text-[15.5px] font-semibold text-ink">per submitted application</span>
-                                                </div>
-                                                <p className="mt-3 text-[14.5px] text-muted">
-                                                    No traditional per-call charge, and no minimum purchase.
-                                                    Start with a single application.
-                                                </p>
-                                            </div>
+                                            <PriceAnchor
+                                                className="mt-7 pl-6 border-l-[3px] border-brandgreen"
+                                                amount={FEE_DISPLAY}
+                                                unit="per submitted application"
+                                                fine="No per-call charge. No minimum purchase."
+                                            />
 
-                                            <div className="mt-7 flex flex-col sm:flex-row gap-3">
-                                                <button onClick={startSignup} className="btn-primary btn-lg">
-                                                    Start Receiving Calls
-                                                </button>
-                                                <button onClick={() => scrollToSection('how-it-works')} className="btn-secondary">
-                                                    See How It Works
-                                                </button>
-                                            </div>
+                                            <CtaPair
+                                                className="mt-7 flex flex-col sm:flex-row gap-3"
+                                                primary={{ label: 'Start Receiving Calls', onClick: startSignup }}
+                                                secondary={{ label: 'See How It Works', onClick: () => scrollToSection('how-it-works') }}
+                                            />
 
                                             <p className="mt-6 text-[14px] text-muted">
-                                                Built for licensed final expense agents and agencies.
+                                                For licensed final expense agents and agencies.
                                             </p>
-                                        </div>
+                                        </Reveal>
 
-                                        {/* The billing model as a picture, so it lands before the copy is read. */}
-                                        <div className="reveal-2 w-full max-w-[400px] mx-auto lg:mx-0 lg:justify-self-end">
+                                        {/* The billing model as a product surface, so it reads as the
+                                            platform rather than a decorative card. Illustrative only -
+                                            never presented as measured performance. */}
+                                        <Reveal className="w-full max-w-[400px] mx-auto lg:mx-0 lg:justify-self-end">
                                             <div className="card shadow-lift overflow-hidden">
-                                                <div className="px-6 py-3.5 border-b border-line flex items-center justify-between">
-                                                    <span className="text-[12px] font-semibold tracking-[0.13em] text-muted">FINAL EXPENSE CALL</span>
-                                                    <span className="flex items-center gap-2 text-[12px] font-medium text-deepgreen">
-                                                        <span className="w-[7px] h-[7px] rounded-full bg-brandgreen"></span>
-                                                        Live
+                                                <div className="px-6 py-3.5 border-b border-line flex items-center justify-between gap-3">
+                                                    <span className="text-[12px] font-semibold tracking-[0.13em] text-muted">CAMPAIGN ECONOMICS</span>
+                                                    <span className="shrink-0 rounded-full border border-line bg-soft px-2.5 py-1 text-[11px] font-medium text-muted">
+                                                        Illustrative example
                                                     </span>
                                                 </div>
 
                                                 <div className="px-6 pt-5 pb-6">
-                                                    {[
-                                                        ['Incoming consumer', 'Looking for final expense coverage'],
-                                                        ['Agent connected', null],
-                                                        ['Conversation', null]
-                                                    ].map(([title, sub], i) => (
-                                                        <React.Fragment key={title}>
-                                                            {i > 0 && <div className="flow-tick" aria-hidden="true"></div>}
-                                                            <div className="flex items-center gap-4">
-                                                                <span className="w-[26px] flex justify-center shrink-0">
-                                                                    <span className="w-[9px] h-[9px] rounded-full bg-line"></span>
-                                                                </span>
-                                                                <span className="flex-1 min-w-0">
-                                                                    <span className="block text-[15px] font-medium text-ink">{title}</span>
-                                                                    {sub && <span className="block mt-0.5 text-[13px] text-muted">{sub}</span>}
-                                                                </span>
-                                                                <span className="num text-[14.5px] font-semibold text-muted">$0</span>
+                                                    <dl className="divide-y divide-line text-[14.5px]">
+                                                        {[
+                                                            ['Calls received', '10'],
+                                                            ['Consumers who did not move forward', '9'],
+                                                            ['Applications submitted', '1']
+                                                        ].map(([label, value]) => (
+                                                            <div key={label} className="flex items-baseline justify-between gap-4 py-3">
+                                                                <dt className="text-muted">{label}</dt>
+                                                                <dd className="num font-semibold text-ink shrink-0">{value}</dd>
                                                             </div>
-                                                        </React.Fragment>
-                                                    ))}
+                                                        ))}
+                                                    </dl>
 
-                                                    <div className="flow-tick" aria-hidden="true"></div>
+                                                    <dl className="mt-2 pt-2 divide-y divide-line text-[14.5px] border-t border-line">
+                                                        {[
+                                                            ['Call fees', '$0'],
+                                                            ['Consumers not forwarded', '$0'],
+                                                            ['Application', FEE_DISPLAY]
+                                                        ].map(([label, value]) => (
+                                                            <div key={label} className="flex items-baseline justify-between gap-4 py-3">
+                                                                <dt className="text-muted">{label}</dt>
+                                                                <dd className="num font-semibold text-ink shrink-0">{value}</dd>
+                                                            </div>
+                                                        ))}
+                                                    </dl>
 
-                                                    <div className="flex items-center gap-4">
-                                                        <span className="w-[26px] flex justify-center shrink-0">
-                                                            <span className="w-[11px] h-[11px] rounded-full bg-brandgreen"></span>
-                                                        </span>
-                                                        <span className="flex-1 text-[15px] font-semibold text-ink">Application submitted</span>
+                                                    <div className="mt-1 pt-4 border-t-2 border-ink/15 flex items-baseline justify-between">
+                                                        <span className="text-[15px] font-bold text-ink">Total</span>
+                                                        <span className="num text-[1.9rem] font-bold text-deepgreen leading-none">{FEE_DISPLAY}</span>
                                                     </div>
 
-                                                    <div className="mt-5 rounded-2xl bg-mint border border-brandgreen/25 px-6 py-6 text-center">
-                                                        <p className="eyebrow text-deepgreen">Application Fee</p>
-                                                        <div className="num mt-2.5 text-[3.4rem] leading-[0.88] font-bold text-deepgreen">
-                                                            {FEE_DISPLAY}
-                                                        </div>
-                                                        <p className="mt-3 text-[13.5px] font-medium text-deepgreen/80">The billing event</p>
-                                                    </div>
+                                                    <p className="mt-5 text-[14px] font-medium text-ink text-center">
+                                                        You pay once the business happens.
+                                                    </p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Reveal>
                                     </div>
                                 </section>
 
-                                {/* ---------------- TRUST STRIP ---------------- */}
-                                <section className="border-y border-line bg-soft">
-                                    <div className="max-w-[1200px] mx-auto px-5 sm:px-6 py-6">
-                                        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
-                                            {[
-                                                ['call', 'Live final expense calls'],
-                                                ['shield', 'State matching'],
-                                                ['chart', 'Call tracking'],
-                                                ['doc', 'Application tracking']
-                                            ].map(([icon, label]) => (
-                                                <li key={label} className="flex items-center gap-3">
-                                                    <TrustIcon name={icon} />
-                                                    <span className="text-[15px] font-medium text-ink leading-tight">{label}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </section>
-
-                                {/* ---------------- THE BILLING DIFFERENCE ---------------- */}
+                                {/* ---------------- 2. COMPARISON AND WORKED EXAMPLE ---------------- */}
                                 <section id="final-expense" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
                                         <div className="max-w-[46rem]">
-                                            <h2 className="t-h2">
-                                                Your marketing budget shouldn't disappear
-                                                <span className="text-brandgreen"> when the phone rings.</span>
-                                            </h2>
-                                            <p className="t-lede mt-5">
-                                                Traditional pay-per-call programs charge you when a consumer connects. You
-                                                are paying before you know whether the opportunity becomes an application.
-                                            </p>
-                                            <p className="t-lede mt-4">
-                                                NetEnroll changes the billing event. Instead of a charge for every delivered
-                                                call, the applicable fee is tied to an eligible submitted application.
-                                            </p>
+                                            <h2 className="t-h2">Money should leave your account after value is created, not before.</h2>
                                         </div>
 
-                                        {/* Two objects rather than one table. The reader is choosing between
-                                            two billing models, so each model is a thing they can look at, and
-                                            the outcome on every row is set large enough to read across the
-                                            page. The four rows are matched line for line so the eye can
-                                            travel sideways without a shared grid holding it together. */}
-                                        <div className="mt-11 grid lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
-                                            {[
-                                                {
-                                                    label: 'TRADITIONAL PAY-PER-CALL',
-                                                    featured: false,
-                                                    rows: [
-                                                        ['Consumer calls', 'You pay'],
-                                                        ['You speak with the consumer', 'You pay'],
-                                                        ["Consumer doesn't move forward", 'You pay'],
-                                                        ['Application submitted', 'Already paid']
-                                                    ]
-                                                },
-                                                {
-                                                    label: 'NETENROLL',
-                                                    featured: true,
-                                                    rows: [
-                                                        ['Consumer calls', '$0'],
-                                                        ['You speak with the consumer', '$0'],
-                                                        ["Consumer doesn't move forward", 'No fee'],
-                                                        ['Application submitted', FEE_DISPLAY]
-                                                    ]
-                                                }
-                                            ].map(({ label, featured, rows }) => (
-                                                <div key={label}
-                                                     className={featured
-                                                         ? 'rounded-2xl border-2 border-brandgreen bg-mint shadow-lift px-7 sm:px-9 py-8 sm:py-9'
-                                                         : 'rounded-2xl border border-line bg-soft px-7 sm:px-9 py-8 sm:py-9'}>
-                                                    <p className={`text-[12.5px] font-semibold tracking-[0.13em] ${featured ? 'text-deepgreen' : 'text-muted'}`}>
-                                                        {label}
-                                                    </p>
+                                        {/* Unmistakably different in weight: the traditional model
+                                            recedes, muted and small; NetEnroll is the dark, dominant
+                                            object beside it. */}
+                                        <Reveal className="mt-11 grid lg:grid-cols-[1fr_1.1fr] gap-6 lg:gap-8 items-stretch">
+                                            <div className="rounded-2xl border border-line px-7 sm:px-9 py-8 sm:py-9">
+                                                <p className="text-[12.5px] font-semibold tracking-[0.13em] text-red-800/60">
+                                                    Traditional pay-per-call
+                                                </p>
+                                                <ul className="mt-6 space-y-4">
+                                                    {[
+                                                        'You pay for every delivered call',
+                                                        'You pay for calls nobody answers',
+                                                        'You pay for consumers who do not qualify',
+                                                        'You pay for conversations that go nowhere',
+                                                        'By the time an application is submitted, you have already paid'
+                                                    ].map(t => (
+                                                        <li key={t} className="flex items-start gap-3 text-[15px] leading-snug text-muted/80">
+                                                            <span className="mt-[2px] w-[17px] h-[17px] shrink-0 rounded-full border border-red-300 text-red-400 flex items-center justify-center text-[10px] font-bold leading-none" aria-hidden="true">&times;</span>
+                                                            <span>{t}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
 
-                                                    <dl className={`mt-6 divide-y ${featured ? 'divide-brandgreen/20' : 'divide-line'}`}>
-                                                        {rows.map(([event, outcome], i) => {
-                                                            const isFee = i === rows.length - 1;
-                                                            return (
-                                                                <div key={event} className="flex items-baseline justify-between gap-5 py-[18px]">
-                                                                    <dt className={`text-[15.5px] leading-snug ${isFee && featured ? 'font-medium text-ink' : 'text-muted'}`}>
-                                                                        {event}
-                                                                    </dt>
-                                                                    <dd className={`num shrink-0 text-right font-bold leading-none tracking-[-0.02em] ${featured
-                                                                        ? (isFee ? 'text-[2.35rem] text-deepgreen' : 'text-[1.85rem] text-brandgreen')
-                                                                        : 'text-[1.6rem] text-ink/60'}`}>
-                                                                        {outcome}
-                                                                    </dd>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </dl>
-                                                </div>
-                                            ))}
-                                        </div>
+                                            <div className="rounded-2xl bg-dark-900 shadow-lift px-7 sm:px-10 py-10 sm:py-12 flex flex-col justify-center text-center lg:text-left">
+                                                <p className="text-[12.5px] font-semibold tracking-[0.13em] text-brand-400">NetEnroll</p>
+                                                <p className="mt-6 text-[27px] sm:text-[31px] leading-tight font-bold tracking-[-0.02em] text-white">
+                                                    You pay for one thing:
+                                                    <span className="block text-brand-400">a valid submitted application.</span>
+                                                </p>
+                                            </div>
+                                        </Reveal>
 
-                                        <p className="mt-9 text-center text-[19px] sm:text-[22px] font-bold tracking-[-0.025em] text-ink">
-                                            Put your acquisition cost closer to the application.
+                                        {/* The worked example, as one strip rather than a separate section. */}
+                                        <Reveal className="mt-9 card shadow-lift px-2 sm:px-4">
+                                            <dl className="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-line">
+                                                {[
+                                                    ['Ten calls delivered', '$0', false],
+                                                    ['Nine that went nowhere', '$0', false],
+                                                    ['One submitted application', FEE_DISPLAY, true]
+                                                ].map(([label, value, isFee]) => (
+                                                    <div key={label} className="px-5 sm:px-7 py-7 flex flex-col items-center sm:items-start text-center sm:text-left">
+                                                        <dt className="text-[14px] text-muted">{label}</dt>
+                                                        <dd className={`num mt-2.5 font-bold leading-none tracking-[-0.02em] ${isFee ? 'text-[2.5rem] text-deepgreen' : 'text-[2rem] text-ink/40'}`}>{value}</dd>
+                                                    </div>
+                                                ))}
+                                            </dl>
+                                        </Reveal>
+
+                                        <p className="mt-9 text-center text-[22px] sm:text-[28px] leading-tight font-bold tracking-[-0.025em] text-ink">
+                                            Ten conversations.<span className="text-brandgreen"> One charge.</span>
+                                        </p>
+
+                                        <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem] mx-auto text-center">
+                                            The ten-call volume and the single application are an illustration of the
+                                            billing model, not NetEnroll performance figures. Results vary by agent,
+                                            market and demand. No conversion rate is implied or guaranteed.
                                         </p>
                                     </div>
                                 </section>
 
-                                {/* ---------------- HOW IT WORKS ---------------- */}
+                                {/* ---------------- 3. PROCESS, THREE STEPS ---------------- */}
                                 <section id="how-it-works" className="border-y border-line bg-soft px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
-                                        <h2 className="t-h2 max-w-[44rem]">A simpler way to buy final expense opportunities.</h2>
+                                        <h2 className="t-h2 max-w-[44rem]">From consumer to application.</h2>
+                                        <ProcessSteps steps={[
+                                            { num: '01', title: 'Connect', body: 'Receive live final expense calls, matched to the states you are licensed in.' },
+                                            { num: '02', title: 'Convert', body: 'Your agent works the conversation and completes the application.' },
+                                            { num: '03', title: 'Pay', body: 'NetEnroll bills only for valid submitted applications.' }
+                                        ]} />
+                                    </div>
+                                </section>
 
-                                        <ol className="mt-11 grid sm:grid-cols-2 lg:grid-cols-4 gap-9 lg:gap-8 step-rule">
+                                {/* ---------------- 4. RISK REVERSAL ---------------- */}
+                                <DarkBand id="pricing" headline="Move the risk off your marketing budget.">
+                                    <Reveal className="mt-10 grid sm:grid-cols-3 gap-9 sm:gap-6 text-center sm:text-left">
+                                        {[
+                                            ['$0', 'PER DELIVERED CALL'],
+                                            ['$0', 'MONTHLY MINIMUM'],
+                                            ['$0', 'FOR CALLS THAT DO NOT CONVERT']
+                                        ].map(([amount, label]) => (
+                                            <div key={label}>
+                                                <div className="num text-[3.1rem] sm:text-[3.6rem] leading-none font-bold text-white">{amount}</div>
+                                                <p className="mt-3 text-[12.5px] font-semibold tracking-[0.1em] text-slate-400">{label}</p>
+                                            </div>
+                                        ))}
+                                    </Reveal>
+
+                                    <div className="mt-14 pt-12 border-t border-white/10 max-w-[640px]">
+                                        <dl className="divide-y divide-white/10">
                                             {[
-                                                ['01', 'Get the call', 'Receive a live final expense call through your campaign.'],
-                                                ['02', 'Talk to the consumer', 'Handle the conversation exactly as you normally would.'],
-                                                ['03', 'Submit the application', 'When the consumer moves forward, complete and submit the eligible insurance application.'],
-                                                ['04', 'Pay the application fee', `The applicable ${FEE_DISPLAY} fee is charged according to the campaign's billing terms.`]
-                                            ].map(([num, title, body]) => (
-                                                <li key={num} className="relative">
-                                                    <span className="num relative z-10 w-[46px] h-[46px] rounded-full bg-white border-2 border-mint ring-1 ring-line flex items-center justify-center text-[16px] font-bold text-deepgreen">
-                                                        {num}
-                                                    </span>
-                                                    <h3 className="mt-5 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</h3>
-                                                    <p className="mt-2.5 text-[15.5px] leading-relaxed text-muted max-w-[18rem]">{body}</p>
-                                                </li>
+                                                ['Final Expense', FEE_DISPLAY],
+                                                ['Medicare', `$${MEDICARE_FEE}`],
+                                                ['ACA', `$${ACA_FEE}`]
+                                            ].map(([program, price]) => (
+                                                <div key={program} className="flex items-baseline justify-between gap-6 py-5">
+                                                    <dt className="text-[17px] font-medium text-white">{program}</dt>
+                                                    <dd className="flex items-baseline gap-2.5 flex-wrap justify-end">
+                                                        <span className="num text-[1.7rem] font-bold text-brand-400">{price}</span>
+                                                        <span className="text-[12.5px] text-slate-400">per submitted application</span>
+                                                    </dd>
+                                                </div>
                                             ))}
-                                        </ol>
-
-                                        <p className="mt-12 text-center text-[24px] sm:text-[32px] leading-tight font-bold tracking-[-0.03em] text-ink">
-                                            The call is not the billing event.
+                                        </dl>
+                                        <p className="mt-8 text-[14.5px] text-slate-400">
+                                            No minimum purchase. A single application is a valid order.
                                         </p>
                                     </div>
-                                </section>
+                                </DarkBand>
 
-                                {/* ---------------- PRICING ---------------- */}
-                                <section id="pricing" className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
-                                    <div className="max-w-[1200px] mx-auto">
-
-                                        <div className="max-w-[42rem]">
-                                            <h2 className="t-h2">
-                                                Pay for applications.
-                                                <span className="block text-brandgreen">Not phone calls.</span>
-                                            </h2>
-                                        </div>
-
-                                        <div className="mt-11 max-w-[960px] mx-auto">
-                                            <div className="card shadow-lift overflow-hidden grid md:grid-cols-[minmax(0,340px)_1fr]">
-                                                <div className="bg-mint border-b md:border-b-0 md:border-r border-brandgreen/20 px-8 py-10 flex flex-col justify-center text-center md:text-left">
-                                                    <p className="eyebrow text-deepgreen">Final Expense</p>
-                                                    <div className="num mt-3.5 text-[4rem] sm:text-[4.6rem] leading-[0.84] font-bold text-deepgreen">
-                                                        {FEE_DISPLAY}
-                                                    </div>
-                                                    <p className="mt-4 text-[16.5px] font-semibold text-ink">per submitted application</p>
-                                                </div>
-
-                                                <div className="p-8 sm:p-9">
-                                                    <div className="grid sm:grid-cols-2 gap-8">
-                                                        <div>
-                                                            <h3 className="text-[15px] font-semibold text-ink">No traditional per-call fee for</h3>
-                                                            <ul className="mt-4 space-y-3">
-                                                                {['Receiving the call', 'Talking with the consumer', 'Call duration', "A consumer who doesn't submit an application"].map(t => (
-                                                                    <li key={t} className="flex items-start gap-3 text-[15px] leading-snug text-muted">
-                                                                        <CheckMark /> <span>{t}</span>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="text-[15px] font-semibold text-ink">You pay when</h3>
-                                                            <ul className="mt-4">
-                                                                <li className="flex items-start gap-3 text-[15px] leading-snug font-medium text-ink">
-                                                                    <CheckMark /> <span>An eligible application is submitted</span>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-
-                                                    <button onClick={startSignup} className="btn-primary mt-8 w-full sm:w-auto">
-                                                        Start Receiving Calls
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <p className="mt-5 text-center text-[15px] font-medium text-ink">
-                                                No minimum purchase. Buy a single application at
-                                                {' '}{MIN_PURCHASE_DISPLAY} and go from there.
-                                            </p>
-                                            <p className="mt-2 text-center text-[14.5px] text-muted">
-                                                No monthly subscription. No per-call charge.
-                                            </p>
-                                        </div>
-
-                                        {/* --- The arithmetic, clearly labelled as illustration --- */}
-                                        <div className="mt-[54px] pt-[46px] border-t border-line">
-                                            <h3 className="t-h2 max-w-[38rem]">Why pay for every conversation?</h3>
-                                            <p className="t-lede mt-5 max-w-[44rem]">
-                                                Take ten calls. One of them becomes an application. This is the whole
-                                                bill.
-                                            </p>
-
-                                            {/* Only NetEnroll's own numbers appear here. There is no industry
-                                                per-call rate we can stand behind, so none is quoted. */}
-                                            <div className="mt-10 card shadow-lift px-7 sm:px-9 py-3">
-                                                <dl className="divide-y divide-line">
-                                                    {[
-                                                        ['10 calls received', '$0', false],
-                                                        ['9 consumers who did not move forward', '$0', false],
-                                                        ['1 submitted application', FEE_DISPLAY, true]
-                                                    ].map(([item, amount, isFee]) => (
-                                                        <div key={item} className="flex items-baseline justify-between gap-5 py-6">
-                                                            <dt className={isFee ? 'text-[16px] font-medium text-ink' : 'text-[16px] text-muted'}>{item}</dt>
-                                                            <dd className={`num shrink-0 font-bold leading-none tracking-[-0.02em] ${isFee
-                                                                ? 'text-[2.5rem] text-deepgreen'
-                                                                : 'text-[2rem] text-brandgreen'}`}>{amount}</dd>
-                                                        </div>
-                                                    ))}
-                                                </dl>
-                                            </div>
-
-                                            <p className="mt-9 text-[19px] sm:text-[23px] font-bold leading-snug tracking-[-0.025em] text-ink max-w-[46rem]">
-                                                Ten conversations.
-                                                <span className="text-brandgreen"> One billing event.</span>
-                                            </p>
-                                            <p className="mt-4 text-[16px] leading-relaxed text-muted max-w-[46rem]">
-                                                There is no charge for the call itself, for how long you spend on it, or
-                                                for the nine consumers who did not move forward.
-                                            </p>
-
-                                            <p className="mt-6 text-[13px] leading-relaxed text-muted max-w-[54rem]">
-                                                Illustrative example only. The ten-call volume and the single application
-                                                are for illustration and are not NetEnroll figures. The {FEE_DISPLAY}
-                                                per-application rate is the actual rate for the current Final Expense
-                                                program. Results vary by agent, market, and demand; no conversion rate is
-                                                implied or guaranteed.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </section>
-
-                                {/* ---------------- AGENTS + AGENCIES ---------------- */}
-                                <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
-                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-6 lg:gap-8">
-
-                                        <div className="card p-8 sm:p-10 flex flex-col">
-                                            <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">FOR INDEPENDENT AGENTS</p>
-                                            <h3 className="t-h3 mt-5">Focus on selling.</h3>
-                                            <p className="mt-4 text-[16px] leading-relaxed text-muted">
-                                                Spend less time worrying about paying for every phone call and more time
-                                                working the consumers who are ready to move forward.
-                                            </p>
-                                            <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
-                                                {['Calls routed to you', 'State matching', 'Call tracking', 'Application tracking'].map(t => (
-                                                    <li key={t} className="flex items-start gap-2.5 text-[15px] leading-snug text-muted">
-                                                        <CheckMark /> <span>{t}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <button onClick={startSignup} className="btn-primary mt-8 self-start">
-                                                Start as an Agent
-                                            </button>
-                                        </div>
-
-                                        <div className="card p-8 sm:p-10 flex flex-col">
-                                            <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">FOR AGENCIES</p>
-                                            <h3 className="t-h3 mt-5">Give your producers another acquisition channel.</h3>
-                                            <p className="mt-4 text-[16px] leading-relaxed text-muted">
-                                                Route final expense calls to your producers while keeping call activity and
-                                                applications organized in one platform.
-                                            </p>
-                                            <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
-                                                {['Agent management', 'Call routing', 'State matching', 'Call tracking', 'Application tracking', 'Reporting'].map(t => (
-                                                    <li key={t} className="flex items-start gap-2.5 text-[15px] leading-snug text-muted">
-                                                        <CheckMark /> <span>{t}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <button onClick={startSignup} className="btn-primary mt-8 self-start">
-                                                Start Receiving Calls
-                                            </button>
-                                        </div>
-                                    </div>
-                                </section>
-
-                                {/* ---------------- PLATFORM / TRACKING ---------------- */}
+                                {/* ---------------- 5. CAMPAIGN DASHBOARD PREVIEW ---------------- */}
                                 <section className="px-5 sm:px-6 py-[60px] lg:py-[80px]">
                                     <div className="max-w-[1200px] mx-auto">
                                         <div className="max-w-[44rem]">
-                                            <h2 className="t-h2">See what's happening with your campaign.</h2>
-                                            <p className="t-lede mt-5">
-                                                Track calls, applications and agent activity from your NetEnroll account.
-                                            </p>
+                                            <h2 className="t-h2">See exactly where your acquisition dollars go.</h2>
                                         </div>
 
                                         {/* Stylised interface. Every figure below is sample data and says so. */}
-                                        <div className="mt-11 card shadow-lift overflow-hidden">
+                                        <Reveal className="mt-11 card shadow-lift overflow-hidden">
                                             <div className="px-6 sm:px-8 py-4 border-b border-line flex items-center justify-between gap-4 bg-soft">
                                                 <span className="text-[13px] font-semibold tracking-[0.11em] text-muted">CAMPAIGN OVERVIEW</span>
                                                 <span className="rounded-full border border-line bg-white px-3 py-1 text-[11.5px] font-medium text-muted">
@@ -2622,16 +2651,18 @@
 
                                             <div className="grid grid-cols-2 lg:grid-cols-5 gap-px bg-line">
                                                 {[
-                                                    ['Calls', '128'],
-                                                    ['Applications', '19'],
-                                                    ['Agents', '6'],
-                                                    ['Conversion', '14.8%'],
-                                                    ['Application fees', '$3,040']
-                                                ].map(([label, value], i, arr) => (
-                                                    <div key={label}
+                                                    { label: 'Calls', value: 128 },
+                                                    { label: 'Applications', value: 19 },
+                                                    { label: 'Agents', value: 6 },
+                                                    { label: 'Conversion', value: 14.8, decimals: 1, suffix: '%' },
+                                                    { label: 'Application fees', value: 3781, prefix: '$' }
+                                                ].map((m, i, arr) => (
+                                                    <div key={m.label}
                                                          className={`bg-white px-6 sm:px-7 py-7 ${i === arr.length - 1 ? 'col-span-2 lg:col-span-1' : ''}`}>
-                                                        <div className="text-[13px] font-medium text-muted">{label}</div>
-                                                        <div className="num mt-2.5 text-[1.9rem] leading-none font-bold text-ink">{value}</div>
+                                                        <div className="text-[13px] font-medium text-muted">{m.label}</div>
+                                                        <div className="mt-2.5 text-[1.9rem] leading-none font-bold text-ink">
+                                                            <CountUp value={m.value} decimals={m.decimals || 0} prefix={m.prefix || ''} suffix={m.suffix || ''} />
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -2667,56 +2698,60 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div className="mt-10 pt-9 border-t border-line max-w-[46rem]">
-                                            <p className="eyebrow">Built for licensed insurance professionals</p>
-                                            <p className="mt-4 text-[18px] sm:text-[20px] leading-relaxed font-medium tracking-[-0.015em] text-ink">
-                                                Designed for final expense agents and agencies that want a more
-                                                performance-focused way to acquire business.
-                                            </p>
-                                        </div>
+                                        </Reveal>
                                     </div>
                                 </section>
 
-                                {/* ---------------- FAQ ---------------- */}
+                                {/* ---------------- 6. AGENTS AND AGENCIES ---------------- */}
+                                <section className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
+                                    <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-6 lg:gap-8">
+
+                                        {[
+                                            {
+                                                tag: 'FOR INDEPENDENT AGENTS',
+                                                title: 'Focus on selling.',
+                                                body: 'Spend less time worrying about paying for every phone call and more time working the consumers who are ready to move forward.',
+                                                items: ['Live final expense calls routed to you', 'State matching', 'Call tracking', 'Application tracking'],
+                                                cta: 'Start as an Agent'
+                                            },
+                                            {
+                                                tag: 'FOR AGENCIES',
+                                                title: 'Give your producers another acquisition channel.',
+                                                body: 'Route final expense calls to your producers while keeping call activity and applications organized in one platform.',
+                                                items: ['Agent management', 'Call routing', 'State matching', 'Call tracking and application tracking', 'Reporting'],
+                                                cta: 'Start Receiving Calls'
+                                            }
+                                        ].map(seg => (
+                                            <div key={seg.tag} className="card p-8 sm:p-10 flex flex-col">
+                                                <p className="text-[12.5px] font-semibold tracking-[0.13em] text-muted">{seg.tag}</p>
+                                                <h3 className="t-h3 mt-5">{seg.title}</h3>
+                                                <p className="mt-4 text-[16px] leading-relaxed text-muted">{seg.body}</p>
+                                                <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
+                                                    {seg.items.map(t => (
+                                                        <li key={t} className="flex items-start gap-2.5 text-[15px] leading-snug text-muted">
+                                                            <CheckMark /> <span>{t}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                                <button onClick={startSignup} className="btn-primary mt-8 self-start">
+                                                    {seg.cta}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                {/* ---------------- 7. FAQ ---------------- */}
                                 <section id="faq" className="border-y border-line bg-soft px-5 sm:px-6 py-[54px] lg:py-[70px]">
                                     <div className="max-w-[1040px] mx-auto">
                                         <h2 className="t-h2">Questions.</h2>
-
-                                        {/* Two independent columns: nine stacked rows made this the second-tallest
-                                            section for no good reason, and opening one only reflows its own column. */}
-                                        <div className="mt-9 grid lg:grid-cols-2 gap-5 items-start">
-                                            {[FAQS.slice(0, Math.ceil(FAQS.length / 2)), FAQS.slice(Math.ceil(FAQS.length / 2))].map((group, gi) => (
-                                                <div key={gi} className="card divide-y divide-line overflow-hidden">
-                                                    {group.map((faq, j) => {
-                                                        const idx = gi * Math.ceil(FAQS.length / 2) + j;
-                                                        return (
-                                                            <div key={idx}>
-                                                                <button
-                                                                    onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
-                                                                    aria-expanded={openFaq === idx}
-                                                                    className="w-full text-left px-6 py-[18px] flex items-start justify-between gap-4 hover:bg-soft transition-colors">
-                                                                    <span className="text-[16px] font-medium leading-snug text-ink">{faq.q}</span>
-                                                                    <span className={`mt-0.5 shrink-0 transition-transform duration-200 ${openFaq === idx ? 'rotate-45' : ''}`}>
-                                                                        <PlusMark />
-                                                                    </span>
-                                                                </button>
-                                                                <div className={`faq-panel ${openFaq === idx ? 'faq-open' : ''}`}>
-                                                                    <div>
-                                                                        <p className="px-6 pb-6 text-[15px] leading-relaxed text-muted">{faq.a}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            ))}
+                                        <div className="mt-9">
+                                            <FaqAccordion faqs={FAQS} openIndex={openFaq} onToggle={setOpenFaq} idPrefix="fe" />
                                         </div>
                                     </div>
                                 </section>
 
-                                {/* ---------------- FINAL CTA ---------------- */}
+                                {/* ---------------- 8. CLOSING CTA ---------------- */}
                                 <section className="bg-mint px-5 sm:px-6 py-[58px] lg:py-[74px]">
                                     <div className="max-w-[760px] mx-auto text-center">
                                         <h2 className="t-h2">Ready to stop paying for every call?</h2>
@@ -2724,13 +2759,12 @@
                                             Start receiving final expense calls and tie your acquisition cost to the
                                             application instead of the phone call.
                                         </p>
-                                        <div className="num mt-8 text-[2.8rem] leading-none font-bold text-deepgreen">{FEE_DISPLAY}</div>
-                                        <p className="mt-2.5 text-[14px] font-semibold tracking-[0.1em] text-deepgreen/80">PER SUBMITTED APPLICATION</p>
+                                        <PriceAnchor className="mt-8 flex flex-col items-center" size="sm" amount={FEE_DISPLAY} unit="per submitted application" />
                                         <button onClick={startSignup} className="btn-primary btn-lg mt-8">
                                             Start Receiving Calls
                                         </button>
                                         <p className="mt-5 text-[14px] text-muted">
-                                            Built for licensed final expense agents and agencies.
+                                            For licensed final expense agents and agencies.
                                         </p>
                                     </div>
                                 </section>
