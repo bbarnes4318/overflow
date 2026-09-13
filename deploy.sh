@@ -248,7 +248,8 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
   # rewrite and is left alone above. Splice each missing block in, once,
   # ahead of the vhost's access_log line - which sits in the server block
   # certbot upgraded to 443 - and leave it alone on every later run.
-  # The marker is the block's first line, matched literally.
+  # The marker is a literal prefix of the block's first line. Keep it free of
+  # backslashes: awk -v interprets escapes, so '\.' would not match the file.
   VHOST="/etc/nginx/sites-available/${SITE_HOSTS[0]}"
   splice_location() {
     if grep -qF "\$1" "\$VHOST"; then return; fi
@@ -268,7 +269,8 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
     rm -f "\$BLOCK_FILE"
   }
   splice_location 'location = /api/recruiting-inquiry'
-  splice_location 'location ~ ^/(aca-agent-recruiting|licensing-value|site\.css|site\.js)$'
+  splice_location 'location = /licensing-fees.json'
+  splice_location 'location ~ ^/(aca-agent-recruiting|licensing-value|site'
   # Ubuntu's stock catch-all would otherwise answer for these names.
   rm -f /etc/nginx/sites-enabled/default
 fi
