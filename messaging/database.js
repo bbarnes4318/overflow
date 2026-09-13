@@ -607,6 +607,26 @@ function initDatabase() {
     )
   `).run();
 
+  // Inquiries from the public recruiting page on netenroll.com. Not tenant
+  // data: the form is anonymous and the rows belong to the platform operator.
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS recruiting_inquiries (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source TEXT NOT NULL,
+      agency_name TEXT NOT NULL,
+      contact_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      states TEXT NOT NULL,
+      agent_count TEXT NOT NULL,
+      offer TEXT NOT NULL,
+      timing TEXT NOT NULL,
+      notes TEXT,
+      client_ip TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `).run();
+
   // Bring a pre-tenancy database up to the multi-tenant shape.
   migrateToMultiTenant();
 
@@ -628,6 +648,15 @@ function initDatabase() {
   } catch (err) {
     console.error("Failed to reset stuck sending messages:", err);
   }
+}
+
+function insertRecruitingInquiry(row) {
+  return db.prepare(`
+    INSERT INTO recruiting_inquiries
+      (source, agency_name, contact_name, email, phone, states, agent_count, offer, timing, notes, client_ip)
+    VALUES
+      (@source, @agency_name, @contact_name, @email, @phone, @states, @agent_count, @offer, @timing, @notes, @client_ip)
+  `).run(row).lastInsertRowid;
 }
 
 /**
@@ -2598,6 +2627,7 @@ module.exports = {
   db,
   initDatabase,
   requireTenant,
+  insertRecruitingInquiry,
 
   // Tenancy
   createTenant,

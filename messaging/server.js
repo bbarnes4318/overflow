@@ -8,6 +8,7 @@ const mergeFields = require('./merge_fields');
 const queueWorker = require('./queue');
 const variation = require('./variation');
 const contentLint = require('./content_lint');
+const mail = require('./mail');
 
 // Load environment variables from backend/.env if present
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -249,8 +250,87 @@ const PUBLIC_PATHS = [
   '/favicon.ico',
   '/api/auth/status',
   '/api/auth/signup',
-  '/api/auth/login'
+  '/api/auth/login',
+  '/api/recruiting-inquiry'
 ];
+
+/* ------------------------------------------------------------------
+ * Recruiting inquiry — the form on netenroll.com/aca-agent-recruiting.
+ *
+ * Anonymous and public, so it is reached through nginx on the marketing
+ * vhost rather than the app's own. The row is written before the email is
+ * attempted: a mail outage must never lose an inquiry, so a failed send is
+ * logged against the stored id instead of failing the request.
+ * ------------------------------------------------------------------ */
+const INQUIRY_WINDOW_MS = 60 * 60 * 1000;
+const INQUIRY_MAX_PER_IP = 5;
+const inquiryTimes = new Map();
+
+const INQUIRY_OPTIONS = {
+  agent_count: ['5 to 9', '10', '11 to 25', 'More than 25'],
+  offer: ['Commission only', 'Salary plus commission', 'Draw against commission', 'A combination', 'Still deciding'],
+  timing: ['Immediately', 'Before November 1', 'During open enrollment', 'After January']
+};
+
+function validateInquiry(body) {
+  const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const row = {
+    source: str(body.source, 60) || 'aca-agent-recruiting',
+    agency_name: str(body.agency_name, 200),
+    contact_name: str(body.contact_name, 200),
+    email: str(body.email, 254),
+    phone: str(body.phone, 40),
+    states: str(body.states, 500),
+    agent_count: str(body.agent_count, 40),
+    offer: str(body.offer, 60),
+    timing: str(body.timing, 60),
+    notes: str(body.notes, 4000) || null
+  };
+  for (const key of ['agency_name', 'contact_name', 'email', 'phone', 'states', 'agent_count', 'offer', 'timing']) {
+    if (!row[key]) return { ok: false, error: `${key.replace('_', ' ')} is required` };
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) return { ok: false, error: 'A valid email address is required' };
+  if (row.phone.replace(/\D/g, '').length < 10) return { ok: false, error: 'A valid phone number is required' };
+  for (const [key, allowed] of Object.entries(INQUIRY_OPTIONS)) {
+    if (!allowed.includes(row[key])) return { ok: false, error: `${key.replace('_', ' ')} is not one of the offered choices` };
+  }
+  return { ok: true, row };
+}
+
+app.post('/api/recruiting-inquiry', (req, res) => {
+  const ip = clientIp(req);
+  const now = Date.now();
+  const recent = (inquiryTimes.get(ip) || []).filter(t => now - t < INQUIRY_WINDOW_MS);
+  if (recent.length >= INQUIRY_MAX_PER_IP) {
+    return res.status(429).json({ error: 'Too many requests from this connection. Please call 904-512-8487.' });
+  }
+  const checked = validateInquiry(req.body || {});
+  if (!checked.ok) return res.status(400).json({ error: checked.error });
+
+  let id;
+  try {
+    id = db.insertRecruitingInquiry({ ...checked.row, client_ip: ip });
+  } catch (err) {
+    return fail(res, 500, 'The request could not be saved', err);
+  }
+  inquiryTimes.set(ip, [...recent, now]);
+  res.json({ ok: true, id });
+
+  const to = process.env.RECRUITING_INQUIRY_EMAIL;
+  if (!to) {
+    console.warn(`[inquiry] #${id} stored; RECRUITING_INQUIRY_EMAIL is not set so no email was sent`);
+    return;
+  }
+  const r = checked.row;
+  const text = [
+    `Agency: ${r.agency_name}`, `Name: ${r.contact_name}`, `Email: ${r.email}`, `Phone: ${r.phone}`,
+    `States: ${r.states}`, `Agents wanted: ${r.agent_count}`, `Offering: ${r.offer}`, `Needed: ${r.timing}`,
+    '', r.notes || '(no notes)', '', `Source: ${r.source}  Inquiry #${id}`
+  ].join('\n');
+  mail.sendMail({ to, subject: `Recruiting inquiry from ${r.agency_name}`, text })
+    .then(() => console.log(`[inquiry] #${id} emailed to ${to}`))
+    .catch(err => console.error(`[inquiry] #${id} stored but the email failed:`, err.message));
+});
 
 app.use((req, res, next) => {
   const isStaticAsset = /\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/i.test(req.path) || req.path.startsWith('/lib/');

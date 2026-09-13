@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["tools/preview.js"],
       "port": 4173
+    },
+    {
+      "name": "netenroll-messaging",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["messaging/server.js"],
+      "port": 3100
     }
   ]
 }
