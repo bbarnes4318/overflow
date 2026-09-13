@@ -237,6 +237,29 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
   else
     echo "--> nginx vhost for ${SITE_HOSTS[0]} already present, left as-is"
   fi
+
+  # A location block added to nginx-site.conf AFTER the vhost was first
+  # installed never reaches the live file, because the live file is certbot's
+  # rewrite and is left alone above. Splice the recruiting proxy in, once,
+  # ahead of the vhost's access_log line - which sits in the server block
+  # certbot upgraded to 443 - and leave it alone on every later run.
+  VHOST="/etc/nginx/sites-available/${SITE_HOSTS[0]}"
+  if ! grep -q 'location = /api/recruiting-inquiry' "\$VHOST"; then
+    BLOCK_FILE="\$(mktemp)"
+    sed -n '/location = \/api\/recruiting-inquiry/,/^    }/p' \
+        "${REMOTE_DIR}/deploy/nginx-site.conf" > "\$BLOCK_FILE"
+    if [ -s "\$BLOCK_FILE" ]; then
+      echo >> "\$BLOCK_FILE"
+      awk -v f="\$BLOCK_FILE" '
+        /access_log \/var\/log\/nginx\/netenroll.access.log;/ && !done {
+          while ((getline line < f) > 0) print line
+          done = 1
+        }
+        { print }' "\$VHOST" > "\$VHOST.new" && mv "\$VHOST.new" "\$VHOST"
+      echo "--> added the /api/recruiting-inquiry proxy to the live vhost"
+    fi
+    rm -f "\$BLOCK_FILE"
+  fi
   # Ubuntu's stock catch-all would otherwise answer for these names.
   rm -f /etc/nginx/sites-enabled/default
 fi
