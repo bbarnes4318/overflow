@@ -1,440 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Final Expense Calls, Billed Per Submitted Application | NetEnroll</title>
-<meta name="description" content="Stop paying for final expense leads and calls that never become applications. NetEnroll routes live final expense consumers to licensed producers and bills $199 only when an application is submitted. $0 per call, $0 per lead, $0 per month.">
-<meta name="theme-color" content="#FFFFFF">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NetEnroll | Insurance Calls. Pay When the Application Is Submitted.</title>
+<meta name="description" content="NetEnroll connects licensed insurance producers with live Final Expense, Medicare, and ACA consumers. No per-call or per-lead charges. You pay when an application is submitted.">
+<meta name="theme-color" content="#f7f8f6">
 <link rel="canonical" href="https://netenroll.com/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NetEnroll">
 <meta property="og:url" content="https://netenroll.com/">
-<meta property="og:title" content="Final Expense Calls, Billed Per Submitted Application">
-<meta property="og:description" content="Live final expense consumers routed to licensed producers. $199 per submitted application. $0 per call, $0 per lead, $0 per month. Start with one.">
+<meta property="og:title" content="Insurance Calls. Pay When the Application Is Submitted.">
+<meta property="og:description" content="Final Expense, Medicare and ACA calls for licensed producers. No per-call or per-lead charges. Pay when an application is submitted.">
 <meta property="og:image" content="https://netenroll.com/og-final-expense.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Final Expense Calls, Billed Per Submitted Application">
-<meta name="twitter:description" content="Live final expense consumers routed to licensed producers. $199 per submitted application. $0 per call, $0 per lead, $0 per month. Start with one.">
-<meta name="twitter:image" content="https://netenroll.com/og-final-expense.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site.css">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://netenroll.com/#org",
-      "name": "NetEnroll",
-      "legalName": "PVN LLC",
-      "url": "https://netenroll.com/",
-      "logo": "https://netenroll.com/netenroll-logo.png",
-      "telephone": "+1-904-512-8487",
-      "address": { "@type": "PostalAddress", "streetAddress": "2800 N 6th Street #796", "addressLocality": "Saint Augustine", "addressRegion": "FL", "postalCode": "32084", "addressCountry": "US" }
-    },
-    {
-      "@type": "WebPage",
-      "url": "https://netenroll.com/",
-      "name": "Final Expense Calls, Billed Per Submitted Application",
-      "isPartOf": { "@id": "https://netenroll.com/#org" }
-    },
-    {
-      "@type": "Service",
-      "name": "Final Expense Application Program",
-      "serviceType": "Final expense call distribution",
-      "provider": { "@id": "https://netenroll.com/#org" },
-      "areaServed": "US",
-      "url": "https://netenroll.com/",
-      "offers": { "@type": "Offer", "name": "Submitted final expense application", "price": "199", "priceCurrency": "USD", "description": "Per submitted application. No per-call, per-lead or monthly charge." }
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "What am I paying for?", "acceptedAnswer": { "@type": "Answer", "text": "A submitted application. A charge is logged only when your producer completes and submits a carrier application for a consumer NetEnroll delivered. Calls, transfers, non-qualifying prospects and dropped calls are $0." } },
-        { "@type": "Question", "name": "What does a call cost if it doesn't become an application?", "acceptedAnswer": { "@type": "Answer", "text": "Nothing. There is no per-call, per-transfer or per-lead charge. If the conversation does not end in a submitted application, no charge is logged." } },
-        { "@type": "Question", "name": "How does the application model work?", "acceptedAnswer": { "@type": "Answer", "text": "You fund applications in advance through Stripe, starting with a single application. Live consumers are routed to your producers in the states you selected. When an application is submitted, one is drawn from your balance. You buy more whenever you want them; there is no subscription." } },
-        { "@type": "Question", "name": "What happens after I sign up?", "acceptedAnswer": { "@type": "Answer", "text": "Create your account at agents.netenroll.com, choose the states you are licensed to write in, choose your programs, and fund your first application through Stripe. Routing starts once your account is configured." } },
-        { "@type": "Question", "name": "How does pricing work?", "acceptedAnswer": { "@type": "Answer", "text": "$199 per submitted final expense application, $125 for Medicare, $100 for ACA. No setup fee, no monthly platform fee, no minimum purchase, no cancellation penalty." } },
-        { "@type": "Question", "name": "Where do I access my agent tools?", "acceptedAnswer": { "@type": "Answer", "text": "At agents.netenroll.com. That is where your states, programs, call log, applications and billing live." } }
-      ]
-    }
-  ]
-}
-</script>
+<style>
+:root{--ink:#111817;--ink2:#25302e;--muted:#66716e;--line:#dfe5e1;--soft:#f4f6f4;--paper:#fff;--green:#146b52;--green2:#0d503e;--mint:#e8f3ee;--lime:#dff1e9;--gold:#b98a35;--red:#a52a22;--max:1180px;--radius:18px;--shadow:0 24px 70px -38px rgba(17,24,23,.32);font-family:'DM Sans',sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--paper);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}a{color:inherit}button{font:inherit}img,svg{display:block;max-width:100%}.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.topbar{background:var(--ink);color:#eaf0ed;font-size:13px}.topbar .wrap{min-height:38px;display:flex;align-items:center;justify-content:center;gap:9px}.topbar strong{color:#fff}.topbar .mark{width:6px;height:6px;border-radius:50%;background:#66bd9e}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid rgba(223,229,225,.9)}.nav{height:74px;display:flex;align-items:center;gap:34px}.brand{display:flex;align-items:center;margin-right:auto}.brand img{width:142px;height:auto}.links{display:flex;align-items:center;gap:28px}.links a{font-size:14px;font-weight:600;text-decoration:none;color:#5c6764}.links a:hover{color:var(--ink)}.nav-actions{display:flex;align-items:center;gap:12px}.signin{font-size:14px;font-weight:600;text-decoration:none;color:var(--ink2);padding:10px 8px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 20px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;border:1px solid transparent;transition:.18s ease;cursor:pointer}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--green);color:#fff;box-shadow:0 8px 20px -12px rgba(20,107,82,.7)}.btn-primary:hover{background:var(--green2)}.btn-dark{background:var(--ink);color:#fff}.btn-dark:hover{background:#000}.btn-light{border-color:#cfd7d3;background:#fff;color:var(--ink)}.btn-light:hover{border-color:#9ba7a2;background:var(--soft)}.btn-lg{min-height:56px;padding:0 26px;font-size:15px}.menu{display:none;background:none;border:0;padding:10px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#f7f9f7 0%,#fff 86%);padding:82px 0 74px}.hero:before{content:"";position:absolute;width:620px;height:620px;border-radius:50%;right:-260px;top:-230px;background:radial-gradient(circle,rgba(190,224,211,.55),rgba(190,224,211,0) 68%);pointer-events:none}.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:76px;align-items:center;position:relative}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}.eyebrow i{width:7px;height:7px;border-radius:50%;background:#69ad95;box-shadow:0 0 0 5px #e0eee8}.hero h1{font-family:Manrope,sans-serif;font-size:clamp(48px,6vw,76px);line-height:.98;letter-spacing:-.055em;margin:22px 0 24px;max-width:700px}.hero h1 span{color:var(--green)}.hero .lead{font-size:20px;line-height:1.52;color:#56615e;max-width:620px;margin:0}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.hero-note{display:flex;align-items:center;gap:9px;margin-top:17px;color:#68736f;font-size:13px}.hero-note svg{color:var(--green)}
+.proof-card{background:#fff;border:1px solid #dbe3df;border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.proof-head{padding:25px 28px 21px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:end}.proof-head p{margin:0;color:#7b8582;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.proof-head strong{font-family:Manrope;font-size:18px}.proof-body{padding:10px 28px 22px}.row{display:grid;grid-template-columns:1fr 88px;gap:15px;align-items:center;padding:17px 0;border-bottom:1px solid #edf0ee}.row:last-child{border:0}.row .label{font-weight:600;color:#27312f}.row .sub{display:block;font-size:12px;color:#87918e;font-weight:500;margin-top:2px}.price{font-family:Manrope;font-size:21px;font-weight:800;text-align:right}.zero{color:var(--green)}.paid{color:var(--ink)}.outcome{background:var(--mint);border:1px solid #cde4d9;border-radius:13px;padding:13px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}.outcome b{font-family:Manrope}.outcome small{display:block;color:#567067;font-size:11px;margin-top:2px}.outcome .price{font-size:25px;color:var(--green)}.proof-foot{background:#111817;color:#fff;padding:20px 28px;display:flex;justify-content:space-between;gap:15px;align-items:center}.proof-foot strong{font-family:Manrope;font-size:16px}.proof-foot span{color:#aeb8b4;font-size:12px}
+.strip{border-block:1px solid var(--line);background:#fff}.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr)}.strip-item{padding:22px 24px;border-right:1px solid var(--line)}.strip-item:last-child{border:0}.strip-item b{font-family:Manrope;font-size:19px}.strip-item span{display:block;color:#78837f;font-size:12px;margin-top:1px}
+.section{padding:105px 0}.section.soft{background:var(--soft)}.section.dark{background:var(--ink);color:#fff}.section-head{max-width:760px;margin-bottom:52px}.kicker{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:13px}.dark .kicker{color:#7bc6aa}.section h2{font-family:Manrope;font-size:clamp(36px,4.5vw,57px);line-height:1.02;letter-spacing:-.045em;margin:0 0 18px}.section-head p{font-size:18px;color:#65716d;margin:0;max-width:680px}.dark .section-head p{color:#aeb8b4}
+.programs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.program{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;min-height:310px;display:flex;flex-direction:column;box-shadow:0 10px 40px -38px rgba(17,24,23,.45)}.program:hover{border-color:#b7c7c0;box-shadow:0 25px 60px -45px rgba(17,24,23,.5);transform:translateY(-2px);transition:.2s ease}.program-icon{width:46px;height:46px;border-radius:12px;background:var(--mint);color:var(--green);display:grid;place-items:center;margin-bottom:23px}.program h3{font-family:Manrope;font-size:24px;letter-spacing:-.025em;margin:0 0 9px}.program p{color:#6d7874;font-size:14px;line-height:1.6;margin:0}.program .program-bottom{margin-top:auto;padding-top:28px;display:flex;align-items:end;justify-content:space-between}.program .price{font-size:26px}.program .price small{display:block;font-family:'DM Sans';font-size:11px;color:#8a9491;font-weight:600;text-align:left}.program .tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--green);background:var(--mint);padding:7px 9px;border-radius:7px}
+.callout{margin-top:18px;padding:17px 20px;border:1px solid #d5e1db;background:#f8fbf9;border-radius:12px;color:#53615c;font-size:13px}.callout strong{color:var(--ink)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid rgba(255,255,255,.15)}.step{padding:31px 28px 12px 0;border-right:1px solid rgba(255,255,255,.12);margin-right:28px}.step:last-child{border:0;margin:0}.step-num{font-family:Manrope;color:#79c4a8;font-size:12px;font-weight:800;letter-spacing:.08em}.step h3{font-family:Manrope;font-size:20px;margin:14px 0 8px}.step p{font-size:13px;color:#aeb8b4;line-height:1.6;margin:0}
+.econ{display:grid;grid-template-columns:.9fr 1.1fr;gap:80px;align-items:start}.big-statement{font-family:Manrope;font-size:clamp(36px,4vw,55px);line-height:1.02;letter-spacing:-.045em}.big-statement em{font-style:normal;color:var(--green)}.compare{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}.compare-row{display:grid;grid-template-columns:1fr 1fr}.compare-row>div{padding:18px 20px;border-bottom:1px solid var(--line);font-size:14px}.compare-row>div+div{border-left:1px solid var(--line)}.compare-head{background:var(--ink);color:#fff;font-weight:700}.compare-old{color:#69746f}.compare-new{color:var(--green);font-weight:700}.compare-row:last-child>div{border-bottom:0}
+.cta{padding:94px 0}.cta-box{border-radius:24px;background:linear-gradient(135deg,#123d32,#0e5e48);color:#fff;padding:60px;display:flex;align-items:center;justify-content:space-between;gap:40px;box-shadow:0 28px 80px -50px rgba(14,94,72,.7)}.cta-box h2{font-family:Manrope;font-size:clamp(34px,4vw,52px);line-height:1;letter-spacing:-.045em;margin:0 0 14px}.cta-box p{color:#c3d5ce;margin:0;max-width:650px}.cta-box .btn{background:#fff;color:var(--ink);min-width:170px}.cta-box .btn:hover{background:#f0f5f2}
+.faq{display:grid;grid-template-columns:.72fr 1.28fr;gap:90px}.faq-list{border-top:1px solid var(--line)}details{border-bottom:1px solid var(--line)}summary{list-style:none;cursor:pointer;padding:21px 0;font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:20px}summary::-webkit-details-marker{display:none}summary:after{content:'+';font-size:22px;font-weight:400;color:#87918e}details[open] summary:after{content:'−'}details p{margin:-5px 35px 22px 0;color:#68736f;font-size:14px;line-height:1.65}
+footer{background:#101615;color:#fff;padding:52px 0 30px}.footer-top{display:flex;justify-content:space-between;gap:40px;padding-bottom:45px}.footer-brand img{width:142px;filter:brightness(0) invert(1);opacity:.96}.footer-brand p{color:#8e9995;font-size:13px;max-width:300px;margin:17px 0 0}.footer-links{display:flex;gap:65px}.footer-col b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#cdd5d2;margin-bottom:14px}.footer-col a{display:block;color:#8e9995;text-decoration:none;font-size:13px;margin:8px 0}.footer-col a:hover{color:#fff}.legal{border-top:1px solid #29312f;padding-top:24px;display:flex;justify-content:space-between;gap:20px;color:#727d79;font-size:11px}.legal a{color:#929d99;text-decoration:none}
+.mobile-cta{display:none}
+@media(max-width:950px){.links{display:none}.nav-actions .signin{display:none}.menu{display:block}.hero{padding-top:58px}.hero-grid{grid-template-columns:1fr;gap:46px}.hero h1{max-width:780px}.proof-card{max-width:650px}.strip .wrap{grid-template-columns:repeat(2,1fr)}.strip-item:nth-child(2){border-right:0}.strip-item:nth-child(-n+2){border-bottom:1px solid var(--line)}.programs{grid-template-columns:1fr}.program{min-height:240px}.econ{grid-template-columns:1fr;gap:40px}.steps{grid-template-columns:1fr 1fr;gap:0}.step:nth-child(2){border-right:0}.step:nth-child(-n+2){border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:30px}.step:nth-child(n+3){padding-top:30px}.faq{grid-template-columns:1fr;gap:40px}.cta-box{padding:45px;flex-direction:column;align-items:flex-start}.footer-top{flex-direction:column}.footer-links{gap:45px}}
+@media(max-width:620px){.wrap{width:min(var(--max),calc(100% - 28px))}.topbar{font-size:11px}.nav{height:66px}.brand img{width:126px}.nav-actions .btn{min-height:40px;padding:0 13px;font-size:12px}.hero{padding:47px 0 50px}.hero h1{font-size:46px;margin-top:20px}.hero .lead{font-size:17px}.hero-actions .btn{width:100%}.hero-note{align-items:flex-start}.proof-head,.proof-body{padding-left:20px;padding-right:20px}.proof-foot{padding:17px 20px;display:block}.proof-foot span{display:block;margin-top:3px}.row{grid-template-columns:1fr 70px}.strip .wrap{grid-template-columns:1fr 1fr}.strip-item{padding:17px 13px}.strip-item b{font-size:16px}.section{padding:72px 0}.section h2{font-size:37px}.section-head{margin-bottom:35px}.program{padding:24px}.steps{grid-template-columns:1fr}.step{border-right:0!important;border-bottom:1px solid rgba(255,255,255,.12)!important;margin:0;padding:25px 0!important}.step:last-child{border-bottom:0!important}.compare-row>div{padding:15px 12px;font-size:12px}.cta{padding:65px 0}.cta-box{padding:35px 24px;border-radius:18px}.faq{gap:28px}.footer-links{flex-wrap:wrap;gap:30px}.legal{display:block}.legal span{display:block;margin-top:8px}.mobile-cta{display:block;position:fixed;bottom:0;left:0;right:0;z-index:45;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));backdrop-filter:blur(12px)}.mobile-cta .btn{width:100%;min-height:47px}}
+</style>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to content</a>
+<div class="topbar"><div class="wrap"><span class="mark"></span><span><strong>One simple rule:</strong> you don't pay for the call. You pay when the application is submitted.</span></div></div>
+<header><div class="wrap nav"><a class="brand" href="/" aria-label="NetEnroll home"><img src="/netenroll-logo.png" alt="NetEnroll"></a><nav class="links" aria-label="Main navigation"><a href="#programs">Programs</a><a href="#how-it-works">How It Works</a><a href="#economics">Why NetEnroll</a><a href="#faq">FAQ</a></nav><div class="nav-actions"><a class="signin" href="https://agents.netenroll.com">Sign in</a><a class="btn btn-primary" href="https://agents.netenroll.com">Get Started <span>→</span></a><button class="menu" aria-label="Open menu" onclick="document.getElementById('mobileMenu').toggleAttribute('hidden')">☰</button></div></div><div id="mobileMenu" hidden style="border-top:1px solid #dfe5e1;background:#fff;padding:10px 20px 18px"><a href="#programs" style="display:block;padding:10px 0;text-decoration:none;font-weight:600">Programs</a><a href="#how-it-works" style="display:block;padding:10px 0;text-decoration:none;font-weight:600">How It Works</a><a href="#faq" style="display:block;padding:10px 0;text-decoration:none;font-weight:600">FAQ</a><a href="https://agents.netenroll.com" style="display:block;margin-top:8px" class="btn btn-primary">Get Started</a></div></header>
 
-<header class="site-header">
-    <div class="wrap">
-        <a class="brand" href="/" aria-label="NetEnroll home">
-            <img src="/netenroll-logo.png" width="918" height="179" alt="NetEnroll">
-        </a>
-        <nav class="nav" aria-label="Primary">
-            <a href="/" aria-current="page">Final Expense</a>
-            <a href="/aca-agent-recruiting">Agent Recruiting</a>
-            <a href="/licensing-value">State License Tool</a>
-        </nav>
-        <div class="header-actions">
-            <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
-            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="header">Get Started</a>
-        </div>
-        <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
-            <svg class="open" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            <svg class="close" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </button>
-    </div>
-    <div class="mobile-nav" id="mobile-nav" hidden>
-        <a href="/" aria-current="page">Final Expense</a>
-        <a href="/aca-agent-recruiting">Agent Recruiting</a>
-        <a href="/licensing-value">State License Tool</a>
-        <a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in</a>
-        <div class="cta-row">
-            <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="mobile-nav">Get Started</a>
-        </div>
-    </div>
-</header>
+<main>
+<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow"><i></i> Built for licensed insurance producers</div><h1>Stop buying calls.<br><span>Start paying for applications.</span></h1><p class="lead">NetEnroll connects your producers with live Final Expense, Medicare, and ACA consumers. <strong>You pay only when a consumer becomes a submitted application.</strong></p><div class="hero-actions"><a class="btn btn-primary btn-lg" href="https://agents.netenroll.com">Get Started <span>→</span></a><a class="btn btn-light btn-lg" href="#how-it-works">See How It Works</a></div><div class="hero-note"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5 6.1 11.5 13 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>No monthly fee. No per-call charge. No minimum purchase.</span></div></div>
+<aside class="proof-card" aria-label="NetEnroll pricing model"><div class="proof-head"><div><p>What you pay for</p><strong>The outcome — not the opportunity</strong></div><span style="font-size:12px;color:#74807c">NETENROLL MODEL</span></div><div class="proof-body"><div class="row"><div class="label">Consumer delivered<span class="sub">A live insurance conversation</span></div><div class="price zero">$0</div></div><div class="row"><div class="label">Qualification<span class="sub">No application yet</span></div><div class="price zero">$0</div></div><div class="row"><div class="label">Producer conversation<span class="sub">Your agent takes the call</span></div><div class="price zero">$0</div></div><div class="row"><div class="label">No application<span class="sub">The conversation ends here</span></div><div class="price zero">$0</div></div><div class="outcome"><div><b>Application submitted</b><small>This is the billable event.</small></div><div class="price">$199</div></div></div><div class="proof-foot"><strong>That's the model.</strong><span>Pricing shown for Final Expense. Medicare and ACA available.</span></div></aside></div></section>
 
-<main id="main">
+<div class="strip"><div class="wrap"><div class="strip-item"><b>Final Expense</b><span>Live consumer calls</span></div><div class="strip-item"><b>Medicare</b><span>Live consumer calls</span></div><div class="strip-item"><b>ACA Health</b><span>Live consumer calls</span></div><div class="strip-item"><b>$0</b><span>Until an application is submitted</span></div></div></div>
 
-    <!-- ============================ HERO ============================ -->
-    <section class="hero" id="top">
-        <div class="wrap hero-grid">
-            <div class="hero-copy">
-                <p class="eyebrow">Final Expense<span class="dot" aria-hidden="true"></span>For licensed producers</p>
-                <h1 class="h1">Stop paying for calls that never become applications.</h1>
-                <p class="lede">NetEnroll routes live final expense consumers to licensed producers &mdash; and you pay $199 only when an application is submitted.</p>
+<section class="section" id="programs"><div class="wrap"><div class="section-head"><div class="kicker">Three programs. One model.</div><h2>Give your producers more conversations without making every conversation an expense.</h2><p>Choose the lines of business your agency writes. Calls are routed to the producers and states you configure, while billing is tied to the application outcome.</p></div><div class="programs">
+<article class="program"><div class="program-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21s8-4.35 8-10.5A4.5 4.5 0 0 0 15.5 6c-1.52 0-2.8.75-3.5 1.9A4.06 4.06 0 0 0 8.5 6 4.5 4.5 0 0 0 4 10.5C4 16.65 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/></svg></div><h3>Final Expense</h3><p>Connect licensed producers with consumers discussing final expense coverage. Your producer handles the conversation and application.</p><div class="program-bottom"><div class="price"><small>per submitted application</small>$199</div><span class="tag">Core program</span></div></article>
+<article class="program"><div class="program-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/></svg></div><h3>Medicare</h3><p>Bring live Medicare conversations to licensed producers without paying for every call that doesn't make it to an application.</p><div class="program-bottom"><div class="price"><small>per submitted application</small>$125</div><span class="tag">Available</span></div></article>
+<article class="program"><div class="program-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>ACA Health</h3><p>Give health producers a way to work live consumer demand while keeping acquisition economics tied to submitted business.</p><div class="program-bottom"><div class="price"><small>per submitted application</small>$100</div><span class="tag">Available</span></div></article></div><div class="callout"><strong>Pricing is program-specific.</strong> The figures above reflect the current published application rates; your account controls which programs and states are active.</div></div></section>
 
-                <div class="price-hero" aria-label="Pricing">
-                    <div class="amt num">$199</div>
-                    <div class="unit">per submitted application</div>
-                    <div class="zeros"><span><b>$0</b> per call</span><span><b>$0</b> per lead</span><span><b>$0</b> monthly fee</span></div>
-                </div>
+<section class="section dark" id="how-it-works"><div class="wrap"><div class="section-head"><div class="kicker">How it works</div><h2>A simpler acquisition model for the producer.</h2><p>There is no complicated lead marketplace to learn. Configure your agency, tell us what you write, and let the economics do the talking.</p></div><div class="steps"><div class="step"><div class="step-num">01 / CONFIGURE</div><h3>Choose your business</h3><p>Select Final Expense, Medicare, ACA, your licensed states, and the producers who should receive calls.</p></div><div class="step"><div class="step-num">02 / RECEIVE</div><h3>Take live calls</h3><p>Consumers are connected to the appropriate producer based on your account configuration.</p></div><div class="step"><div class="step-num">03 / SELL</div><h3>Work the opportunity</h3><p>Your producer handles the conversation, presents the appropriate coverage, and completes the application.</p></div><div class="step"><div class="step-num">04 / PAY</div><h3>Application submitted</h3><p>Only the submitted application becomes billable. No application means no application charge.</p></div></div></div></section>
 
-                <div class="cta-row">
-                    <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="hero">Get Started <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    <a class="btn btn-secondary btn-lg" href="#before-you-pay" data-track="cta_click" data-loc="hero" data-label="See how it works">See How It Works</a>
-                </div>
-                <p class="assure"><strong>No monthly contract. No minimum.</strong> Start with one application.</p>
-            </div>
+<section class="section" id="economics"><div class="wrap"><div class="econ"><div><div class="kicker">The NetEnroll difference</div><div class="big-statement">The call is the <em>opportunity.</em><br>The application is the <em>outcome.</em></div><p style="color:#69746f;max-width:520px;margin-top:24px">Traditional lead buying puts the acquisition risk on the agency. NetEnroll moves that risk closer to the outcome you actually care about: submitted business.</p></div><div class="compare"><div class="compare-row"><div class="compare-head">Traditional model</div><div class="compare-head">NetEnroll</div></div><div class="compare-row"><div class="compare-old">Pay when a lead or call is delivered</div><div class="compare-new">Pay when an application is submitted</div></div><div class="compare-row"><div class="compare-old">No answer? Still paid.</div><div class="compare-new">No application? $0.</div></div><div class="compare-row"><div class="compare-old">Bad fit? Still paid.</div><div class="compare-new">No application? $0.</div></div><div class="compare-row"><div class="compare-old">Monthly platform commitment</div><div class="compare-new">No monthly platform fee</div></div><div class="compare-row"><div class="compare-old">Buy the opportunity</div><div class="compare-new">Pay for the outcome</div></div></div></div></section>
 
-            <!-- What you pay for, side by side. Every label is a step that
-                 actually happens; the only figures are the two prices. -->
-            <figure class="paywhen reveal" data-delay="1" aria-label="Traditional lead buying compared with NetEnroll">
-                <div class="paywhen-grid">
-                    <div class="pw-col is-old">
-                        <div class="pw-head">Traditional lead buying</div>
-                        <div class="pw-paid"><span>You pay here</span><span class="amt">$$$</span></div>
-                        <ol class="pw-steps">
-                            <li>Lead delivered<span class="cost">paid</span></li>
-                            <li>Call attempts<span class="cost">paid</span></li>
-                            <li>No answer<span class="cost">paid</span></li>
-                            <li>Wrong number<span class="cost">paid</span></li>
-                            <li>Already bought elsewhere<span class="cost">paid</span></li>
-                            <li>Maybe a conversation<span class="cost">paid</span></li>
-                            <li>Maybe an application<span class="cost">paid</span></li>
-                        </ol>
-                    </div>
-                    <div class="pw-col is-new">
-                        <div class="pw-head">NetEnroll</div>
-                        <ol class="pw-steps">
-                            <li>Consumer<span class="cost">$0</span></li>
-                            <li>Qualification<span class="cost">$0</span></li>
-                            <li>Live conversation<span class="cost">$0</span></li>
-                            <li>Licensed producer<span class="cost">$0</span></li>
-                            <li>No application? Still<span class="cost">$0</span></li>
-                            <li class="is-outcome">Application submitted<span class="cost">$199</span></li>
-                        </ol>
-                    </div>
-                </div>
-                <figcaption class="pw-foot"><span><b>Traditional:</b> you paid at the beginning.</span><span><b>NetEnroll:</b> <span class="em">everything before the application is $0.</span></span></figcaption>
-            </figure>
-        </div>
-    </section>
+<section class="cta"><div class="wrap"><div class="cta-box"><div><div class="kicker" style="color:#8bd1b6">Ready when you are</div><h2>Put your producers on calls.<br>Put your budget on applications.</h2><p>Create your NetEnroll account, select the programs and states you write, and configure your producers.</p></div><a class="btn" href="https://agents.netenroll.com">Get Started <span>→</span></a></div></div></section>
 
-    <!-- =================== THE DIFFERENCE IS WHEN YOU PAY =================== -->
-    <section class="section band rule" id="when-you-pay">
-        <div class="wrap">
-            <div class="sec-head">
-                <p class="eyebrow">The economics</p>
-                <h2 class="h2">The difference is when you pay.</h2>
-                <p class="lede">A lead vendor gets paid when the lead is delivered. NetEnroll gets paid when the application is submitted. Everything else about the business follows from that.</p>
-            </div>
-            <div class="ledger reveal" role="table" aria-label="Traditional lead model compared with NetEnroll">
-                <div class="ledger-head" role="row"><div role="columnheader">Traditional lead model</div><div role="columnheader">NetEnroll</div></div>
-                <div class="ledger-row" role="row">
-                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay for the lead</div>
-                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Pay for the application</div>
-                </div>
-                <div class="ledger-row" role="row">
-                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay whether they answer</div>
-                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cost">$0</span>&nbsp;if they don't convert</div>
-                </div>
-                <div class="ledger-row" role="row">
-                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay for dead leads</div>
-                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cost">$0</span></div>
-                </div>
-                <div class="ledger-row" role="row">
-                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay for unproductive calls</div>
-                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cost">$0</span></div>
-                </div>
-                <div class="ledger-row is-final" role="row">
-                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Vendor gets paid first</div>
-                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>You pay when the application is submitted</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================= PRODUCER REALITIES ========================= -->
-    <section class="section night" id="realities">
-        <div class="wrap">
-            <div class="sec-head">
-                <p class="eyebrow">Why it matters</p>
-                <h2 class="h2">Your producers should be presenting, not prospecting.</h2>
-            </div>
-            <div class="truths reveal">
-                <div class="truth">
-                    <p class="k">Time</p>
-                    <p class="q">Your producer shouldn't spend the day hunting for people.</p>
-                    <p class="a">Less dialing. More presentations.</p>
-                </div>
-                <div class="truth">
-                    <p class="k">Budget</p>
-                    <p class="q">Your marketing budget shouldn't disappear before the sale.</p>
-                    <p class="a">No charge for the conversation that doesn't become an application.</p>
-                </div>
-                <div class="truth">
-                    <p class="k">Incentive</p>
-                    <p class="q">Your vendor shouldn't win when you lose.</p>
-                    <p class="a">NetEnroll gets paid when you write business.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================ ONE PRICE ============================ -->
-    <section class="section" id="pricing">
-        <div class="wrap">
-            <div class="sec-head center">
-                <p class="eyebrow">Pricing</p>
-                <h2 class="h2">One price. One billable event.</h2>
-            </div>
-            <div class="oneprice reveal">
-                <div class="amt num">$199</div>
-                <div class="unit">Submitted final expense application</div>
-                <ul class="nos">
-                    <li><span class="z">$0</span>per call</li>
-                    <li><span class="z">$0</span>per lead</li>
-                    <li><span class="z">$0</span>monthly platform fee</li>
-                    <li><span class="z">$0</span>minimum purchase</li>
-                    <li class="is-start"><span class="z">1</span>Start with a single application</li>
-                </ul>
-                <div class="cta-row">
-                    <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="pricing">Get Started</a>
-                </div>
-                <p class="small">Medicare and ACA applications are also available under your account, at $125 and $100 respectively. Applications are funded through Stripe and drawn down as they are written.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================== WHAT HAPPENS BEFORE YOU PAY ===================== -->
-    <section class="section band rule" id="before-you-pay">
-        <div class="wrap">
-            <div class="sec-head">
-                <p class="eyebrow">How it works</p>
-                <h2 class="h2">What happens before you ever pay.</h2>
-                <p class="lede">Four things happen on NetEnroll's side of the ledger. None of them is a charge.</p>
-            </div>
-            <ol class="steps4 reveal">
-                <li class="step4"><span class="cost">$0</span><span class="n">01</span><h3 class="h4">Consumer demand</h3><p>A consumer looking for final expense coverage enters the funnel.</p></li>
-                <li class="step4"><span class="cost">$0</span><span class="n">02</span><h3 class="h4">Qualification</h3><p>Screened for product, state and consent before it is routed to anyone.</p></li>
-                <li class="step4"><span class="cost">$0</span><span class="n">03</span><h3 class="h4">Live connection</h3><p>Connected live to a producer licensed in that state and available right now.</p></li>
-                <li class="step4"><span class="cost">$0</span><span class="n">04</span><h3 class="h4">Your producer closes</h3><p>Your script, your carriers, your presentation. NetEnroll is not on the call.</p></li>
-            </ol>
-            <div class="billable reveal">
-                <div>
-                    <h3 class="h3">Application submitted.</h3>
-                    <p class="sub">That's the billable event. The only one.</p>
-                </div>
-                <div class="amt num">$199<small>per submitted application</small></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ====================== STOP BUYING NAMES ====================== -->
-    <section class="section" id="how-it-works">
-        <div class="wrap split">
-            <div class="sticky">
-                <p class="eyebrow">The model</p>
-                <h2 class="h2">Stop buying names. Start buying opportunities.</h2>
-                <p class="lede" style="margin-top:20px">Traditional lead buying moves the risk onto the producer: you pay up front and find out later which names were real. NetEnroll moves that risk back toward the acquisition side, because the charge only happens at the application.</p>
-                <p class="body" style="margin-top:16px">No close rate is promised on this page. Yours depends on your producers. What is promised is when you pay: after the application, never before.</p>
-                <div class="cta-row" style="margin-top:28px">
-                    <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="model">Get Started</a>
-                    <a class="btn btn-secondary" href="tel:+19045128487" data-track="cta_click" data-loc="model" data-label="Talk to NetEnroll">Talk to NetEnroll</a>
-                </div>
-            </div>
-            <ul class="checks reveal">
-                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Create your account at agents.netenroll.com.</strong><span>As an individual producer or as a company with a roster. No sales call required.</span></div></li>
-                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Choose your states.</strong><span>Calls are routed only in the states you select, so they only reach producers licensed to write there.</span></div></li>
-                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Fund your first application through Stripe.</strong><span>One application is a complete order. Card details never touch NetEnroll.</span></div></li>
-                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Take live calls on the line you already use.</strong><span>Every submitted application is logged against the call it came from. That log is the invoice.</span></div></li>
-                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Buy more applications whenever you want them.</strong><span>No subscription, no cancellation penalty. When the balance is used, you decide whether to top it up.</span></div></li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- ========================== WHO IT'S FOR ========================== -->
-    <section class="section band rule" id="who">
-        <div class="wrap">
-            <div class="sec-head">
-                <p class="eyebrow">Who it's for</p>
-                <h2 class="h2">Built for people who write final expense.</h2>
-            </div>
-            <div class="who reveal">
-                <div class="who-card">
-                    <p class="eyebrow">Independent producers</p>
-                    <h3 class="h3">Spend more time presenting and less time chasing.</h3>
-                    <p>Pick your states, fund one application, and take live calls on the line you already use.</p>
-                    <a class="text-link" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="paths-producer">Get Started &rarr;</a>
-                </div>
-                <div class="who-card">
-                    <p class="eyebrow">Agencies</p>
-                    <h3 class="h3">A repeatable source of live opportunities for your licensed producers.</h3>
-                    <p>Add producers under one account, route by licensed state, and see every application against the call it came from.</p>
-                    <a class="text-link" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="paths-agency">Get Started &rarr;</a>
-                </div>
-                <div class="who-card">
-                    <p class="eyebrow">Sales organizations</p>
-                    <h3 class="h3">Volume without turning every conversation into another marketing expense.</h3>
-                    <p>Teams taking calls at higher volume across many states. Talk to us first so routing is set up against your capacity.</p>
-                    <a class="text-link" href="tel:+19045128487" data-track="cta_click" data-loc="paths-org" data-label="Call NetEnroll">Talk to NetEnroll &rarr;</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================== FAQ ============================== -->
-    <section class="section" id="faq">
-        <div class="wrap">
-            <div class="sec-head">
-                <p class="eyebrow">Questions</p>
-                <h2 class="h2">What producers ask before the first application.</h2>
-            </div>
-            <div class="faq-grid">
-                <div class="faq">
-                    <details>
-                        <summary>What am I paying for?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>A submitted application. A charge is logged only when your producer completes and submits a carrier application for a consumer NetEnroll delivered. Calls, transfers, non-qualifying prospects and dropped calls are $0.</p></div>
-                    </details>
-                    <details>
-                        <summary>What does a call cost if it doesn't become an application?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>Nothing. There is no per-call, per-transfer or per-lead charge. If the conversation does not end in a submitted application, no charge is logged.</p></div>
-                    </details>
-                    <details>
-                        <summary>How does the application model work?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>You fund applications in advance through Stripe, starting with a single one. Live consumers are routed to your producers in the states you selected. When an application is submitted, one is drawn from your balance. Buy more whenever you want them. There is no subscription.</p></div>
-                    </details>
-                    <details>
-                        <summary>What happens after I sign up?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>Create your account at agents.netenroll.com, choose the states you are licensed to write in, choose your programs, and fund your first application. Routing starts once your account is configured and your states are mapped.</p></div>
-                    </details>
-                </div>
-                <div class="faq">
-                    <details>
-                        <summary>Can agencies use NetEnroll?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>Yes. Register as a company, add your producers, and route by licensed state across the roster. Every application is recorded against the producer and the call it came from.</p></div>
-                    </details>
-                    <details>
-                        <summary>How does pricing work?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>$199 per submitted final expense application, $125 for Medicare, $100 for ACA. No setup fee, no monthly platform fee, no minimum purchase and no cancellation penalty. The price is per application, not "from".</p></div>
-                    </details>
-                    <details>
-                        <summary>Where do I access my agent tools?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>At <a class="text-link" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="faq">agents.netenroll.com</a>. That is where your states, programs, call log, applications and billing live. This site holds no session and never collects a credential.</p></div>
-                    </details>
-                    <details>
-                        <summary>What happens if I need help?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>Call <a class="text-link" href="tel:+19045128487">904-512-8487</a>. We reply within one business day. NetEnroll is a service of PVN LLC, Saint Augustine, Florida.</p></div>
-                    </details>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================ CLOSING ============================ -->
-    <section class="section night closing" id="get-started">
-        <div class="wrap">
-            <p class="eyebrow">Next step</p>
-            <h2 class="h2" style="margin-top:14px">You don't pay for calls. You pay for applications.</h2>
-            <p class="lede measure">Live final expense consumers, routed to your licensed states. $199 when an application is submitted. $0 until then. Start with one.</p>
-            <div class="cta-row">
-                <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="closing">Get Started</a>
-                <a class="btn btn-secondary btn-lg" href="tel:+19045128487" data-track="cta_click" data-loc="closing" data-label="Talk to NetEnroll">Talk to NetEnroll</a>
-            </div>
-            <p class="terms-line"><b>$199</b> per submitted application &middot; <b>$0</b> per call &middot; <b>$0</b> per lead &middot; <b>$0</b> monthly fee</p>
-            <p class="contact">Prefer to talk it through first? <a href="tel:+19045128487">904-512-8487</a>, one business day to reply.</p>
-        </div>
-    </section>
-
+<section class="section soft" id="faq"><div class="wrap"><div class="faq"><div class="section-head" style="margin:0"><div class="kicker">Questions</div><h2>Before you start, here's what matters.</h2><p>No sales maze. No mystery billing. Just a clear application-based model.</p></div><div class="faq-list"><details open><summary>What exactly am I paying for?</summary><p>You pay for a submitted application. A call, conversation, transfer, or prospect that does not result in a submitted application does not create an application charge.</p></details><details><summary>Do I pay for calls that don't convert?</summary><p>No. There is no per-call or per-lead charge on this model. If the producer does not submit an application, there is no application charge.</p></details><details><summary>Which insurance programs are available?</summary><p>NetEnroll currently offers Final Expense, Medicare, and ACA Health calls. Your account determines which programs and states are active for your agency.</p></details><details><summary>Do I need to buy a monthly subscription?</summary><p>No. There is no monthly platform fee and no minimum purchase requirement described by the current program.</p></details><details><summary>How do I get started?</summary><p>Create an account at agents.netenroll.com, configure your licensed states and programs, and fund your account through the available checkout flow. Routing begins once your account is configured.</p></details><details><summary>Where do I manage my account?</summary><p>Your agent portal is available at agents.netenroll.com for account configuration, program selection, call activity, applications, and billing.</p></details></div></div></div></section>
 </main>
 
-<footer class="site-footer">
-    <div class="wrap">
-        <div class="foot-grid">
-            <div class="foot-brand">
-                <img src="/netenroll-logo.png" width="918" height="179" alt="NetEnroll" style="height:22px;width:auto">
-                <p>Application-based final expense call distribution, and producer recruiting, for licensed insurance professionals.</p>
-            </div>
-            <div>
-                <h3>Services</h3>
-                <ul>
-                    <li><a href="/">Final Expense calls</a></li>
-                    <li><a href="/aca-agent-recruiting">ACA agent recruiting</a></li>
-                    <li><a href="/licensing-value">State license value tool</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3>Account</h3>
-                <ul>
-                    <li><a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="footer">Sign in</a></li>
-                    <li><a href="https://agents.netenroll.com" data-track="signup_cta" data-loc="footer">Create an account</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#faq">Questions</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3>Legal</h3>
-                <ul>
-                    <li><a href="/terms">Terms of Service</a></li>
-                    <li><a href="/privacy">Privacy Policy</a></li>
-                    <li><a href="/tcpa-compliance">TCPA &amp; Compliance</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="foot-legal">
-            <p>&copy; 2026 PVN LLC. All rights reserved. NetEnroll is a service of PVN LLC.</p>
-            <address style="font-style:normal">2800 N 6th Street #796, Saint Augustine, FL 32084 &middot; <a href="tel:+19045128487">904-512-8487</a></address>
-        </div>
-    </div>
-</footer>
-
-<div class="sticky-cta" data-sticky-after="#top" aria-hidden="true">
-    <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="sticky" tabindex="-1">Get Started &middot; $199 per application</a>
-</div>
-
-<script src="/site.js" defer></script>
+<footer><div class="wrap"><div class="footer-top"><div class="footer-brand"><img src="/netenroll-logo-dark.png" alt="NetEnroll"><p>Live insurance calls for licensed producers — with acquisition economics tied to submitted applications.</p></div><div class="footer-links"><div class="footer-col"><b>Programs</b><a href="#programs">Final Expense</a><a href="#programs">Medicare</a><a href="#programs">ACA Health</a></div><div class="footer-col"><b>Company</b><a href="#how-it-works">How It Works</a><a href="#faq">FAQ</a><a href="/licensing-value">State License Tool</a><a href="/aca-agent-recruiting">Agent Recruiting</a></div><div class="footer-col"><b>Account</b><a href="https://agents.netenroll.com">Sign In</a><a href="https://agents.netenroll.com">Get Started</a></div></div></div><div class="legal"><span>© 2026 NetEnroll. All rights reserved.</span><span><a href="/legal/privacy">Privacy</a> · <a href="/legal/terms">Terms</a></span></div></div></footer>
+<div class="mobile-cta"><a class="btn btn-primary" href="https://agents.netenroll.com">Get Started with NetEnroll <span>→</span></a></div>
+<script>document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{const m=document.getElementById('mobileMenu');if(m&&!m.hidden)m.hidden=true}));</script>
 </body>
 </html>
