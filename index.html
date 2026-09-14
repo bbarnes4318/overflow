@@ -36,7 +36,9 @@
    for the menu, scroll reveals, the mobile sticky CTA and the analytics hook.
 
    The page tells one story: the invoice moved from the ring to the
-   application, and that changes who carries the risk of a bad call. Each
+   application, and that changes who carries the risk of a bad call. The
+   hero says it in three type sizes, the ledger in the shift section shows
+   it, and every later section restates it in a different form. Each
    section makes that point in a different form (statement, comparison,
    rate sheet, benefits, agency math, written proof, questions) rather than
    repeating the sentence. General Sans carries the headlines, Satoshi the
@@ -174,16 +176,19 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .mobile-nav { display: none; }
 
 /* ---- Hero ---------------------------------------------------------------- */
-.hero { padding: clamp(44px, 6vw, 80px) 0 clamp(56px, 6vw, 88px); }
-.hero-grid { display: grid; grid-template-columns: 1.18fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
-.hero h1 { margin-top: 22px; max-width: 21ch; }
-.hero h1 em { font-style: normal; color: var(--green); }
-.hero .lede { margin-top: 22px; max-width: 33rem; }
+.hero { padding: clamp(40px, 5.5vw, 72px) 0 clamp(56px, 6vw, 88px); }
+.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
+/* The headline is three sizes: the category, the number, the rule. */
+.hero h1 { margin-top: 24px; display: grid; font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.hero h1 .a { font-size: clamp(1.45rem, 2.2vw, 2rem); font-weight: 500; letter-spacing: -.02em; color: var(--ink-2); }
+.hero h1 .zero { margin: 8px 0 12px; font-size: clamp(3.9rem, 8.2vw, 7rem); line-height: .92; letter-spacing: -.055em; color: var(--green); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hero h1 .b { font-size: clamp(1.45rem, 2.2vw, 2rem); line-height: 1.12; letter-spacing: -.025em; max-width: 21ch; text-wrap: balance; }
+.hero .lede { margin-top: 24px; max-width: 32rem; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
-.hero-proof { display: flex; flex-wrap: wrap; gap: 10px 0; margin-top: 30px; font-size: 14px; font-weight: 500; color: var(--muted); }
-.hero-proof li { padding-right: 12px; margin-right: 12px; border-right: 1px solid var(--line-2); line-height: 1.3; }
-.hero-proof li:last-child { border: 0; padding-right: 0; margin-right: 0; }
-.hero-proof b { color: var(--ink); font-weight: 700; }
+/* What happens after the click, so the button reads as a beginning. */
+.next { display: grid; gap: 7px; margin-top: 22px; font-size: 14px; font-weight: 500; color: var(--muted); counter-reset: nx; }
+.next li { display: flex; align-items: center; gap: 10px; counter-increment: nx; }
+.next li::before { content: counter(nx); flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--ink-2); }
 
 .hero-visual { background: var(--mint); border-radius: var(--r-lg); padding: clamp(18px, 3vw, 36px); }
 
@@ -255,34 +260,52 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .stmt-ne blockquote { color: #fff; }
 .stmt-ne blockquote em { font-style: normal; color: var(--green-bright); }
 .stmt-ne p { color: #C5DDD1; }
-.shift .sub { margin-top: clamp(40px, 5vw, 64px); padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .14); display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; }
-.shift .sub h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
-.shift .sub p { font-size: 15.5px; color: #9DB8AB; max-width: 34rem; }
-
-.tracks { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); margin-top: 24px; }
-.track { --row: 58px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-lg); padding: clamp(20px, 2.6vw, 32px); }
-.track-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, .14); }
-.track-head h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
 .pill { flex: none; white-space: nowrap; display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .pill-dim { background: rgba(255, 255, 255, .1); color: #D3E4DB; }
 .pill-bright { background: var(--green-bright); color: var(--green-ink); }
-.track ol { position: relative; margin-top: 10px; }
-.track ol::before { content: ""; position: absolute; left: 13px; top: 14px; bottom: 14px; width: 2px; background: rgba(255, 255, 255, .14); border-radius: 2px; }
-.track li { position: relative; height: var(--row); display: flex; align-items: center; gap: 16px; font-size: 17px; font-weight: 500; }
-.track li .dot { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--green-deep); border: 2px solid rgba(255, 255, 255, .35); display: grid; place-items: center; font-size: 12px; font-weight: 700; z-index: 1; }
-.track li.maybe { color: #9DB8AB; font-weight: 400; }
-.track li.maybe .dot { border-style: dashed; border-color: rgba(255, 255, 255, .28); color: #9DB8AB; }
-.track li.pay { z-index: 2; }
-.chip { display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: #fff; color: var(--green-ink); font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .6); }
+.chip { display: inline-flex; align-items: center; gap: 10px; height: 38px; padding: 0 16px 0 12px; border-radius: 999px; background: #fff; color: var(--green-ink); font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .6); white-space: nowrap; }
 .chip .dollar { width: 22px; height: 22px; border-radius: 50%; background: var(--green-ink); color: #fff; display: grid; place-items: center; font-family: var(--display); font-size: 14px; font-weight: 700; }
-.track-ne .chip { background: var(--green-bright); }
-.track .tag { margin-left: auto; background: rgba(255, 255, 255, .1); color: #fff; }
-/* The invoice slides from the top of the NetEnroll track to the bottom once
-   the section scrolls in: the page's one animation that is itself the argument. */
-.js .track-ne li.pay { transform: translateY(calc(-3 * var(--row))); transition: transform 1.5s var(--ease) .3s; }
-.js .track-ne.is-in li.pay { transform: none; }
-.track-note { margin-top: 14px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .14); font-size: 15.5px; line-height: 1.5; color: #C5DDD1; }
-.track-note b { color: #fff; }
+
+/* The signature: two ledgers, one invoice each. In the usual model it sits
+   at the first step; here it sits at the last. */
+.seq { margin-top: clamp(40px, 5vw, 64px); padding-top: clamp(28px, 3vw, 40px); border-top: 1px solid rgba(255, 255, 255, .14); }
+.seq-title { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; margin-bottom: 28px; }
+.seq-title h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
+.seq-title p { font-size: 15.5px; color: #9DB8AB; max-width: 34rem; }
+.seq-row { display: grid; grid-template-columns: 180px 1fr; gap: 20px 32px; align-items: center; }
+.seq-row + .seq-row { margin-top: 28px; }
+.seq-label { display: grid; gap: 10px; justify-items: start; }
+.seq-label h3 { font-family: var(--display); font-size: 18px; font-weight: 600; letter-spacing: -.02em; }
+.seq-note { grid-column: 2; font-size: 15px; line-height: 1.5; color: #9DB8AB; margin-top: -6px; }
+.seq-note b { color: #C5DDD1; }
+/* Usual model: thin, dim, and the invoice sits at the head. */
+.seq-old { padding-bottom: 24px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.seq-old ol { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.seq-old li { display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .22); font-size: 15px; font-weight: 500; color: #D3E4DB; }
+.seq-old li.maybe { border-style: dashed; color: #8FAA9D; font-weight: 400; }
+.seq-old li.slot { padding: 0; border: 0; height: auto; }
+.seq-old li.slot .chip { background: rgba(255, 255, 255, .92); }
+/* NetEnroll: three stages, and the third is the only one that is ever paid. */
+.stages { display: grid; grid-template-columns: 1fr 1fr 1.45fr; gap: 14px; }
+.stage { position: relative; display: grid; gap: 6px; align-content: start; padding: 22px 24px 24px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(255, 255, 255, .04); min-height: 168px; }
+.stage .st { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #9DB8AB; }
+.stage .amt { font-family: var(--display); font-size: clamp(2.6rem, 3.6vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; margin-top: 10px; }
+.stage .sub { font-size: 14.5px; line-height: 1.45; color: #9DB8AB; margin-top: auto; padding-top: 12px; }
+.stage:not(.pay)::after { content: ""; position: absolute; top: 50%; right: -14px; width: 14px; height: 1px; background: rgba(255, 255, 255, .3); }
+.stage.pay { background: var(--green-bright); border-color: var(--green-bright); color: var(--green-ink); box-shadow: 0 30px 60px -30px rgba(46, 209, 142, .55); }
+.stage.pay .st { color: var(--green-deep); }
+.stage.pay .amt { color: var(--green-ink); font-size: clamp(2rem, 2.9vw, 2.7rem); white-space: nowrap; }
+.stage.pay .amt i { font-style: normal; color: var(--green); margin: 0 .12em; }
+.stage.pay .sub { color: var(--green-deep); font-weight: 500; }
+.stage.pay .chip { position: absolute; top: -18px; right: 18px; background: var(--green-ink); color: #fff; }
+.stage.pay .chip .dollar { background: var(--green-bright); color: var(--green-ink); }
+/* Restrained: the stages print left to right once the ledger scrolls in. */
+.js .seq .stage { opacity: 0; transform: translateY(10px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.js .seq.is-in .stage { opacity: 1; transform: none; }
+.js .seq.is-in .stage:nth-child(2) { transition-delay: .18s; }
+.js .seq.is-in .stage:nth-child(3) { transition-delay: .36s; }
+.js .seq .stage.pay .chip { opacity: 0; transform: translateY(6px); transition: opacity .5s var(--ease) .8s, transform .5s var(--ease) .8s; }
+.js .seq.is-in .stage.pay .chip { opacity: 1; transform: none; }
 
 /* ---- Programs: the rate sheet ------------------------------------------- */
 .programs { padding: clamp(64px, 8vw, 112px) 0; }
@@ -304,14 +327,18 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .row.zero .desc { color: var(--green-deep); }
 .sheet-foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 20px; font-size: 14.5px; color: var(--muted); }
 
-/* ---- Why producers care -------------------------------------------------- */
-.why { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
-.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.why-grid li { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 28px 30px; display: grid; gap: 10px; align-content: start; }
-.why-grid .k { font-family: var(--display); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--green); }
-.why-grid h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.025em; line-height: 1.15; text-wrap: balance; }
-.why-grid p { font-size: 15.5px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
-.callout { margin-top: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 40px); }
+/* ---- Why producers care: an editorial split, no cards -------------------- */
+.why { padding: clamp(64px, 8vw, 112px) 0; }
+.why-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
+.why-lead { position: sticky; top: calc(var(--header) + 32px); }
+.why-lead .h2 { margin-top: 14px; }
+.why-lead .lede { margin-top: 18px; color: var(--muted); max-width: 26rem; }
+.why-list { border-top: 1px solid var(--ink); counter-reset: why; }
+.why-list li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; padding: 24px 0; border-bottom: 1px solid var(--line-2); counter-increment: why; }
+.why-list li::before { content: counter(why, decimal-leading-zero); font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--green); padding-top: 5px; font-variant-numeric: tabular-nums; }
+.why-list h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.7vw, 1.45rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.15; text-wrap: balance; }
+.why-list p { font-size: 15.5px; line-height: 1.55; color: var(--muted); margin-top: 6px; max-width: 34rem; text-wrap: pretty; }
+.callout { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 40px); }
 .callout .big { font-family: var(--display); font-size: clamp(2.4rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; white-space: nowrap; }
 .callout .big small { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DE5C4; margin-top: 8px; white-space: normal; max-width: 12ch; }
 .callout h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.8vw, 1.55rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
@@ -321,7 +348,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .callout .ref:hover { background: rgba(255, 255, 255, .2); }
 
 /* ---- How it works -------------------------------------------------------- */
-.how { padding: clamp(64px, 8vw, 112px) 0; }
+.how { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; counter-reset: step; }
 .steps li { position: relative; padding-top: 26px; }
 .steps li::before { content: ""; position: absolute; left: 0; right: -32px; top: 0; height: 2px; background: var(--line-2); }
@@ -337,38 +364,43 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .how-foot { margin-top: clamp(36px, 5vw, 56px); display: flex; align-items: center; gap: 14px 24px; flex-wrap: wrap; }
 
 /* ---- Agencies ------------------------------------------------------------ */
-.agency { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.agency { padding: clamp(64px, 8vw, 112px) 0; }
 .agency .wrap { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
 .agency .sticky { position: sticky; top: calc(var(--header) + 32px); }
 .agency .lede { margin-top: 20px; color: var(--muted); max-width: 30rem; }
 .agency .hero-actions { margin-top: 30px; }
 .facts { border-top: 1px solid var(--ink); }
 .facts li { display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--line-2); }
-.facts .ic { width: 44px; height: 44px; border-radius: var(--r); background: #fff; border: 1px solid var(--line); color: var(--green); display: grid; place-items: center; }
+.facts .ic { width: 44px; height: 44px; border-radius: var(--r); background: var(--mint); color: var(--green); display: grid; place-items: center; }
 .facts .ic svg { width: 22px; height: 22px; }
 .facts h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
 .facts p { font-size: 15.5px; color: var(--muted); margin-top: 4px; text-wrap: pretty; }
 
-/* ---- Proof: in writing --------------------------------------------------- */
-.proof { padding: clamp(64px, 8vw, 112px) 0; }
-.proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.proof-grid li { border: 1px solid var(--line); border-radius: var(--r-lg); padding: 26px 26px 24px; display: grid; grid-template-rows: auto auto 1fr; gap: 12px; }
-.proof-grid .k { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.proof-grid h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
-.proof-grid p { font-size: 15px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
-.proof-grid .ref { justify-self: start; align-self: end; display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 6px; background: var(--mint); color: var(--green); font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; white-space: nowrap; }
-.proof-grid .ref:hover { background: var(--mint-2); }
-.proof-grid li.co { background: var(--ink); color: #fff; border-color: var(--ink); }
-.proof-grid li.co .k { color: #9DB8AB; }
-.proof-grid li.co p { color: #C5DDD1; }
-.proof-grid li.co a { color: #fff; text-underline-offset: 3px; }
-.proof-grid li.co .ref { background: rgba(255, 255, 255, .12); color: #fff; }
-.proof-grid li.co .ref:hover { background: rgba(255, 255, 255, .2); }
-.proof-foot { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 14.5px; color: var(--muted); }
-.proof-foot a { color: var(--ink); text-underline-offset: 3px; }
+/* ---- Proof: quiet, weighted, no cards ------------------------------------ */
+.proof { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.pull { margin: 0; padding: clamp(28px, 4vw, 44px) 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line-2); display: grid; grid-template-columns: 1fr auto; gap: 24px 48px; align-items: end; }
+.pull p { font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.35rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; color: var(--ink); max-width: 30ch; text-wrap: balance; }
+.pull p::before { content: "\201C"; color: var(--green); }
+.pull p::after { content: "\201D"; color: var(--green); }
+.pull cite { font-style: normal; font-size: 14.5px; color: var(--muted); text-align: right; line-height: 1.5; }
+.pull cite b { display: block; color: var(--ink); font-weight: 700; }
+.pull cite a { color: var(--green); font-weight: 700; text-underline-offset: 3px; }
+.keyfacts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0 32px; }
+.keyfacts li { padding: 24px 0 26px; border-bottom: 1px solid var(--line-2); display: grid; gap: 8px; align-content: start; }
+.keyfacts .k { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green); }
+.keyfacts h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.025em; line-height: 1.15; }
+.keyfacts p { font-size: 15px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+.keyfacts a { font-size: 14px; font-weight: 700; color: var(--ink); text-underline-offset: 3px; }
+.receipt { display: flex; flex-wrap: wrap; gap: 12px 0; margin-top: 24px; font-size: 14.5px; color: var(--muted); }
+.receipt li { display: inline-flex; align-items: center; }
+.receipt li:not(:last-child)::after { content: ""; width: 1px; height: 14px; background: var(--line-2); margin: 0 16px; }
+.receipt b { color: var(--ink); font-weight: 700; margin-right: 5px; }
+.receipt a { color: var(--ink); text-underline-offset: 3px; }
+.receipt .co { width: 100%; display: block; }
+.receipt .co::after { display: none; }
 
 /* ---- Questions ----------------------------------------------------------- */
-.qa { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.qa { border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
 .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(32px, 5vw, 72px); border-top: 1px solid var(--line-2); }
 .qa .q { padding: 28px 0; border-bottom: 1px solid var(--line-2); }
 .qa dt { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
@@ -378,8 +410,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 /* ---- Final --------------------------------------------------------------- */
 .final { background: var(--green); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
 .final .wrap { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; }
-.final .h2 { max-width: 16ch; font-size: clamp(2.2rem, 4.6vw, 3.9rem); }
-.final .h2 em { display: block; font-style: normal; color: #9DE5C4; }
+.final .h2 { max-width: 18ch; font-size: clamp(2.1rem, 4.4vw, 3.7rem); }
+.final .h2 em { display: block; font-style: normal; color: #9DE5C4; margin-top: 8px; }
 .final p { margin-top: 20px; font-size: 18px; color: #CDE5D9; max-width: 32rem; text-wrap: pretty; }
 .final-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; justify-self: end; }
 .final .tel { color: #fff; font-size: 15.5px; text-decoration: none; }
@@ -415,7 +447,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     html { scroll-behavior: auto; }
     .bill .line, .bill-foot { animation: none; opacity: 1; }
     .js .reveal { opacity: 1; transform: none; transition: none; }
-    .js .track-ne li.pay { transform: none; transition: none; }
+    .js .seq .stage, .js .seq .stage.pay .chip { opacity: 1; transform: none; transition: none; }
     .btn svg { transition: none; }
 }
 
@@ -424,7 +456,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .steps { grid-template-columns: 1fr 1fr; gap: 40px 32px; }
     .steps li:nth-child(2)::before { right: 0; }
-    .why-grid, .proof-grid { grid-template-columns: 1fr 1fr; }
+    .keyfacts { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 900px) {
     .nav, .signin, .header-actions .btn { display: none; }
@@ -440,13 +472,26 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .mobile-nav .cta-row .btn { width: 100%; }
 
     .hero-grid { grid-template-columns: 1fr; gap: 36px; }
-    .hero h1 { max-width: 16ch; }
     .rates .wrap { grid-template-columns: repeat(3, 1fr); }
     .rates .zero { grid-column: 1 / -1; justify-self: start; text-align: left; padding-bottom: 18px; margin-top: -8px; }
     .rates li { padding: 18px 0 14px; }
     .sec-head.split { grid-template-columns: 1fr; align-items: start; }
     .sec-head.split .lede { justify-self: start; }
-    .stmts, .tracks { grid-template-columns: 1fr; }
+    .stmts, .why-grid { grid-template-columns: 1fr; }
+    .why-lead { position: static; }
+    .seq-row { grid-template-columns: 1fr; gap: 16px; }
+    .seq-label { grid-auto-flow: column; align-items: center; }
+    .seq-note { grid-column: 1; margin-top: 0; }
+    .stages { grid-template-columns: 1fr; gap: 12px; }
+    .stage { min-height: 0; grid-template-columns: 1fr auto; grid-template-areas: "st amt" "sub amt"; align-items: center; padding: 18px 20px; }
+    .stage .st { grid-area: st; }
+    .stage .amt { grid-area: amt; margin: 0; }
+    .stage .sub { grid-area: sub; padding-top: 4px; margin: 0; }
+    .stage:not(.pay)::after { display: none; }
+    .stage.pay { padding-top: 28px; }
+    .stage.pay .chip { top: -16px; right: 14px; }
+    .pull { grid-template-columns: 1fr; }
+    .pull cite { text-align: left; }
     .agency .wrap, .final .wrap { grid-template-columns: 1fr; }
     .agency .sticky { position: static; }
     .final-actions { justify-self: start; }
@@ -459,9 +504,12 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     :root { --header: 64px; }
     .brand img { height: 21px; }
     .hero { padding-top: 36px; }
-    .hero h1 { font-size: clamp(2.1rem, 9.5vw, 2.7rem); }
+    .hero h1 .a, .hero h1 .b { font-size: 1.35rem; }
+    .hero h1 .zero { font-size: clamp(3.4rem, 17vw, 4.2rem); margin: 6px 0 10px; }
+    .hero .lede { font-size: 1.05rem; margin-top: 18px; }
+    .hero-actions { margin-top: 24px; }
+    .next { margin-top: 18px; }
     .hero-actions .btn { width: 100%; }
-    .hero-proof li { border: 0; padding: 0; margin: 0 0 4px; width: 100%; }
     .hero-visual { padding: 14px; margin-left: calc(var(--gutter) * -1 + 8px); margin-right: calc(var(--gutter) * -1 + 8px); border-radius: 14px; }
     .bill-head, .bill-body, .bill-foot { padding-left: 16px; padding-right: 16px; }
     .line { grid-template-columns: 24px 1fr auto; gap: 12px; }
@@ -471,8 +519,9 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .rates li { padding: 14px 0; border-bottom: 1px solid var(--line-2); }
     .rates li + li { border-left: 0; padding-left: 0; }
     .rates .zero { padding: 14px 0 16px; margin: 0; }
-    .track { --row: 54px; }
-    .track li { font-size: 16px; line-height: 1.2; }
+    .stage.pay .amt { font-size: 1.55rem; }
+    .stage.pay { grid-template-columns: 1fr; grid-template-areas: "st" "amt" "sub"; }
+    .seq-old li { height: 34px; padding: 0 12px; font-size: 14px; }
     .steps { grid-template-columns: 1fr; gap: 32px; }
     .steps li::before { right: 0; }
     .sheet-head { display: none; }
@@ -482,7 +531,10 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .row .price span { font-size: 10.5px; max-width: 96px; margin-left: auto; line-height: 1.25; }
     .row .name { font-size: 1.35rem; }
     .row .price b { font-size: 1.9rem; }
-    .why-grid, .proof-grid { grid-template-columns: 1fr; }
+    .keyfacts { grid-template-columns: 1fr; }
+    .why-list li { grid-template-columns: 32px 1fr; gap: 12px; padding: 20px 0; }
+    .receipt li:not(:last-child)::after { display: none; }
+    .receipt li { width: 100%; }
     .final-actions .btn { width: 100%; }
     .final-actions { width: 100%; }
     .foot-grid { grid-template-columns: 1fr; gap: 28px; }
@@ -582,18 +634,18 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 <section class="hero" id="top" aria-labelledby="hero-title">
     <div class="wrap hero-grid">
         <div>
-            <p class="eyebrow">Live Final Expense, Medicare &amp; ACA calls for licensed producers</p>
-            <h1 id="hero-title" class="h1">Live insurance calls for your producers. <em>Every call is free until it becomes an application.</em></h1>
-            <p class="lede">Consumers who called in about coverage, connected live to a producer in their state. The call is $0, however long it runs. When your producer submits an application, you pay one flat published rate. When they don't, you pay nothing.</p>
+            <p class="eyebrow">Live Final Expense, Medicare &amp; ACA Health calls</p>
+            <h1 id="hero-title"><span class="a">Live insurance calls for licensed producers.</span> <span class="zero">$0 per call.</span> <span class="b">Pay only when an application is submitted.</span></h1>
+            <p class="lede">You work the call before you buy it. Hear the consumer, qualify them, write the application, and only then does the program rate apply. A call that goes nowhere never becomes a bill.</p>
             <div class="hero-actions">
                 <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="hero" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
                 <a class="btn btn-outline" href="#how-it-works" data-track="cta_click" data-loc="hero" data-label="See how it works">See how it works</a>
             </div>
-            <ul class="hero-proof">
-                <li><b>$0 per call</b>, in the Terms</li>
-                <li><b>$199 · $125 · $100</b>, published</li>
-                <li><b>No monthly</b> or seat fees</li>
-            </ul>
+            <ol class="next" aria-label="What happens next">
+                <li><span>Create your account</span></li>
+                <li><span>Confirm your programs and states</span></li>
+                <li><span>Calls matched to them route to your producers</span></li>
+            </ol>
         </div>
 
         <div class="hero-visual">
@@ -653,33 +705,32 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             </div>
         </div>
 
-        <div class="sub reveal">
-            <h3>Same call, step by step</h3>
-            <p>Same consumer, same conversation, same producer. The only thing that moved is where the invoice sits, and that decides who carries the risk.</p>
-        </div>
-        <div class="tracks">
-            <div class="track track-old reveal">
-                <div class="track-head"><h3>The usual model</h3><span class="pill pill-dim">Pay first</span></div>
-                <ol>
-                    <li class="pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
-                    <li><span class="dot">1</span>Lead delivered</li>
-                    <li><span class="dot">2</span>Call delivered</li>
-                    <li class="maybe"><span class="dot">3</span>Maybe they answer</li>
-                    <li class="maybe"><span class="dot">4</span>Maybe they qualify</li>
-                    <li class="maybe"><span class="dot">5</span>Maybe they apply</li>
-                    <li class="maybe"><span class="dot">6</span>Maybe it issues</li>
-                </ol>
-                <p class="track-note"><b>Six steps of maybe.</b> You paid at the first one, and the vendor was done.</p>
+        <div class="seq reveal" aria-label="Where the invoice sits">
+            <div class="seq-title">
+                <h3>Same call, step by step</h3>
+                <p>Same consumer, same conversation, same producer. The only thing that moved is where the invoice sits, and that decides who carries the risk.</p>
             </div>
-            <div class="track track-ne reveal">
-                <div class="track-head"><h3>NetEnroll</h3><span class="pill pill-bright">Pay last</span></div>
+            <div class="seq-row seq-old">
+                <div class="seq-label"><h3>The usual model</h3><span class="pill pill-dim">Pay first</span></div>
                 <ol>
-                    <li><span class="dot">1</span>Call<span class="tag">$0</span></li>
-                    <li><span class="dot">2</span>Conversation<span class="tag">$0</span></li>
-                    <li><span class="dot">3</span>Application submitted<span class="tag">Program rate</span></li>
-                    <li class="pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
+                    <li class="slot"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
+                    <li>Lead delivered</li>
+                    <li>Call delivered</li>
+                    <li class="maybe">Maybe they answer</li>
+                    <li class="maybe">Maybe they qualify</li>
+                    <li class="maybe">Maybe they apply</li>
+                    <li class="maybe">Maybe it issues</li>
                 </ol>
-                <p class="track-note"><b>Three steps. You pay at the last one.</b> If the call never gets there, neither does the invoice.</p>
+                <p class="seq-note"><b>Six steps of maybe.</b> You paid at the first one, and the vendor was done.</p>
+            </div>
+            <div class="seq-row seq-ne">
+                <div class="seq-label"><h3>NetEnroll</h3><span class="pill pill-bright">Pay last</span></div>
+                <ol class="stages">
+                    <li class="stage"><span class="st">1 · Call</span><span class="amt">$0</span><span class="sub">Routed live to your producer.</span></li>
+                    <li class="stage"><span class="st">2 · Conversation</span><span class="amt">$0</span><span class="sub">Any length. Quote, qualify, write it up.</span></li>
+                    <li class="stage pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span><span class="st">3 · Application submitted</span><span class="amt">$199<i>·</i>$125<i>·</i>$100</span><span class="sub">The only stage that is ever billed. Final Expense, Medicare, ACA Health.</span></li>
+                </ol>
+                <p class="seq-note"><b>Three steps. You pay at the last one.</b> If the call never gets there, neither does the invoice.</p>
             </div>
         </div>
     </div>
@@ -727,44 +778,22 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 
 <!-- 4. Why producers care -->
 <section class="why" id="why" aria-labelledby="why-title">
-    <div class="wrap">
-        <div class="sec-head reveal">
+    <div class="wrap why-grid">
+        <div class="why-lead reveal">
             <p class="eyebrow">What changes for you</p>
-            <h2 id="why-title" class="h2">When the call is free, the whole afternoon changes.</h2>
-            <p class="lede">Billing at the application isn't a pricing detail. It changes what a bad call costs, how you test a new source, and how far a budget goes.</p>
+            <h2 id="why-title" class="h2">The only call you pay for is the one you chose to write.</h2>
+            <p class="lede">Billing at the application isn't a pricing detail. It changes what a bad call costs, how you test a source, and how far a budget goes.</p>
         </div>
-        <ul class="why-grid reveal">
-            <li>
-                <span class="k">Wasted spend</span>
-                <h3>A bad call costs you time, not money.</h3>
-                <p>The wrong number, the not-eligible, the tire-kicker: all $0. The only calls you ever pay for are the ones your producer chose to write.</p>
-            </li>
-            <li>
-                <span class="k">Order of operations</span>
-                <h3>You work the call before you pay for it.</h3>
-                <p>You've heard the consumer, qualified them and completed the application before a dollar is owed. You never pay for a stranger.</p>
-            </li>
-            <li>
-                <span class="k">Testing</span>
-                <h3>Try a new source without funding a campaign.</h3>
-                <p>Turn on one program in one state. No monthly commitment, no block of calls to buy. The test costs the applications it produces, and nothing else.</p>
-            </li>
-            <li>
-                <span class="k">Pricing</span>
-                <h3>The rate is printed, not negotiated.</h3>
-                <p>$199, $125 or $100, the same for every call in the program, confirmed at checkout and written into the Terms. Your cost per application is fixed before the first call.</p>
-            </li>
-            <li>
-                <span class="k">The calls</span>
-                <h3>A live consumer who called in about coverage.</h3>
-                <p>Not a list, not a form fill from last week. A person on the line who reached out about Final Expense, Medicare or ACA Health, routed to you while they're still on it.</p>
-            </li>
-            <li>
-                <span class="k">Scale</span>
-                <h3>Ten producers cost the same as one, until they submit.</h3>
-                <p>One agency account, your producers under it, and no seat licenses. The bill grows only with applications, not with headcount.</p>
-            </li>
-        </ul>
+        <ol class="why-list reveal">
+            <li><div><h3>A bad call costs you time, not money.</h3><p>The wrong number, the not-eligible, the tire-kicker: all $0. Wasted spend stops at zero because the call was never the thing you were buying.</p></div></li>
+            <li><div><h3>You work the call before you pay for it.</h3><p>You've heard the consumer, qualified them and completed the application before a dollar is owed. You never pay for a stranger.</p></div></li>
+            <li><div><h3>Try a new source without funding a campaign.</h3><p>Turn on one program in one state. No monthly commitment, no block of calls to buy. The test costs the applications it produces, and nothing else.</p></div></li>
+            <li><div><h3>The rate is printed, not negotiated.</h3><p>$199, $125 or $100, the same for every call in the program, confirmed at checkout and written into the Terms. Your cost per application is fixed before the first call.</p></div></li>
+            <li><div><h3>A live consumer who called in about coverage.</h3><p>Not a list, not a form fill from last week. A person on the line who reached out about Final Expense, Medicare or ACA Health, routed to you while they're still on it.</p></div></li>
+            <li><div><h3>Ten producers cost the same as one, until they submit.</h3><p>One agency account, your producers under it, and no seat licenses. The bill grows only with applications, not with headcount.</p></div></li>
+        </ol>
+    </div>
+    <div class="wrap">
         <div class="callout reveal">
             <div class="big">+1<small>Replacement application</small></div>
             <div>
@@ -843,65 +872,45 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         <div class="sec-head split reveal">
             <div>
                 <p class="eyebrow">Why you can believe it</p>
-                <h2 id="proof-title" class="h2" style="margin-top:14px">Every claim here is written where you can check it.</h2>
+                <h2 id="proof-title" class="h2" style="margin-top:14px">Nothing on this page is a promise. It's a term.</h2>
             </div>
             <p class="lede">No testimonials, no counts, no conversion rates. The billing rules are in the Terms, the consent rules are in the compliance policy, and the rates are on this page.</p>
         </div>
-        <ul class="proof-grid reveal">
+        <blockquote class="pull reveal">
+            <p>No separate charge for receiving a Call, for speaking with a Consumer, or for the duration of a conversation.</p>
+            <cite><b>Terms of Service, §5.1</b>Quoted, not paraphrased. <a href="/terms#fees">Read the section</a></cite>
+        </blockquote>
+        <ul class="keyfacts reveal">
             <li>
                 <span class="k">Rates</span>
                 <h3>$199 · $125 · $100, published</h3>
-                <p>The rate displayed for your program at checkout is the rate that applies to your account. No "from" pricing.</p>
-                <a class="ref" href="/terms#fees">Terms §5.1</a>
-            </li>
-            <li>
-                <span class="k">The call</span>
-                <h3>$0 per call, in the Terms</h3>
-                <p>"No separate charge for receiving a call, for speaking with a consumer, or for the duration of a conversation." Quoted from the Terms, not paraphrased.</p>
-                <a class="ref" href="/terms#fees">Terms §5.1</a>
+                <p>The rate shown for your program at checkout is the rate that applies to your account. No "from" pricing.</p>
+                <a href="/terms#fees">Terms §5.1</a>
             </li>
             <li>
                 <span class="k">Not billable</span>
                 <h3>The exceptions are spelled out</h3>
-                <p>Duplicates, applications that didn't come from a NetEnroll call, and contacts without consumer consent are not billable. By rule, not by request.</p>
-                <a class="ref" href="/terms#fees">Terms §5.2</a>
+                <p>Duplicates, applications that didn't come from a NetEnroll call, and contacts without consumer consent. By rule, not by request.</p>
+                <a href="/terms#fees">Terms §5.2</a>
             </li>
             <li>
                 <span class="k">Disputes</span>
                 <h3>Billed in error? 30 days to say so</h3>
                 <p>Send the submission details and we investigate. The process is written down before you ever need it.</p>
-                <a class="ref" href="/terms#fees">Terms §5.4</a>
-            </li>
-            <li>
-                <span class="k">Payment</span>
-                <h3>Processed by Stripe</h3>
-                <p>Card details are entered on Stripe's systems and are never collected or stored by us.</p>
-                <a class="ref" href="/terms#fees">Terms §5.3</a>
-            </li>
-            <li>
-                <span class="k">Consent</span>
-                <h3>Every consumer inquiry carries a consent record</h3>
-                <p>The exact language shown, the page it was shown on, the timestamp and the device. One-to-one consent naming the seller, never a list of "marketing partners".</p>
-                <a class="ref" href="/tcpa-compliance">TCPA &amp; Compliance</a>
+                <a href="/terms#fees">Terms §5.4</a>
             </li>
             <li>
                 <span class="k">Licensing</span>
                 <h3>You control programs and states</h3>
-                <p>Calls are matched to the consumer's state and go only to the programs you turn on. Licensing stays your responsibility, and the controls are yours.</p>
-                <a class="ref" href="/terms#eligibility">Terms §3</a>
+                <p>Calls are matched to the consumer's state and go only to the programs you turn on. Licensing stays your responsibility; the controls are yours.</p>
+                <a href="/terms#eligibility">Terms §3</a>
             </li>
-            <li>
-                <span class="k">A person</span>
-                <h3>904-512-8487</h3>
-                <p>Questions before you open an account, or a bill you want to talk through. A phone number, not a ticket queue.</p>
-                <a class="ref" href="tel:+19045128487">Call</a>
-            </li>
-            <li class="co">
-                <span class="k">The company</span>
-                <h3>NetEnroll is a service of PVN LLC</h3>
-                <p>2800 N 6th Street #796, Saint Augustine, FL 32084. <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/tcpa-compliance">TCPA &amp; Compliance</a>, each at its own address.</p>
-                <a class="ref" href="/terms">Read the Terms</a>
-            </li>
+        </ul>
+        <ul class="receipt reveal">
+            <li><b>Payments</b> processed by Stripe; card details never touch our systems</li>
+            <li><b>Consent</b> on record for every consumer inquiry: language, page, timestamp, device</li>
+            <li><b>A person</b> <a href="tel:+19045128487">904-512-8487</a></li>
+            <li class="co">NetEnroll is a service of <b>PVN LLC</b>, 2800 N 6th Street #796, Saint Augustine, FL 32084 &nbsp;·&nbsp; <a href="/terms">Terms</a> &nbsp;·&nbsp; <a href="/privacy">Privacy</a> &nbsp;·&nbsp; <a href="/tcpa-compliance">TCPA &amp; Compliance</a></li>
         </ul>
     </div>
 </section>
@@ -962,8 +971,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 <section class="final on-green" id="final" aria-labelledby="final-title">
     <div class="wrap">
         <div class="reveal">
-            <h2 id="final-title" class="h2">Take the call first. <em>Pay only when it becomes an application.</em></h2>
-            <p>Open your account, switch on your programs and states, and put your producers on live Final Expense, Medicare and ACA Health calls. The first application costs $199, $125 or $100. Everything before it costs nothing.</p>
+            <h2 id="final-title" class="h2">Stop buying conversations. <em>Work them first. Pay when one becomes an application.</em></h2>
+            <p>Create your account, confirm your programs and states, and take the next call at $0. The only thing you ever pay for is an application your producer chose to write: $199, $125 or $100.</p>
         </div>
         <div class="final-actions reveal">
             <a class="btn btn-white" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="final" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
