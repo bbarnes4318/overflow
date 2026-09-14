@@ -155,7 +155,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     border-bottom: 1px solid var(--line);
 }
 .site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
-.brand img { height: 24px; width: auto; }
+.brand img { height: 44px; width: auto; }
 .nav { display: flex; gap: 30px; font-size: 15px; font-weight: 500; }
 .nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; }
 .nav a:hover { color: var(--green); }
@@ -316,37 +316,88 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .sheet-note { padding: 22px 32px; background: var(--mint); font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.4rem); font-weight: 600; letter-spacing: -.02em; color: var(--green); }
 .sheet-foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 20px; font-size: 14.5px; color: var(--muted); }
 
-/* ---- The real economics: dark, editorial ---------------------------------- */
+/* ---- The real economics: the ledger ---------------------------------------- */
 .econ { background: var(--ink); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.econ .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
+.econ .wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(40px, 6vw, 88px); align-items: start; }
 .econ .eyebrow { color: var(--green-bright); }
-.econ .h2 { margin-top: 14px; max-width: 18ch; }
-.econ .body { margin-top: 24px; max-width: 32rem; }
+.econ .h2 { margin-top: 14px; max-width: 22ch; }
+.econ .body { margin-top: 24px; max-width: 30rem; }
 .econ .body p { font-size: 17px; line-height: 1.6; color: #B9C8C0; }
 .econ .body p + p { margin-top: 14px; }
 .econ .body ul { margin: 14px 0; }
 .econ .body li { position: relative; padding-left: 22px; font-size: 17px; line-height: 1.7; color: #B9C8C0; }
 .econ .body li::before { content: ""; position: absolute; left: 0; top: .78em; width: 10px; height: 2px; background: var(--green-bright); }
 .econ .body p.key { color: #fff; font-weight: 700; }
-.econ-quote { position: sticky; top: calc(var(--header) + 40px); padding: clamp(28px, 4vw, 44px) 0 0; border-top: 1px solid rgba(255, 255, 255, .18); }
-.econ-quote p { font-family: var(--display); font-size: clamp(1.9rem, 3.4vw, 3rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; color: var(--green-bright); text-wrap: balance; }
-.econ-quote cite { display: block; margin-top: 18px; font-style: normal; font-size: 14px; color: #8FAA9D; }
+.econ-quote { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .16); }
+.econ-quote p { font-family: var(--display); font-size: clamp(1.5rem, 2.2vw, 1.9rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; color: var(--green-bright); text-wrap: balance; }
+.econ-quote cite { display: block; margin-top: 10px; font-style: normal; font-size: 14px; color: #8FAA9D; }
+/* Same five outcomes, two invoices. Counts charges, not conversions. */
+.ledger { position: sticky; top: calc(var(--header) + 32px); background: #131B17; border: 1px solid rgba(255, 255, 255, .12); border-radius: var(--r-lg); overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .8); }
+.ledger-head { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: end; padding: 20px 24px 14px; border-bottom: 1px solid rgba(255, 255, 255, .12); }
+.ledger-head h3 { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: #fff; }
+.ledger-head h3 small { display: block; font-family: var(--text); font-size: 12.5px; font-weight: 500; color: #8FAA9D; margin-top: 2px; }
+.ledger-head .col { text-align: right; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; }
+.ledger-head .col.ne { color: var(--green-bright); }
+.ledger-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: center; padding: 13px 24px; border-bottom: 1px solid rgba(255, 255, 255, .08); font-size: 15.5px; color: #D3E4DB; }
+.ledger-row .o { display: flex; align-items: center; gap: 12px; }
+.ledger-row .o i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #56705F; }
+.ledger-row .old, .ledger-row .ne { text-align: right; font-family: var(--display); font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.ledger-row .old { color: #E9A1A1; font-size: 14px; }
+.ledger-row .old::before { content: "\2212"; margin-right: 3px; }
+.ledger-row .ne { color: #fff; font-size: 17px; }
+.ledger-row.app { background: rgba(46, 209, 142, .08); }
+.ledger-row.app .o { color: #fff; font-weight: 700; }
+.ledger-row.app .o i { background: var(--green-bright); }
+.ledger-row.app .ne { color: var(--green-bright); font-size: 19px; }
+.ledger-foot { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: center; padding: 18px 24px; background: rgba(255, 255, 255, .04); border-top: 1px solid rgba(255, 255, 255, .12); }
+.ledger-foot .lbl { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; }
+.ledger-foot .old, .ledger-foot .ne { text-align: right; font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.ledger-foot .old { color: #E9A1A1; font-size: 22px; }
+.ledger-foot .ne { color: var(--green-bright); font-size: 30px; }
+.ledger-foot small { display: block; font-family: var(--text); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #8FAA9D; margin-top: 6px; }
 
-/* ---- Agencies ------------------------------------------------------------ */
-.agency { padding: clamp(64px, 8vw, 112px) 0; }
-.agency .wrap { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
-.agency .sticky { position: sticky; top: calc(var(--header) + 32px); }
+/* ---- Agencies: the routing panel ------------------------------------------- */
+.agency { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.agency-top { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(40px, 6vw, 88px); align-items: center; }
 .agency .lede { margin-top: 20px; color: var(--muted); max-width: 30rem; }
 .agency .lede + .lede { margin-top: 12px; }
 .agency .lede b { color: var(--ink); }
 .agency .hero-actions { margin-top: 30px; }
-.facts { border-top: 1px solid var(--ink); }
-.facts li { display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--line-2); }
-.facts .ic { width: 44px; height: 44px; border-radius: var(--r); background: var(--mint); color: var(--green); display: grid; place-items: center; }
-.facts .ic svg { width: 22px; height: 22px; }
-.facts h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
-.facts p { font-size: 15.5px; color: var(--muted); margin-top: 4px; text-wrap: pretty; }
-.agency-close { margin-top: 28px; font-family: var(--display); font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; color: var(--green); text-wrap: balance; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 34px 70px -40px rgba(14, 21, 18, .4); overflow: hidden; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+.panel-head h3 { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.panel-head .badge { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--mint); color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.panel-row { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; padding: 14px 22px; border-bottom: 1px solid var(--line); }
+.panel-row .lbl { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 13.5px; font-weight: 700; color: var(--ink-2); }
+.chips span.on { background: var(--green); border-color: var(--green); color: #fff; }
+.chips span.on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green-bright); }
+.chips span.off { color: var(--muted); font-weight: 500; }
+.chips span.st { padding: 0 10px; font-family: var(--display); letter-spacing: .02em; }
+.producers { display: grid; gap: 6px; }
+.producers li { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 10px; background: var(--bg-2); font-size: 14px; }
+.producers .av { width: 32px; height: 32px; border-radius: 50%; background: var(--mint-2); color: var(--green-deep); display: grid; place-items: center; font-family: var(--display); font-size: 12px; font-weight: 700; }
+.producers .who b { display: block; font-size: 14px; }
+.producers .who small { font-size: 12.5px; color: var(--muted); }
+.producers .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--green); white-space: nowrap; }
+.producers .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green-bright); }
+.producers .status.busy { color: var(--muted); }
+.producers .status.busy::before { background: var(--line-2); }
+.producers li.hit { background: var(--mint); outline: 1px solid var(--mint-2); }
+.panel-call { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 16px 22px; background: var(--green); color: #fff; }
+.panel-call .ring { width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, .14); display: grid; place-items: center; }
+.panel-call .ring svg { width: 18px; height: 18px; }
+.panel-call b { display: block; font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.panel-call small { display: block; font-size: 13px; color: #CDE5D9; margin-top: 2px; }
+.panel-call .tag { background: rgba(255, 255, 255, .14); color: #fff; }
+.agency-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: clamp(40px, 5vw, 64px); }
+.agency-facts li { padding-top: 20px; border-top: 2px solid var(--line-2); position: relative; }
+.agency-facts li::before { content: ""; position: absolute; left: 0; top: -2px; width: 48px; height: 2px; background: var(--green); }
+.agency-facts h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.agency-facts p { font-size: 15.5px; color: var(--muted); margin-top: 8px; text-wrap: pretty; }
+.agency-close { margin-top: clamp(36px, 4vw, 48px); font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.2rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; color: var(--ink); max-width: 30ch; text-wrap: balance; }
+.agency-close em { font-style: normal; color: var(--green); }
 
 /* ---- Replacement callout ------------------------------------------------- */
 .callout { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 40px); }
@@ -359,7 +410,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .callout .ref:hover { background: rgba(255, 255, 255, .2); }
 
 /* ---- Proof: quiet, human, no cards --------------------------------------- */
-.proof { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.proof { padding: clamp(64px, 8vw, 112px) 0; }
 .proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; border-top: 1px solid var(--ink); }
 .proof-grid li { padding: 22px 0 24px; border-bottom: 1px solid var(--line-2); display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
 .proof-grid li::before { content: ""; width: 20px; height: 20px; margin-top: 2px; border-radius: 50%; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat; }
@@ -370,7 +421,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .proof-foot a { color: var(--ink); text-underline-offset: 3px; }
 
 /* ---- Questions ----------------------------------------------------------- */
-.qa { padding: clamp(64px, 8vw, 112px) 0; }
+.qa { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
 .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(32px, 5vw, 72px); border-top: 1px solid var(--line-2); }
 .qa .q { padding: 26px 0; border-bottom: 1px solid var(--line-2); }
 .qa dt { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
@@ -380,22 +431,29 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .qa dd p + p { margin-top: 6px; }
 .qa dd a { color: var(--green); font-weight: 700; text-underline-offset: 3px; }
 
-/* ---- Final --------------------------------------------------------------- */
-.final { background: var(--green); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.final .wrap { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; }
-.final .h2 { margin-top: 14px; max-width: 17ch; font-size: clamp(2.2rem, 4.6vw, 3.9rem); }
-.final p { margin-top: 20px; font-size: 18px; color: #CDE5D9; max-width: 32rem; text-wrap: pretty; }
-.final p.key { margin-top: 12px; font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; color: #fff; }
-.final-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; justify-self: end; }
+/* ---- Final: centered, with the three numbers -------------------------------- */
+.final { position: relative; overflow: hidden; background: var(--green-deep); color: #fff; padding: clamp(72px, 9vw, 128px) 0; text-align: center; }
+.final::before { content: ""; position: absolute; left: -20%; right: -20%; top: -40%; height: 120%; background: radial-gradient(closest-side, rgba(46, 209, 142, .22), transparent 70%); pointer-events: none; }
+.final .wrap { position: relative; display: grid; justify-items: center; }
+.final .eyebrow { color: var(--green-bright); }
+.final .h2 { margin-top: 16px; max-width: 18ch; font-size: clamp(2.3rem, 5vw, 4.2rem); }
+.final .sub { margin-top: 20px; font-size: 18px; color: #C5DDD1; max-width: 34rem; text-wrap: pretty; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; width: min(100%, 860px); margin-top: clamp(36px, 5vw, 56px); background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-lg); overflow: hidden; }
+.tiles li { background: var(--green-deep); padding: 26px 20px 24px; }
+.tiles b { display: block; font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; color: var(--green-bright); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tiles li:last-child b { font-size: clamp(1.5rem, 2.4vw, 2.1rem); padding-top: .2em; }
+.tiles span { display: block; margin-top: 10px; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DB8AB; }
+.final-actions { margin-top: clamp(32px, 4vw, 44px); display: grid; justify-items: center; gap: 16px; }
+.final .btn-white { min-height: 60px; padding: 0 34px; font-size: 17px; }
 .final .tel { color: #fff; font-size: 15.5px; text-decoration: none; }
 .final .tel b { text-decoration: underline; text-underline-offset: 4px; }
-.final .micro { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #9DE5C4; }
+.final .micro { margin-top: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6F9C87; }
 .final ::selection { background: #fff; color: var(--green); }
 
 /* ---- Footer -------------------------------------------------------------- */
 .site-footer { padding: clamp(48px, 6vw, 72px) 0 32px; font-size: 15px; }
 .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
-.foot-brand img { height: 22px; width: auto; }
+.foot-brand img { height: 40px; width: auto; }
 .foot-brand p { margin-top: 16px; color: var(--muted); max-width: 22rem; font-size: 14.5px; }
 .site-footer h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
 .site-footer li a { display: inline-block; padding: 4px 0; color: var(--ink-2); text-decoration: none; }
@@ -451,18 +509,17 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .rates li { padding: 18px 0 14px; }
     .sec-head.split { grid-template-columns: 1fr; align-items: start; }
     .sec-head.split .lede { justify-self: start; }
-    .stmts, .why-grid, .econ .wrap, .agency .wrap, .final .wrap { grid-template-columns: 1fr; }
+    .stmts, .why-grid, .econ .wrap, .agency-top { grid-template-columns: 1fr; }
     .callout { grid-template-columns: 1fr; gap: 16px; }
     .callout .big small { max-width: none; }
-    .why-lead, .agency .sticky, .econ-quote { position: static; }
-    .econ-quote { padding-top: 24px; }
-    .final-actions { justify-self: start; }
+    .why-lead, .ledger { position: static; }
+    .agency-facts { grid-template-columns: 1fr 1fr; }
     .qa-grid { grid-template-columns: 1fr; }
     .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
 @media (max-width: 640px) {
     :root { --header: 64px; }
-    .brand img { height: 21px; }
+    .brand img { height: 38px; }
     .hero { padding-top: 36px; }
     .hero h1 { font-size: clamp(1.9rem, 8.8vw, 2.4rem); }
     .hero .lede { font-size: 1.05rem; margin-top: 18px; }
@@ -495,6 +552,16 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .proof-grid { grid-template-columns: 1fr; }
     .final-actions .btn { width: 100%; }
     .final-actions { width: 100%; }
+    .tiles { grid-template-columns: 1fr; }
+    .tiles li:last-child b { font-size: 1.6rem; }
+    .agency-facts { grid-template-columns: 1fr; gap: 24px; }
+    .panel-row { grid-template-columns: 1fr; gap: 8px; padding: 12px 16px; }
+    .panel-head, .panel-call { padding-left: 16px; padding-right: 16px; }
+    .panel-call { grid-template-columns: auto 1fr; }
+    .panel-call .tag { display: none; }
+    .ledger-head, .ledger-row, .ledger-foot { grid-template-columns: 1.3fr .8fr .8fr; gap: 8px; padding-left: 16px; padding-right: 16px; }
+    .ledger-row { font-size: 14px; }
+    .ledger-row .old { font-size: 12.5px; }
     .foot-grid { grid-template-columns: 1fr; gap: 28px; }
     .sticky-cta { display: flex; }
     body.has-sticky { padding-bottom: 74px; }
@@ -555,7 +622,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 <header class="site-header">
     <div class="wrap">
         <a class="brand" href="/" aria-label="NetEnroll home">
-            <img src="/netenroll-logo.png" width="918" height="179" alt="NetEnroll">
+            <img src="/netenroll-logo-tagline.png" width="1950" height="555" alt="NetEnroll — Pay-per-application">
         </a>
         <nav class="nav" aria-label="Primary">
             <a href="#how-it-works">How it works</a>
@@ -787,49 +854,71 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
                 <p>With NetEnroll, those conversations don't create a call charge.</p>
                 <p class="key">Your producer gets the opportunity. You pay when the opportunity becomes an application.</p>
             </div>
+            <blockquote class="econ-quote">
+                <p>&ldquo;Give me the conversation. I'll worry about the sale.&rdquo;</p>
+                <cite>The producer's side of the deal</cite>
+            </blockquote>
         </div>
-        <blockquote class="econ-quote reveal">
-            <p>&ldquo;Give me the conversation. I'll worry about the sale.&rdquo;</p>
-            <cite>The producer's side of the deal</cite>
-        </blockquote>
+        <div class="ledger reveal" role="table" aria-label="Five conversations, two invoices">
+            <div class="ledger-head" role="row">
+                <h3 role="columnheader">Five conversations<small>The same afternoon, billed two ways</small></h3>
+                <span class="col" role="columnheader">Pay per call</span>
+                <span class="col ne" role="columnheader">NetEnroll</span>
+            </div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Answers and says no</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Outside the target market</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Changes their mind</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Simply not ready</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row app" role="row"><span class="o" role="cell"><i></i>Submits an application</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">Program rate</span></div>
+            <div class="ledger-foot" role="row">
+                <span class="lbl" role="cell">Charges on the invoice</span>
+                <span class="old" role="cell">5<small>one per call</small></span>
+                <span class="ne" role="cell">1<small>the application</small></span>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- 7. Agencies -->
 <section class="agency" id="agencies" aria-labelledby="agency-title">
     <div class="wrap">
-        <div class="sticky reveal">
-            <p class="eyebrow">For agency owners</p>
-            <h2 id="agency-title" class="h2" style="margin-top:14px">Give your agents something better than another lead list.</h2>
-            <p class="lede">Your agents don't need more names to chase.</p>
-            <p class="lede"><b>They need more real consumers to talk to.</b></p>
-            <p class="lede">NetEnroll puts live insurance conversations in front of your licensed producers across the programs and states you choose.</p>
-            <div class="hero-actions">
-                <a class="btn btn-ink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="agency" data-label="Set up an agency account">Set up an agency account</a>
-                <a class="btn btn-outline" href="tel:+19045128487">Call 904-512-8487</a>
+        <div class="agency-top">
+            <div class="reveal">
+                <p class="eyebrow">For agency owners</p>
+                <h2 id="agency-title" class="h2" style="margin-top:14px">Give your agents something better than another lead list.</h2>
+                <p class="lede">Your agents don't need more names to chase.</p>
+                <p class="lede"><b>They need more real consumers to talk to.</b></p>
+                <p class="lede">NetEnroll puts live insurance conversations in front of your licensed producers across the programs and states you choose.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-ink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="agency" data-label="Set up an agency account">Set up an agency account</a>
+                    <a class="btn btn-outline" href="tel:+19045128487">Call 904-512-8487</a>
+                </div>
+            </div>
+            <div class="panel reveal" aria-label="How an agency account routes a call">
+                <div class="panel-head"><h3>Agency account</h3><span class="badge">One bill</span></div>
+                <div class="panel-row"><span class="lbl">Programs</span><div class="chips"><span class="on">Final Expense</span><span class="on">Medicare</span><span class="off">ACA Health</span></div></div>
+                <div class="panel-row"><span class="lbl">States</span><div class="chips"><span class="st">FL</span><span class="st">GA</span><span class="st">TX</span><span class="st">NC</span><span class="st off">+</span></div></div>
+                <div class="panel-row"><span class="lbl">Producers</span>
+                    <ul class="producers">
+                        <li class="hit"><span class="av">P1</span><span class="who"><b>Producer 1</b><small>Licensed FL &middot; GA</small></span><span class="status">Available</span></li>
+                        <li><span class="av">P2</span><span class="who"><b>Producer 2</b><small>Licensed TX</small></span><span class="status busy">On a call</span></li>
+                        <li><span class="av">P3</span><span class="who"><b>Producer 3</b><small>Licensed FL &middot; NC</small></span><span class="status">Available</span></li>
+                    </ul>
+                </div>
+                <div class="panel-call">
+                    <span class="ring" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+                    <span><b>Live Final Expense call &middot; Florida</b><small>Routed to Producer 1: available, licensed in FL. Billed only if an application is submitted.</small></span>
+                    <span class="tag">$0</span>
+                </div>
             </div>
         </div>
-        <div class="reveal">
-            <ul class="facts">
-                <li>
-                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19M20 19v-1.5a3.5 3.5 0 0 0-2.5-3.36M14.5 5.14a3.5 3.5 0 0 1 0 6.72M13.5 7.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <div><h3>Feed your team</h3><p>Route calls to the producers who are available and licensed to take them.</p></div>
-                </li>
-                <li>
-                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <div><h3>Protect your acquisition budget</h3><p>Calls that don't become applications don't create a call charge.</p></div>
-                </li>
-                <li>
-                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-                    <div><h3>Scale without changing your sales process</h3><p>Your producers keep using the sales process, carriers and systems they already know.</p></div>
-                </li>
-                <li>
-                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7ZM4 10h16M8 15h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <div><h3>One account. Multiple producers.</h3><p>Build your team under an agency account and manage your programs and states from one place.</p></div>
-                </li>
-            </ul>
-            <p class="agency-close">Your agents know how to sell insurance. Give them more people to sell to.</p>
-        </div>
+        <ul class="agency-facts reveal">
+            <li><h3>Feed your team</h3><p>Route calls to the producers who are available and licensed to take them.</p></li>
+            <li><h3>Protect your acquisition budget</h3><p>Calls that don't become applications don't create a call charge.</p></li>
+            <li><h3>Scale without changing your sales process</h3><p>Your producers keep using the sales process, carriers and systems they already know.</p></li>
+            <li><h3>One account. Multiple producers.</h3><p>Build your team under an agency account and manage your programs and states from one place.</p></li>
+        </ul>
+        <p class="agency-close reveal">Your agents know how to sell insurance. <em>Give them more people to sell to.</em></p>
     </div>
 </section>
 
@@ -914,12 +1003,14 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 <!-- 11. Final -->
 <section class="final on-green" id="final" aria-labelledby="final-title">
     <div class="wrap">
-        <div class="reveal">
-            <p class="eyebrow">Ready to try it?</p>
-            <h2 id="final-title" class="h2">Stop paying for opportunities that never become business.</h2>
-            <p>Put your producers on live insurance calls and let them work the opportunity before you pay.</p>
-            <p class="key">$0 per call. Pay when an application is submitted.</p>
-        </div>
+        <p class="eyebrow reveal">Ready to try it?</p>
+        <h2 id="final-title" class="h2 reveal">Stop paying for opportunities that never become business.</h2>
+        <p class="sub reveal">Put your producers on live insurance calls and let them work the opportunity before you pay.</p>
+        <ul class="tiles reveal" aria-label="What you pay">
+            <li><b>$0</b><span>per call</span></li>
+            <li><b>$0</b><span>per month</span></li>
+            <li><b>$199 &middot; $125 &middot; $100</b><span>per submitted application</span></li>
+        </ul>
         <div class="final-actions reveal">
             <a class="btn btn-white" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="final" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
             <a class="tel" href="tel:+19045128487">Questions? <b>Call 904-512-8487</b></a>
@@ -934,7 +1025,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     <div class="wrap">
         <div class="foot-grid">
             <div class="foot-brand">
-                <img src="/netenroll-logo.png" width="918" height="179" alt="NetEnroll">
+                <img src="/netenroll-logo-tagline.png" width="1950" height="555" alt="NetEnroll — Pay-per-application">
                 <p>Live Final Expense, Medicare and ACA Health calls for licensed producers, billed per submitted application. Producer recruiting for agencies.</p>
             </div>
             <div>
