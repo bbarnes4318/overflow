@@ -233,30 +233,43 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .rates .lbl small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-top: 3px; }
 .rates .zero { justify-self: end; text-align: right; font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); }
 
-/* ---- The difference: two columns, one invoice each ---------------------- */
-.shift { background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.shift .h2 { max-width: 24ch; }
-.shift .sec-head { margin-bottom: clamp(32px, 4vw, 48px); }
-.shift .sec-head .lede { color: #C5DDD1; }
-.shift .sec-head .lede b { color: #fff; }
-.stmts { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); }
-.stmt { --row: 52px; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px); border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05); display: grid; gap: 18px; align-content: start; }
+/* ---- The difference: two ledgers, one invoice each ----------------------- */
+.shift { position: relative; overflow: hidden; background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
+.shift::before { content: ""; position: absolute; right: -10%; top: -30%; width: 60%; height: 90%; background: radial-gradient(closest-side, rgba(46, 209, 142, .16), transparent 70%); pointer-events: none; }
+.shift .wrap { position: relative; }
+.shift .sec-head.split { grid-template-columns: 1.15fr 1fr; align-items: end; margin-bottom: clamp(36px, 5vw, 56px); }
+.shift .h2 { max-width: 20ch; }
+.shift .intro { justify-self: end; max-width: 26rem; padding-left: 24px; border-left: 2px solid var(--green-bright); }
+.shift .intro p { font-size: clamp(1.1rem, 1.4vw, 1.25rem); line-height: 1.5; color: #C5DDD1; }
+.shift .intro p + p { margin-top: 10px; color: #fff; font-weight: 700; }
+.stmts { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); align-items: stretch; }
+.stmt { --row: 58px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; border-radius: 20px; padding: clamp(24px, 3vw, 36px); border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .04); }
 .stmt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, .14); }
-.stmt-head h3 { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: #9DB8AB; }
-.stmt blockquote { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1.08; font-size: clamp(1.7rem, 2.9vw, 2.5rem); color: #C5DDD1; text-wrap: balance; }
-.stmt ol { position: relative; margin-top: 4px; }
-.stmt ol::before { content: ""; position: absolute; left: 13px; top: 14px; bottom: 14px; width: 2px; background: rgba(255, 255, 255, .14); border-radius: 2px; }
-.stmt li { position: relative; height: var(--row); display: flex; align-items: center; gap: 16px; font-size: 17px; font-weight: 500; color: #D3E4DB; }
-.stmt li .dot { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--green-deep); border: 2px solid rgba(255, 255, 255, .35); display: grid; place-items: center; font-size: 12px; font-weight: 700; z-index: 1; }
-.stmt li.maybe { color: #8FAA9D; font-weight: 400; }
+.stmt-head h3 { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #9DB8AB; }
+.stmt blockquote { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1.05; font-size: clamp(1.8rem, 3vw, 2.6rem); color: #C5DDD1; text-wrap: balance; }
+.stmt ol { display: grid; align-content: start; gap: 6px; }
+.stmt li { position: relative; height: calc(var(--row) - 6px); display: flex; align-items: center; gap: 14px; padding: 0 14px 0 12px; border-radius: 12px; background: rgba(255, 255, 255, .05); font-size: 16.5px; font-weight: 500; color: #D3E4DB; }
+.stmt li .dot { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .35); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; }
+.stmt li .tag { margin-left: auto; height: 28px; min-width: 0; padding: 0 10px; font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; }
+.stmt li.maybe { color: #8FAA9D; font-weight: 400; background: transparent; outline: 1px dashed rgba(255, 255, 255, .16); outline-offset: -1px; }
 .stmt li.maybe .dot { border-style: dashed; border-color: rgba(255, 255, 255, .28); color: #8FAA9D; }
-.stmt li.pay { z-index: 2; }
-.stmt .close { padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .14); font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; color: #fff; }
-.stmt-ne { background: rgba(46, 209, 142, .08); border-color: rgba(46, 209, 142, .45); box-shadow: 0 30px 60px -40px rgba(0, 0, 0, .8); }
+.stmt li.pay { background: transparent; padding-left: 0; z-index: 2; }
+.stmt-old li .tag { background: rgba(233, 161, 161, .12); color: #E9A1A1; }
+.stmt-old li.maybe .tag { background: transparent; outline: 1px solid rgba(233, 161, 161, .35); outline-offset: -1px; }
+.stmt .close { padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .14); display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; color: #fff; }
+.stmt .close small { font-family: var(--text); font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #8FAA9D; white-space: nowrap; }
+.stmt-old .close small { color: #E9A1A1; }
+/* NetEnroll: the winner, without saying so. */
+.stmt-ne { background: linear-gradient(180deg, rgba(46, 209, 142, .12), rgba(46, 209, 142, .05)); border-color: rgba(46, 209, 142, .55); box-shadow: 0 0 0 1px rgba(46, 209, 142, .25), 0 40px 80px -40px rgba(46, 209, 142, .5); }
 .stmt-ne .stmt-head h3 { color: var(--green-bright); }
 .stmt-ne blockquote { color: #fff; }
-.stmt-ne li { color: #fff; }
+.stmt-ne li { color: #fff; background: rgba(255, 255, 255, .06); }
+.stmt-ne li .dot { border-color: var(--green-bright); background: var(--green-bright); color: var(--green-ink); }
+.stmt-ne li .dot svg { width: 13px; height: 13px; }
+.stmt-ne li .tag { background: rgba(255, 255, 255, .1); color: #fff; font-family: var(--display); font-size: 15px; letter-spacing: -.01em; text-transform: none; }
+.stmt-ne li.app .tag { background: var(--green-bright); color: var(--green-ink); }
 .stmt-ne .close { color: var(--green-bright); }
+.stmt-ne .close small { color: #9DE5C4; }
 .pill { flex: none; white-space: nowrap; display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .pill-dim { background: rgba(255, 255, 255, .1); color: #D3E4DB; }
 .pill-bright { background: var(--green-bright); color: var(--green-ink); }
@@ -267,7 +280,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
    the section scrolls in: the page's one animation that is itself the argument. */
 .js .stmt-ne li.pay { transform: translateY(calc(-4 * var(--row))); transition: transform 1.5s var(--ease) .3s; }
 .js .stmt-ne.is-in li.pay { transform: none; }
-.shift-close { margin-top: clamp(36px, 5vw, 56px); padding-top: clamp(24px, 3vw, 32px); border-top: 1px solid rgba(255, 255, 255, .14); font-family: var(--display); font-size: clamp(1.8rem, 3.4vw, 2.9rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }
+.shift-close { margin-top: clamp(40px, 5vw, 64px); padding-top: clamp(28px, 3vw, 40px); border-top: 1px solid rgba(255, 255, 255, .14); text-align: center; font-family: var(--display); font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
 .shift-close em { font-style: normal; color: var(--green-bright); }
 
 /* ---- How it works -------------------------------------------------------- */
@@ -507,8 +520,9 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .rates .wrap { grid-template-columns: repeat(3, 1fr); }
     .rates .zero { grid-column: 1 / -1; justify-self: start; text-align: left; padding-bottom: 18px; margin-top: -8px; }
     .rates li { padding: 18px 0 14px; }
-    .sec-head.split { grid-template-columns: 1fr; align-items: start; }
+    .sec-head.split, .shift .sec-head.split { grid-template-columns: 1fr; align-items: start; }
     .sec-head.split .lede { justify-self: start; }
+    .shift .intro { justify-self: start; }
     .stmts, .why-grid, .econ .wrap, .agency-top { grid-template-columns: 1fr; }
     .callout { grid-template-columns: 1fr; gap: 16px; }
     .callout .big small { max-width: none; }
@@ -536,8 +550,10 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .rates li { padding: 14px 0; border-bottom: 1px solid var(--line-2); }
     .rates li + li { border-left: 0; padding-left: 0; }
     .rates .zero { padding: 14px 0 16px; margin: 0; }
-    .stmt { --row: 48px; }
-    .stmt li { font-size: 16px; line-height: 1.2; }
+    .stmt { --row: 54px; padding: 20px 16px; }
+    .stmt li { font-size: 15px; line-height: 1.2; gap: 10px; padding: 0 10px; }
+    .stmt li .tag { font-size: 11.5px; padding: 0 8px; }
+    .stmt .close { flex-direction: column; gap: 4px; }
     .steps { grid-template-columns: 1fr; gap: 32px; }
     .steps li::before { right: 0; }
     .why-list li { grid-template-columns: 32px 1fr; gap: 12px; padding: 20px 0; }
@@ -711,11 +727,15 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 <!-- 2. The difference -->
 <section class="shift on-green" id="difference" aria-labelledby="shift-title">
     <div class="wrap">
-        <div class="sec-head reveal">
-            <p class="eyebrow">A different way to buy calls</p>
-            <h2 id="shift-title" class="h2">Your producers shouldn't have to make every call profitable before they even pick up the phone.</h2>
-            <p class="lede">Most call programs charge you for the opportunity.</p>
-            <p class="lede"><b>NetEnroll lets your producers work the opportunity first.</b></p>
+        <div class="sec-head split reveal">
+            <div>
+                <p class="eyebrow">A different way to buy calls</p>
+                <h2 id="shift-title" class="h2" style="margin-top:14px">Your producers shouldn't have to make every call profitable before they even pick up the phone.</h2>
+            </div>
+            <div class="intro">
+                <p>Most call programs charge you for the opportunity.</p>
+                <p>NetEnroll lets your producers work the opportunity first.</p>
+            </div>
         </div>
 
         <div class="stmts">
@@ -724,26 +744,26 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
                 <blockquote>You pay for the call.</blockquote>
                 <ol>
                     <li class="pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
-                    <li><span class="dot">1</span>The consumer answers.</li>
-                    <li><span class="dot">2</span>Your producer works the lead.</li>
-                    <li class="maybe"><span class="dot">3</span>Maybe they qualify.</li>
-                    <li class="maybe"><span class="dot">4</span>Maybe they don't.</li>
-                    <li class="maybe"><span class="dot">5</span>Maybe they buy.</li>
-                    <li class="maybe"><span class="dot">6</span>Maybe they don't.</li>
+                    <li><span class="dot">1</span>The consumer answers.<span class="tag">Paid</span></li>
+                    <li><span class="dot">2</span>Your producer works the lead.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">3</span>Maybe they qualify.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">4</span>Maybe they don't.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">5</span>Maybe they buy.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">6</span>Maybe they don't.<span class="tag">Paid</span></li>
                 </ol>
-                <p class="close">You paid either way.</p>
+                <p class="close">You paid either way.<small>Charged before step 1</small></p>
             </div>
             <div class="stmt stmt-ne reveal">
                 <div class="stmt-head"><h3>NetEnroll</h3><span class="pill pill-bright">Pay last</span></div>
                 <blockquote>You pay for the result.</blockquote>
                 <ol>
-                    <li><span class="dot">1</span>The consumer answers.</li>
-                    <li><span class="dot">2</span>Your producer works the call.</li>
-                    <li><span class="dot">3</span>They qualify the opportunity.</li>
-                    <li><span class="dot">4</span>They submit the application.</li>
+                    <li><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>The consumer answers.<span class="tag">$0</span></li>
+                    <li><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your producer works the call.<span class="tag">$0</span></li>
+                    <li><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>They qualify the opportunity.<span class="tag">$0</span></li>
+                    <li class="app"><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>They submit the application.<span class="tag">Program rate</span></li>
                     <li class="pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
                 </ol>
-                <p class="close">That's when the charge happens.</p>
+                <p class="close">That's when the charge happens.<small>Charged after step 4</small></p>
             </div>
         </div>
 
