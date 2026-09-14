@@ -228,19 +228,43 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .split li::before { content: counter(d, decimal-leading-zero); font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--muted); padding-top: 4px; }
 .split .foot { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-2); font-size: 15px; line-height: 1.5; color: var(--muted); }
 
-/* ---- 07 Thirty days: night ---------------------------------------------------- */
+/* ---- 07 The 30-day replacement: night, with a window you can read ---------- */
 .thirty { background: var(--night); color: #fff; }
-.thirty .wrap { display: grid; grid-template-columns: auto 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
-.thirty .big { font-family: var(--display); font-size: clamp(8rem, 22vw, 20rem); font-weight: 600; letter-spacing: -.07em; line-height: .8; color: var(--bright); }
-.thirty .big small { display: block; margin-top: 18px; font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8FAA9D; }
-.thirty h2 { font-family: var(--display); font-size: clamp(2rem, 3.8vw, 3.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1; }
-.thirty .lede { margin-top: 20px; color: #B9C8C0; max-width: 32rem; }
-.thirty ol { margin-top: 26px; border-top: 1px solid rgba(255, 255, 255, .2); }
-.thirty li { display: grid; grid-template-columns: 90px 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, .12); font-size: 16px; color: #D3E4DB; }
-.thirty li .d { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; padding-top: 4px; }
-.thirty li.out { color: #fff; font-weight: 700; }
-.thirty li.out .d { color: var(--bright); }
+.thirty-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(32px, 5vw, 80px); align-items: center; }
+.thirty h3 { font-family: var(--display); font-size: clamp(2rem, 3.6vw, 3.2rem); font-weight: 600; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+.thirty h3 em { font-style: normal; color: var(--bright); }
+.thirty .lede { margin-top: 20px; color: #B9C8C0; max-width: 30rem; }
+.thirty .terms { margin-top: 24px; display: grid; gap: 0; border-top: 1px solid rgba(255, 255, 255, .2); }
+.thirty .terms li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, .12); font-size: 15.5px; color: #D3E4DB; }
+.thirty .terms li::before { content: ""; width: 16px; height: 16px; margin-top: 4px; background: var(--bright) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23052A1F' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 10px no-repeat; }
 .thirty .hero-actions { margin-top: 26px; }
+/* The window: thirty ticks, a start, an end, and the two ways it resolves. */
+.window { border: 1px solid rgba(255, 255, 255, .25); background: var(--night-2); }
+.window-head { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; padding: 20px 24px 16px; border-bottom: 1px solid rgba(255, 255, 255, .15); }
+.window-head .mono { color: #8FAA9D; }
+.window-head h4 { margin-top: 4px; font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
+.window-head .fig { text-align: right; font-family: var(--display); font-size: 44px; font-weight: 600; letter-spacing: -.05em; line-height: .9; color: var(--bright); }
+.window-head .fig small { display: block; margin-top: 6px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #8FAA9D; }
+.window-body { padding: 22px 24px 8px; }
+.ticks { position: relative; height: 34px; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .55) 0 2px, transparent 2px calc(100% / 30)); background-size: 100% 14px; background-position: 0 bottom; background-repeat: no-repeat; }
+.ticks::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(255, 255, 255, .25); }
+.ticks::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--bright), rgba(46, 209, 142, .35)); }
+.ticks .m { position: absolute; bottom: 0; width: 2px; height: 34px; background: var(--bright); }
+.ticks .m.end { right: 0; }
+.ends { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+.ends li .d { font-family: var(--mono); font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--bright); }
+.ends li p { margin-top: 4px; font-size: 14.5px; line-height: 1.4; color: #D3E4DB; }
+.ends li:last-child { text-align: right; }
+.ends li:last-child p { margin-left: auto; }
+.outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 22px; background: rgba(255, 255, 255, .15); border-top: 1px solid rgba(255, 255, 255, .15); }
+.outcomes li { padding: 18px 24px 22px; background: var(--night-2); }
+.outcomes .tag { display: inline-flex; align-items: center; gap: 8px; height: 26px; padding: 0 10px; border: 1px solid rgba(255, 255, 255, .35); font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; }
+.outcomes .t { display: block; margin-top: 12px; font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -.025em; line-height: 1.1; }
+.outcomes p { margin-top: 6px; font-size: 14px; line-height: 1.45; color: #9DB8AB; }
+.outcomes li.no { background: rgba(46, 209, 142, .1); }
+.outcomes li.no .tag { background: var(--bright); border-color: var(--bright); color: var(--bright-ink); }
+.outcomes li.no .t { color: var(--bright); }
+.outcomes li.no p { color: #C5DDD1; }
 
 /* ---- 08 Questions ---------------------------------------------------------- */
 .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(24px, 4vw, 64px); }
@@ -334,7 +358,7 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     .mobile-nav > a.signin { display: block; font-family: var(--text); font-size: 16px; font-weight: 700; color: var(--ink-2); }
     .mobile-nav .cta-row { padding-top: 20px; }
     .mobile-nav .cta-row .btn { width: 100%; }
-    .hero-grid, .lines-grid, .checks, .split, .qa-grid, .start-grid, .thirty .wrap { grid-template-columns: 1fr; }
+    .hero-grid, .lines-grid, .checks, .split, .qa-grid, .start-grid, .thirty-grid { grid-template-columns: 1fr; }
     .hero-grid { gap: 40px; }
     .line-col { padding: 24px 0 0; border-left: 0; border-top: 1px solid var(--rule-2); }
     .line-col:first-child { padding-top: 0; border-top: 0; }
@@ -343,7 +367,6 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     .sources li { grid-template-columns: 64px 1fr; }
     .sources p { grid-column: 2; }
     .start .sticky { position: static; }
-    .thirty .big { font-size: clamp(6rem, 28vw, 10rem); }
     .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
     .sec-bar { grid-template-columns: 64px 1fr; }
     .sec-bar .aside { grid-column: 2; text-align: left; }
@@ -364,6 +387,8 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     .checks li small { grid-column: 2; }
     .form-card { padding: 22px 16px 20px; box-shadow: 8px 8px 0 var(--rule); }
     .form-actions { flex-direction: column; }
+    .outcomes { grid-template-columns: 1fr; }
+    .window-head, .window-body, .outcomes li { padding-left: 16px; padding-right: 16px; }
     .foot-grid { grid-template-columns: 1fr; gap: 28px; }
     .sticky-cta { display: flex; }
     body.has-sticky { padding-bottom: 74px; }
@@ -597,21 +622,40 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     </div>
 </section>
 
-<!-- 07 Thirty days -->
+<!-- 07 The 30-day replacement -->
 <section class="sec thirty on-night" id="replacement" aria-labelledby="thirty-title">
     <div class="wrap">
-        <div class="big reveal" aria-hidden="true">30<small>Days</small></div>
-        <div class="reveal">
-            <h2 id="thirty-title">Doesn't work out? We replace them.</h2>
-            <p class="lede">If a signed producer is no longer with your agency after 30 days, NetEnroll recruits a replacement at no additional charge. That producer comes off your count; the campaign keeps running until the count is filled.</p>
-            <ol>
-                <li><span class="d">Day 1</span><span>Signed, paperwork done, writing under your contract.</span></li>
-                <li><span class="d">Day 30</span><span>Still with you? Keep building.</span></li>
-                <li class="out"><span class="d">Not?</span><span>Tell us. Off your count. We recruit again. $0.</span></li>
-            </ol>
-            <div class="hero-actions">
-                <a class="btn btn-bright" href="#inquiry" data-track="cta_click" data-loc="replacement" data-label="Get the price for my roster">Get the price for my roster</a>
+        <div class="sec-bar reveal"><span class="idx">07</span><h2 id="thirty-title">30-day replacement.</h2><span class="aside">Included with every signed producer</span></div>
+        <div class="thirty-grid">
+            <div class="reveal">
+                <h3>If a producer leaves in the first 30 days, <em>we replace them. Free.</em></h3>
+                <p class="lede">Every signed producer comes with a 30-day window. If they are no longer with your agency when it closes, tell us: they come off your count and we recruit, hire and paper a replacement at no additional charge.</p>
+                <ul class="terms">
+                    <li>Applies to every producer signed under your campaign</li>
+                    <li>No additional charge for the replacement</li>
+                    <li>The campaign keeps running until your count is filled</li>
+                </ul>
+                <div class="hero-actions">
+                    <a class="btn btn-bright" href="#inquiry" data-track="cta_click" data-loc="replacement" data-label="Get the price for my roster">Get the price for my roster</a>
+                </div>
             </div>
+            <figure class="window reveal" aria-label="The 30-day replacement window">
+                <div class="window-head">
+                    <div><p class="mono">One signed producer</p><h4>The replacement window</h4></div>
+                    <div class="fig">30<small>days</small></div>
+                </div>
+                <div class="window-body">
+                    <div class="ticks" aria-hidden="true"><span class="m"></span><span class="m end"></span></div>
+                    <ul class="ends">
+                        <li><span class="d">Day 1</span><p>Signed. Paperwork done. Writing under your contract.</p></li>
+                        <li><span class="d">Day 30</span><p>Still with your agency?</p></li>
+                    </ul>
+                </div>
+                <ul class="outcomes">
+                    <li><span class="tag">Yes</span><span class="t">Keep building.</span><p>The seat is filled. Nothing more to do.</p></li>
+                    <li class="no"><span class="tag">No</span><span class="t">We replace them. $0.</span><p>Off your count. We recruit, hire and paper the next one.</p></li>
+                </ul>
+            </figure>
         </div>
     </div>
 </section>
