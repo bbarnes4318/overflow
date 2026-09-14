@@ -174,9 +174,9 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 /* ---- Hero ---------------------------------------------------------------- */
 .hero { padding: clamp(44px, 6vw, 84px) 0 clamp(56px, 6vw, 88px); }
 .hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
-.hero h1 { margin-top: 22px; max-width: 14ch; }
+.hero h1 { margin-top: 20px; font-size: clamp(2.5rem, 3.9vw, 3.6rem); line-height: 1.04; }
 .hero h1 em { display: block; font-style: normal; color: var(--green); }
-.hero .lede { margin-top: 22px; max-width: 32rem; }
+.hero .lede { margin-top: 22px; max-width: 30rem; }
 .hero .lede + .lede { margin-top: 14px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
 .hero-micro { display: flex; flex-wrap: wrap; gap: 6px 0; margin-top: 22px; font-size: 14.5px; font-weight: 500; color: var(--muted); }
@@ -348,15 +348,15 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .facts p { font-size: 15.5px; color: var(--muted); margin-top: 4px; text-wrap: pretty; }
 .agency-close { margin-top: 28px; font-family: var(--display); font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; color: var(--green); text-wrap: balance; }
 
-/* ---- Replacement --------------------------------------------------------- */
-.replace { background: var(--mint); border-top: 1px solid var(--mint-2); padding: clamp(56px, 7vw, 96px) 0; }
-.replace .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: center; }
-.replace .h2 { margin-top: 14px; max-width: 16ch; }
-.replace .body { margin-top: 18px; font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 30rem; }
-.replace .body a { color: var(--green); font-weight: 700; text-underline-offset: 3px; }
-.callout { background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(28px, 3.4vw, 44px); box-shadow: 0 30px 60px -40px rgba(12, 92, 67, .8); }
-.callout p { font-family: var(--display); font-size: clamp(1.5rem, 2.4vw, 2.1rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.12; text-wrap: balance; }
-.callout p + p { margin-top: 14px; color: #9DE5C4; }
+/* ---- Replacement callout ------------------------------------------------- */
+.callout { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 40px); }
+.callout .big { font-family: var(--display); font-size: clamp(2.4rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; white-space: nowrap; }
+.callout .big small { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DE5C4; margin-top: 8px; white-space: normal; max-width: 12ch; }
+.callout h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.8vw, 1.55rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
+.callout p { margin-top: 8px; font-size: 15.5px; line-height: 1.55; color: #CDE5D9; max-width: 42rem; }
+.callout p a { color: #fff; text-underline-offset: 3px; }
+.callout .ref { justify-self: start; display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 6px; background: rgba(255, 255, 255, .12); color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; white-space: nowrap; }
+.callout .ref:hover { background: rgba(255, 255, 255, .2); }
 
 /* ---- Proof: quiet, human, no cards --------------------------------------- */
 .proof { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
@@ -451,7 +451,9 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .rates li { padding: 18px 0 14px; }
     .sec-head.split { grid-template-columns: 1fr; align-items: start; }
     .sec-head.split .lede { justify-self: start; }
-    .stmts, .why-grid, .econ .wrap, .agency .wrap, .replace .wrap, .final .wrap { grid-template-columns: 1fr; }
+    .stmts, .why-grid, .econ .wrap, .agency .wrap, .final .wrap { grid-template-columns: 1fr; }
+    .callout { grid-template-columns: 1fr; gap: 16px; }
+    .callout .big small { max-width: none; }
     .why-lead, .agency .sticky, .econ-quote { position: static; }
     .econ-quote { padding-top: 24px; }
     .final-actions { justify-self: start; }
@@ -462,7 +464,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     :root { --header: 64px; }
     .brand img { height: 21px; }
     .hero { padding-top: 36px; }
-    .hero h1 { font-size: clamp(2.3rem, 10.5vw, 2.9rem); }
+    .hero h1 { font-size: clamp(1.9rem, 8.8vw, 2.4rem); }
     .hero .lede { font-size: 1.05rem; margin-top: 18px; }
     .hero-actions { margin-top: 26px; }
     .hero-actions .btn { width: 100%; }
@@ -720,6 +722,16 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <li><div><h3>A bad call doesn't become a bad purchase.</h3><p>If the consumer says no, isn't qualified or simply isn't ready, the call costs you nothing.</p></div></li>
         </ol>
     </div>
+    <div class="wrap">
+        <div class="callout reveal">
+            <div class="big">+1<small>Replacement application</small></div>
+            <div>
+                <h3>If the policy never takes effect, the application comes back.</h3>
+                <p>Your producer wrote it, the applicant never paid the first premium, and no commission was earned? We credit a replacement application on the same program at no charge. One replacement per application, with the carrier's documentation, claimed within 60 days.</p>
+            </div>
+            <a class="ref" href="/terms#fees">Terms §5.5</a>
+        </div>
+    </div>
 </section>
 
 <!-- 5. Application rates -->
@@ -817,21 +829,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
                 </li>
             </ul>
             <p class="agency-close">Your agents know how to sell insurance. Give them more people to sell to.</p>
-        </div>
-    </div>
-</section>
-
-<!-- 8. Replacement -->
-<section class="replace" id="replacement" aria-labelledby="replace-title">
-    <div class="wrap">
-        <div class="reveal">
-            <p class="eyebrow">More than a call</p>
-            <h2 id="replace-title" class="h2">We don't disappear after the application.</h2>
-            <p class="body">If an application qualifies under the program's replacement terms, NetEnroll provides a replacement application according to the applicable terms. <a href="/terms#fees">Terms §5.5</a></p>
-        </div>
-        <div class="callout reveal">
-            <p>The goal isn't to sell you more calls.</p>
-            <p>It's to make the calls you take worth taking.</p>
         </div>
     </div>
 </section>
