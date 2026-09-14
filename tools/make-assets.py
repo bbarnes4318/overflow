@@ -83,3 +83,7 @@ og(["Licensed ACA producers,", "signed to your agency."],
     "Verified, scheduled onto your calendar. You interview and sign."],
    "ACA AGENT RECRUITING  ·  FOR AGENCY OWNERS", ROOT / "og-recruiting.png")
 print("wrote favicon.png apple-touch-icon.png og-final-expense.png og-recruiting.png")
+og(["Every call is free until", "it becomes an application."],
+   ["Live Final Expense, Medicare and ACA Health calls for licensed producers.",
+    "$199 · $125 · $100 per submitted application. $0 per call, $0 per month."],
+   "LIVE INSURANCE CALLS  ·  BILLED PER SUBMITTED APPLICATION", ROOT / "og-home.png")
