@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Final Expense Calls, Billed Per Submitted Application | NetEnroll</title>
-<meta name="description" content="NetEnroll connects licensed final expense producers with live consumer demand and bills on one event: a submitted application. $199 per application. Nothing per call, per lead, or per month.">
+<meta name="description" content="Stop paying for final expense leads and calls that never become applications. NetEnroll routes live final expense consumers to licensed producers and bills $199 only when an application is submitted. $0 per call, $0 per lead, $0 per month.">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://netenroll.com/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -15,18 +15,18 @@
 <meta property="og:site_name" content="NetEnroll">
 <meta property="og:url" content="https://netenroll.com/">
 <meta property="og:title" content="Final Expense Calls, Billed Per Submitted Application">
-<meta property="og:description" content="Live final expense demand routed to licensed producers. $199 per submitted application. $0 per call, $0 per month, no minimum.">
+<meta property="og:description" content="Live final expense consumers routed to licensed producers. $199 per submitted application. $0 per call, $0 per lead, $0 per month. Start with one.">
 <meta property="og:image" content="https://netenroll.com/og-final-expense.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Final Expense Calls, Billed Per Submitted Application">
-<meta name="twitter:description" content="Live final expense demand routed to licensed producers. $199 per submitted application. $0 per call, $0 per month, no minimum.">
+<meta name="twitter:description" content="Live final expense consumers routed to licensed producers. $199 per submitted application. $0 per call, $0 per lead, $0 per month. Start with one.">
 <meta name="twitter:image" content="https://netenroll.com/og-final-expense.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site.css">
 
 <script type="application/ld+json">
@@ -50,9 +50,19 @@
       "isPartOf": { "@id": "https://netenroll.com/#org" }
     },
     {
+      "@type": "Service",
+      "name": "Final Expense Application Program",
+      "serviceType": "Final expense call distribution",
+      "provider": { "@id": "https://netenroll.com/#org" },
+      "areaServed": "US",
+      "url": "https://netenroll.com/",
+      "offers": { "@type": "Offer", "name": "Submitted final expense application", "price": "199", "priceCurrency": "USD", "description": "Per submitted application. No per-call, per-lead or monthly charge." }
+    },
+    {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "What am I paying for?", "acceptedAnswer": { "@type": "Answer", "text": "A submitted application. A charge is logged only when your producer completes and submits a carrier application for a consumer NetEnroll delivered. Delivered call time, non-qualifying prospects and dropped calls carry a $0 charge." } },
+        { "@type": "Question", "name": "What am I paying for?", "acceptedAnswer": { "@type": "Answer", "text": "A submitted application. A charge is logged only when your producer completes and submits a carrier application for a consumer NetEnroll delivered. Calls, transfers, non-qualifying prospects and dropped calls are $0." } },
+        { "@type": "Question", "name": "What does a call cost if it doesn't become an application?", "acceptedAnswer": { "@type": "Answer", "text": "Nothing. There is no per-call, per-transfer or per-lead charge. If the conversation does not end in a submitted application, no charge is logged." } },
         { "@type": "Question", "name": "How does the application model work?", "acceptedAnswer": { "@type": "Answer", "text": "You fund applications in advance through Stripe, starting with a single application. Live consumers are routed to your producers in the states you selected. When an application is submitted, one is drawn from your balance. You buy more whenever you want them; there is no subscription." } },
         { "@type": "Question", "name": "What happens after I sign up?", "acceptedAnswer": { "@type": "Answer", "text": "Create your account at agents.netenroll.com, choose the states you are licensed to write in, choose your programs, and fund your first application through Stripe. Routing starts once your account is configured." } },
         { "@type": "Question", "name": "How does pricing work?", "acceptedAnswer": { "@type": "Answer", "text": "$199 per submitted final expense application, $125 for Medicare, $100 for ACA. No setup fee, no monthly platform fee, no minimum purchase, no cancellation penalty." } },
@@ -78,7 +88,7 @@
         </nav>
         <div class="header-actions">
             <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
-            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="header">Get started</a>
+            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="header">Get Started</a>
         </div>
         <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
             <svg class="open" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -91,7 +101,7 @@
         <a href="/licensing-value">State License Tool</a>
         <a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in</a>
         <div class="cta-row">
-            <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="mobile-nav">Get started</a>
+            <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="mobile-nav">Get Started</a>
         </div>
     </div>
 </header>
@@ -102,179 +112,217 @@
     <section class="hero" id="top">
         <div class="wrap hero-grid">
             <div class="hero-copy">
-                <p class="eyebrow">Final Expense<span class="dot" aria-hidden="true"></span>Built for producers</p>
-                <h1 class="h1">More productive conversations. More submitted applications.</h1>
-                <p class="lede">NetEnroll routes live final expense demand to licensed producers and bills on one event: a submitted application. <strong>$199 per application.</strong> Nothing per call, per lead, or per month.</p>
-                <div class="cta-row">
-                    <a class="btn btn-primary btn-lg" href="#how-it-works" data-track="cta_click" data-loc="hero" data-label="See how it works">See how it works <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    <a class="btn btn-secondary btn-lg" href="tel:+19045128487" data-track="cta_click" data-loc="hero" data-label="Talk to NetEnroll">Talk to NetEnroll</a>
+                <p class="eyebrow">Final Expense<span class="dot" aria-hidden="true"></span>For licensed producers</p>
+                <h1 class="h1">Stop paying for calls that never become applications.</h1>
+                <p class="lede">NetEnroll routes live final expense consumers to licensed producers &mdash; and you pay $199 only when an application is submitted.</p>
+
+                <div class="price-hero" aria-label="Pricing">
+                    <div class="amt num">$199</div>
+                    <div class="unit">per submitted application</div>
+                    <div class="zeros"><span><b>$0</b> per call</span><span><b>$0</b> per lead</span><span><b>$0</b> monthly fee</span></div>
                 </div>
-                <p class="small">For licensed final expense producers, agencies and sales organizations. Sign in or create an account at <a class="text-link" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="hero">agents.netenroll.com</a>.</p>
+
+                <div class="cta-row">
+                    <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="hero">Get Started <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                    <a class="btn btn-secondary btn-lg" href="#before-you-pay" data-track="cta_click" data-loc="hero" data-label="See how it works">See How It Works</a>
+                </div>
+                <p class="assure"><strong>No monthly contract. No minimum.</strong> Start with one application.</p>
             </div>
 
-            <!-- The acquisition workflow as a diagram, not a dashboard. Nothing
-                 here is a figure; every label is a step that actually happens. -->
-            <figure class="panel reveal" data-delay="1" aria-labelledby="rail-title">
-                <div class="panel-head">
-                    <span id="rail-title">Acquisition workflow</span>
-                    <span class="live">Live transfer</span>
+            <!-- What you pay for, side by side. Every label is a step that
+                 actually happens; the only figures are the two prices. -->
+            <figure class="paywhen reveal" data-delay="1" aria-label="Traditional lead buying compared with NetEnroll">
+                <div class="paywhen-grid">
+                    <div class="pw-col is-old">
+                        <div class="pw-head">Traditional lead buying</div>
+                        <div class="pw-paid"><span>You pay here</span><span class="amt">$$$</span></div>
+                        <ol class="pw-steps">
+                            <li>Lead delivered<span class="cost">paid</span></li>
+                            <li>Call attempts<span class="cost">paid</span></li>
+                            <li>No answer<span class="cost">paid</span></li>
+                            <li>Wrong number<span class="cost">paid</span></li>
+                            <li>Already bought elsewhere<span class="cost">paid</span></li>
+                            <li>Maybe a conversation<span class="cost">paid</span></li>
+                            <li>Maybe an application<span class="cost">paid</span></li>
+                        </ol>
+                    </div>
+                    <div class="pw-col is-new">
+                        <div class="pw-head">NetEnroll</div>
+                        <ol class="pw-steps">
+                            <li>Consumer<span class="cost">$0</span></li>
+                            <li>Qualification<span class="cost">$0</span></li>
+                            <li>Live conversation<span class="cost">$0</span></li>
+                            <li>Licensed producer<span class="cost">$0</span></li>
+                            <li>No application? Still<span class="cost">$0</span></li>
+                            <li class="is-outcome">Application submitted<span class="cost">$199</span></li>
+                        </ol>
+                    </div>
                 </div>
-                <ol class="rail">
-                    <span class="rail-line" aria-hidden="true"></span>
-                    <span class="rail-pulse" aria-hidden="true"></span>
-                    <li>
-                        <span class="node">01</span>
-                        <div><div class="rail-label">Consumer demand</div><div class="rail-desc">A consumer looking for final expense coverage enters the funnel.</div></div>
-                    </li>
-                    <li>
-                        <span class="node">02</span>
-                        <div><div class="rail-label">Qualification</div><div class="rail-desc">Screened before it is routed to anyone.</div>
-                            <div class="rail-meta"><span class="tag">product</span><span class="tag">state</span><span class="tag">consent</span></div></div>
-                    </li>
-                    <li>
-                        <span class="node">03</span>
-                        <div><div class="rail-label">Agent</div><div class="rail-desc">Connected live to a producer licensed in that state and available now.</div></div>
-                    </li>
-                    <li>
-                        <span class="node">04</span>
-                        <div><div class="rail-label">Conversation</div><div class="rail-desc">Your script. Your carriers. Your close.</div></div>
-                    </li>
-                    <li class="is-outcome">
-                        <span class="node" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                        <div><div class="rail-label">Application submitted</div><div class="rail-desc">The one billable event.</div>
-                            <div class="rail-meta"><span class="tag">$199</span><span class="tag">everything before it: $0</span></div></div>
-                    </li>
-                </ol>
-                <figcaption class="panel-foot">Diagram of the routing and billing flow. Not a dashboard; there are no figures on this page.</figcaption>
+                <figcaption class="pw-foot"><span><b>Traditional:</b> you paid at the beginning.</span><span><b>NetEnroll:</b> <span class="em">everything before the application is $0.</span></span></figcaption>
             </figure>
         </div>
     </section>
 
-    <!-- ========================= VALUE STRIP ========================= -->
-    <section class="strip" aria-label="Terms at a glance">
-        <div class="wrap strip-grid">
-            <div class="strip-item"><div class="num">$199</div><div class="v">per submitted final expense application. The only charge.</div></div>
-            <div class="strip-item"><div class="num">$0</div><div class="v">per call, per transfer, per lead. Unconverted conversations cost nothing.</div></div>
-            <div class="strip-item"><div class="k">No monthly fee</div><div class="v">No setup fee, no platform fee, no minimum. Start with one application.</div></div>
-            <div class="strip-item"><div class="k">Routed by license</div><div class="v">You choose the states. Calls only reach producers licensed to write there.</div></div>
-        </div>
-    </section>
-
-    <!-- ========================== THE PROBLEM ========================== -->
-    <section class="section" id="problem">
-        <div class="wrap split">
-            <div class="sticky">
-                <p class="index">01 &mdash; The problem</p>
-                <h2 class="h2">The problem isn't finding another lead.</h2>
-                <p class="lede" style="margin-top:20px">Every producer can buy volume. What's hard to buy is a conversation with a real chance of becoming an application &mdash; and a price that only comes due when it does.</p>
-            </div>
-            <div>
-                <dl class="ledger reveal">
-                    <div><dt>Stale</dt><dd><div class="h4">The prospect is already spoken for.</div><p>By the time you dial an internet lead, it has been sold to three other agents and the consumer has stopped answering.</p></dd></div>
-                    <div><dt>Intent</dt><dd><div class="h4">They filled out a form. They didn't ask for a policy.</div><p>Incentivised forms and co-registration paths produce names, not buyers. You find out which is which on your own time.</p></dd></div>
-                    <div><dt>Contact</dt><dd><div class="h4">Half the list never picks up. You paid for all of it.</div><p>Contactability is the cost nobody prices. A lead you can't reach is a lead you bought.</p></dd></div>
-                    <div><dt>Dialing</dt><dd><div class="h4">Your best closer spends the day as a phone bank.</div><p>Every hour spent chasing a callback is an hour not spent on a presentation.</p></dd></div>
-                    <div><dt>Incentive</dt><dd><div class="h4">The vendor gets paid when the lead is delivered.</div><p>Whether it converts is your problem. That is the whole economics of volume pricing, and it is why quality drifts.</p></dd></div>
-                </dl>
-                <p class="pull reveal">NetEnroll is built around what happens <span class="em">after</span> the opportunity arrives. The consumer is on the line, the producer is licensed in that state, and the only invoice is for the applications that get written.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================== HOW IT WORKS ========================== -->
-    <section class="section band rule" id="how-it-works">
+    <!-- =================== THE DIFFERENCE IS WHEN YOU PAY =================== -->
+    <section class="section band rule" id="when-you-pay">
         <div class="wrap">
             <div class="sec-head">
-                <p class="index">02 &mdash; How NetEnroll works</p>
-                <h2 class="h2 measure">Five steps. One of them is billable.</h2>
+                <p class="eyebrow">The economics</p>
+                <h2 class="h2">The difference is when you pay.</h2>
+                <p class="lede">A lead vendor gets paid when the lead is delivered. NetEnroll gets paid when the application is submitted. Everything else about the business follows from that.</p>
             </div>
-            <ol class="steps reveal">
-                <li class="step"><span class="n">01</span><div><h3 class="h3">Demand</h3><p>A consumer looking for final expense coverage enters the acquisition funnel.</p></div></li>
-                <li class="step"><span class="n">02</span><div><h3 class="h3">Qualification</h3><p>The inquiry is screened against the program's criteria &mdash; product, state and consent &mdash; before it is routed to anyone.</p></div></li>
-                <li class="step"><span class="n">03</span><div><h3 class="h3">Connection</h3><p>The consumer is connected live to a producer licensed in their state and available to take the call.</p></div></li>
-                <li class="step"><span class="n">04</span><div><h3 class="h3">Conversation</h3><p>Your producer runs their own script with their own carriers, the way they already sell. NetEnroll is not on the call.</p></div></li>
-                <li class="step is-outcome"><span class="n">05</span><div><h3 class="h3">Application</h3><p>A submitted carrier application is the only billable event. Everything before it is $0.</p><p class="price">$199 / SUBMITTED APPLICATION</p></div></li>
-            </ol>
+            <div class="ledger reveal" role="table" aria-label="Traditional lead model compared with NetEnroll">
+                <div class="ledger-head" role="row"><div role="columnheader">Traditional lead model</div><div role="columnheader">NetEnroll</div></div>
+                <div class="ledger-row" role="row">
+                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay for the lead</div>
+                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Pay for the application</div>
+                </div>
+                <div class="ledger-row" role="row">
+                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay whether they answer</div>
+                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cost">$0</span>&nbsp;if they don't convert</div>
+                </div>
+                <div class="ledger-row" role="row">
+                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay for dead leads</div>
+                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cost">$0</span></div>
+                </div>
+                <div class="ledger-row" role="row">
+                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Pay for unproductive calls</div>
+                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cost">$0</span></div>
+                </div>
+                <div class="ledger-row is-final" role="row">
+                    <div class="old" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Vendor gets paid first</div>
+                    <div class="new" role="cell"><span class="ic" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>You pay when the application is submitted</div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- ========================== THE ECONOMICS ========================== -->
-    <section class="section night" id="pricing">
-        <div class="wrap split">
-            <div>
-                <p class="index" style="color:#8B93A1">03 &mdash; The economics</p>
-                <h2 class="h2">A lead is not the finish line.</h2>
-                <p class="lede" style="margin-top:20px">A producer's business is not built on leads. It is built on what a lead turns into. Lead vendors price the first step. NetEnroll prices the third.</p>
-                <div class="flow" style="margin-top:28px" aria-label="Opportunity, then conversation, then application, then production">
-                    <span>Opportunity</span><span class="sep" aria-hidden="true">&rarr;</span>
-                    <span>Conversation</span><span class="sep" aria-hidden="true">&rarr;</span>
-                    <span class="is-outcome">Application</span><span class="sep" aria-hidden="true">&rarr;</span>
-                    <span>Production</span>
+    <!-- ========================= PRODUCER REALITIES ========================= -->
+    <section class="section night" id="realities">
+        <div class="wrap">
+            <div class="sec-head">
+                <p class="eyebrow">Why it matters</p>
+                <h2 class="h2">Your producers should be presenting, not prospecting.</h2>
+            </div>
+            <div class="truths reveal">
+                <div class="truth">
+                    <p class="k">Time</p>
+                    <p class="q">Your producer shouldn't spend the day hunting for people.</p>
+                    <p class="a">Less dialing. More presentations.</p>
+                </div>
+                <div class="truth">
+                    <p class="k">Budget</p>
+                    <p class="q">Your marketing budget shouldn't disappear before the sale.</p>
+                    <p class="a">No charge for the conversation that doesn't become an application.</p>
+                </div>
+                <div class="truth">
+                    <p class="k">Incentive</p>
+                    <p class="q">Your vendor shouldn't win when you lose.</p>
+                    <p class="a">NetEnroll gets paid when you write business.</p>
                 </div>
             </div>
-            <div>
-                <dl class="prices reveal">
-                    <div class="is-lead"><dt>Final Expense<small>Burial and final expense inquiries</small></dt><dd><span class="amt">$199</span><span class="unit">per submitted application</span></dd></div>
-                    <div><dt>Medicare<small>Advantage and Supplement inquiries</small></dt><dd><span class="amt">$125</span><span class="unit">per submitted application</span></dd></div>
-                    <div><dt>ACA<small>Individual and family marketplace inquiries</small></dt><dd><span class="amt">$100</span><span class="unit">per submitted application</span></dd></div>
-                </dl>
-                <ul class="terms reveal">
-                    <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>One charge, one event.</strong> Logged when your producer submits a carrier application for a consumer NetEnroll delivered. Non-converting calls, short calls and dropped calls are $0.</span></li>
-                    <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>No fixed costs.</strong> No setup fee, no monthly platform fee, no minimum purchase, no cancellation penalty. The minimum order is one application.</span></li>
-                    <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Funded in advance, drawn per application.</strong> Applications are purchased through Stripe and drawn down as they are written. Buy more whenever you want them.</span></li>
-                    <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Each application is logged against the call it came from.</strong> That log is the invoice. No conversion rate is promised on this page; yours depends on your producers.</span></li>
-                </ul>
+        </div>
+    </section>
+
+    <!-- ============================ ONE PRICE ============================ -->
+    <section class="section" id="pricing">
+        <div class="wrap">
+            <div class="sec-head center">
+                <p class="eyebrow">Pricing</p>
+                <h2 class="h2">One price. One billable event.</h2>
             </div>
+            <div class="oneprice reveal">
+                <div class="amt num">$199</div>
+                <div class="unit">Submitted final expense application</div>
+                <ul class="nos">
+                    <li><span class="z">$0</span>per call</li>
+                    <li><span class="z">$0</span>per lead</li>
+                    <li><span class="z">$0</span>monthly platform fee</li>
+                    <li><span class="z">$0</span>minimum purchase</li>
+                    <li class="is-start"><span class="z">1</span>Start with a single application</li>
+                </ul>
+                <div class="cta-row">
+                    <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="pricing">Get Started</a>
+                </div>
+                <p class="small">Medicare and ACA applications are also available under your account, at $125 and $100 respectively. Applications are funded through Stripe and drawn down as they are written.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== WHAT HAPPENS BEFORE YOU PAY ===================== -->
+    <section class="section band rule" id="before-you-pay">
+        <div class="wrap">
+            <div class="sec-head">
+                <p class="eyebrow">How it works</p>
+                <h2 class="h2">What happens before you ever pay.</h2>
+                <p class="lede">Four things happen on NetEnroll's side of the ledger. None of them is a charge.</p>
+            </div>
+            <ol class="steps4 reveal">
+                <li class="step4"><span class="cost">$0</span><span class="n">01</span><h3 class="h4">Consumer demand</h3><p>A consumer looking for final expense coverage enters the funnel.</p></li>
+                <li class="step4"><span class="cost">$0</span><span class="n">02</span><h3 class="h4">Qualification</h3><p>Screened for product, state and consent before it is routed to anyone.</p></li>
+                <li class="step4"><span class="cost">$0</span><span class="n">03</span><h3 class="h4">Live connection</h3><p>Connected live to a producer licensed in that state and available right now.</p></li>
+                <li class="step4"><span class="cost">$0</span><span class="n">04</span><h3 class="h4">Your producer closes</h3><p>Your script, your carriers, your presentation. NetEnroll is not on the call.</p></li>
+            </ol>
+            <div class="billable reveal">
+                <div>
+                    <h3 class="h3">Application submitted.</h3>
+                    <p class="sub">That's the billable event. The only one.</p>
+                </div>
+                <div class="amt num">$199<small>per submitted application</small></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================== STOP BUYING NAMES ====================== -->
+    <section class="section" id="how-it-works">
+        <div class="wrap split">
+            <div class="sticky">
+                <p class="eyebrow">The model</p>
+                <h2 class="h2">Stop buying names. Start buying opportunities.</h2>
+                <p class="lede" style="margin-top:20px">Traditional lead buying moves the risk onto the producer: you pay up front and find out later which names were real. NetEnroll moves that risk back toward the acquisition side, because the charge only happens at the application.</p>
+                <p class="body" style="margin-top:16px">No close rate is promised on this page. Yours depends on your producers. What is promised is when you pay: after the application, never before.</p>
+                <div class="cta-row" style="margin-top:28px">
+                    <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="model">Get Started</a>
+                    <a class="btn btn-secondary" href="tel:+19045128487" data-track="cta_click" data-loc="model" data-label="Talk to NetEnroll">Talk to NetEnroll</a>
+                </div>
+            </div>
+            <ul class="checks reveal">
+                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Create your account at agents.netenroll.com.</strong><span>As an individual producer or as a company with a roster. No sales call required.</span></div></li>
+                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Choose your states.</strong><span>Calls are routed only in the states you select, so they only reach producers licensed to write there.</span></div></li>
+                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Fund your first application through Stripe.</strong><span>One application is a complete order. Card details never touch NetEnroll.</span></div></li>
+                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Take live calls on the line you already use.</strong><span>Every submitted application is logged against the call it came from. That log is the invoice.</span></div></li>
+                <li><span class="ck" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Buy more applications whenever you want them.</strong><span>No subscription, no cancellation penalty. When the balance is used, you decide whether to top it up.</span></div></li>
+            </ul>
         </div>
     </section>
 
     <!-- ========================== WHO IT'S FOR ========================== -->
-    <section class="section" id="who">
+    <section class="section band rule" id="who">
         <div class="wrap">
             <div class="sec-head">
-                <p class="index">04 &mdash; Who it's built for</p>
-                <h2 class="h2 measure">Three ways in. Same economics.</h2>
+                <p class="eyebrow">Who it's for</p>
+                <h2 class="h2">Built for people who write final expense.</h2>
             </div>
-            <div class="paths reveal">
-                <div class="path">
-                    <p class="eyebrow">Producers</p>
-                    <h3 class="h3">A consistent source of live conversations.</h3>
-                    <p>For the independent agent who would rather present than prospect. Pick your states, fund an application, and take calls on the line you already use.</p>
-                    <a class="text-link" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="paths-producer">Create your account &rarr;</a>
+            <div class="who reveal">
+                <div class="who-card">
+                    <p class="eyebrow">Independent producers</p>
+                    <h3 class="h3">Spend more time presenting and less time chasing.</h3>
+                    <p>Pick your states, fund one application, and take live calls on the line you already use.</p>
+                    <a class="text-link" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="paths-producer">Get Started &rarr;</a>
                 </div>
-                <div class="path">
+                <div class="who-card">
                     <p class="eyebrow">Agencies</p>
-                    <h3 class="h3">Keep the whole floor writing.</h3>
-                    <p>For organizations running several producers. Add agents under one account, route by licensed state, and see every application against the call it came from.</p>
-                    <a class="text-link" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="paths-agency">Onboard your roster &rarr;</a>
+                    <h3 class="h3">A repeatable source of live opportunities for your licensed producers.</h3>
+                    <p>Add producers under one account, route by licensed state, and see every application against the call it came from.</p>
+                    <a class="text-link" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="paths-agency">Get Started &rarr;</a>
                 </div>
-                <div class="path">
+                <div class="who-card">
                     <p class="eyebrow">Sales organizations</p>
-                    <h3 class="h3">Volume that scales with capacity.</h3>
-                    <p>For teams taking calls at higher volume across many states. Talk to us first so routing is set up against your capacity, not around it.</p>
-                    <a class="text-link" href="tel:+19045128487" data-track="cta_click" data-loc="paths-org" data-label="Call NetEnroll">Call 904-512-8487 &rarr;</a>
+                    <h3 class="h3">Volume without turning every conversation into another marketing expense.</h3>
+                    <p>Teams taking calls at higher volume across many states. Talk to us first so routing is set up against your capacity.</p>
+                    <a class="text-link" href="tel:+19045128487" data-track="cta_click" data-loc="paths-org" data-label="Call NetEnroll">Talk to NetEnroll &rarr;</a>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- ========================== YOUR ACCOUNT ========================== -->
-    <section class="section band rule" id="account">
-        <div class="wrap split">
-            <div class="sticky">
-                <p class="index">05 &mdash; After you sign up</p>
-                <h2 class="h2">Four decisions, then routing starts.</h2>
-                <p class="lede" style="margin-top:20px">Your account at agents.netenroll.com is where states, programs, calls, applications and billing live. There is no sales call required to get started.</p>
-                <div class="cta-row" style="margin-top:28px">
-                    <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="account">Create your account</a>
-                </div>
-            </div>
-            <ul class="checks reveal">
-                <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Register as an individual or a company.</strong><span>A producer registering alone, or an agency with a roster. Either way it is one account.</span></div></li>
-                <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Choose your states.</strong><span>Calls are routed only in the states you select, so pick the ones you can write business in.</span></div></li>
-                <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Choose your programs.</strong><span>Final Expense, Medicare, ACA &mdash; any or all, each at its own per-application rate.</span></div></li>
-                <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Fund your first application through Stripe.</strong><span>Card details are entered on Stripe's page and never touch NetEnroll. One application is a complete order.</span></div></li>
-            </ul>
         </div>
     </section>
 
@@ -282,14 +330,18 @@
     <section class="section" id="faq">
         <div class="wrap">
             <div class="sec-head">
-                <p class="index">06 &mdash; Questions</p>
-                <h2 class="h2 measure">What producers ask before they fund the first application.</h2>
+                <p class="eyebrow">Questions</p>
+                <h2 class="h2">What producers ask before the first application.</h2>
             </div>
             <div class="faq-grid">
                 <div class="faq">
                     <details>
                         <summary>What am I paying for?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>A submitted application. A charge is logged only when your producer completes and submits a carrier application for a consumer NetEnroll delivered. Delivered call time, non-qualifying prospects and dropped calls carry a $0 charge.</p></div>
+                        <div class="a"><p>A submitted application. A charge is logged only when your producer completes and submits a carrier application for a consumer NetEnroll delivered. Calls, transfers, non-qualifying prospects and dropped calls are $0.</p></div>
+                    </details>
+                    <details>
+                        <summary>What does a call cost if it doesn't become an application?<span class="plus" aria-hidden="true"></span></summary>
+                        <div class="a"><p>Nothing. There is no per-call, per-transfer or per-lead charge. If the conversation does not end in a submitted application, no charge is logged.</p></div>
                     </details>
                     <details>
                         <summary>How does the application model work?<span class="plus" aria-hidden="true"></span></summary>
@@ -298,10 +350,6 @@
                     <details>
                         <summary>What happens after I sign up?<span class="plus" aria-hidden="true"></span></summary>
                         <div class="a"><p>Create your account at agents.netenroll.com, choose the states you are licensed to write in, choose your programs, and fund your first application. Routing starts once your account is configured and your states are mapped.</p></div>
-                    </details>
-                    <details>
-                        <summary>Who is this designed for?<span class="plus" aria-hidden="true"></span></summary>
-                        <div class="a"><p>Licensed final expense producers who would rather present than prospect, and the agencies and sales organizations that run them. If you are not licensed to write in the states you select, the calls are no use to you.</p></div>
                     </details>
                 </div>
                 <div class="faq">
@@ -329,13 +377,14 @@
     <!-- ============================ CLOSING ============================ -->
     <section class="section night closing" id="get-started">
         <div class="wrap">
-            <p class="index" style="color:#8B93A1">07 &mdash; Next step</p>
-            <h2 class="h2" style="margin-top:14px">Build a pipeline your producers can actually work.</h2>
-            <p class="lede measure" style="margin-top:20px">Live final expense demand, routed to your licensed states, billed only when an application is written. Start with one.</p>
+            <p class="eyebrow">Next step</p>
+            <h2 class="h2" style="margin-top:14px">You don't pay for calls. You pay for applications.</h2>
+            <p class="lede measure">Live final expense consumers, routed to your licensed states. $199 when an application is submitted. $0 until then. Start with one.</p>
             <div class="cta-row">
-                <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="closing">Get started</a>
+                <a class="btn btn-primary btn-lg" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="closing">Get Started</a>
                 <a class="btn btn-secondary btn-lg" href="tel:+19045128487" data-track="cta_click" data-loc="closing" data-label="Talk to NetEnroll">Talk to NetEnroll</a>
             </div>
+            <p class="terms-line"><b>$199</b> per submitted application &middot; <b>$0</b> per call &middot; <b>$0</b> per lead &middot; <b>$0</b> monthly fee</p>
             <p class="contact">Prefer to talk it through first? <a href="tel:+19045128487">904-512-8487</a>, one business day to reply.</p>
         </div>
     </section>
@@ -383,7 +432,7 @@
 </footer>
 
 <div class="sticky-cta" data-sticky-after="#top" aria-hidden="true">
-    <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="sticky" tabindex="-1">Get started</a>
+    <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="signup_cta" data-loc="sticky" tabindex="-1">Get Started &middot; $199 per application</a>
 </div>
 
 <script src="/site.js" defer></script>

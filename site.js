@@ -60,7 +60,8 @@
     var sticky = document.querySelector('.sticky-cta');
     if (sticky && 'IntersectionObserver' in window) {
         var after = document.querySelector(sticky.getAttribute('data-sticky-after') || '#top');
-        var until = document.querySelector(sticky.getAttribute('data-sticky-until') || '');
+        var untilSel = sticky.getAttribute('data-sticky-until');
+        var until = untilSel ? document.querySelector(untilSel) : null;
         var heroGone = false, targetSeen = false;
         var link = sticky.querySelector('a');
         function paint() {
