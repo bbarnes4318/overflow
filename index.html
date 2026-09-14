@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NetEnroll — Live Insurance Calls, Billed Per Submitted Application</title>
-<meta name="description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers and agencies. No charge for the call or the conversation. You pay a flat program rate when an application is submitted: $199 Final Expense, $125 Medicare, $100 ACA Health.">
+<title>NetEnroll — Live Insurance Calls. $0 Per Call. Pay Per Submitted Application.</title>
+<meta name="description" content="Live Final Expense, Medicare and ACA Health calls, routed to your licensed producers. $0 per call, however long it runs. You pay one flat published rate only when an application is submitted: $199 Final Expense, $125 Medicare, $100 ACA Health.">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://netenroll.com/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -15,13 +15,13 @@
 <meta property="og:site_name" content="NetEnroll">
 <meta property="og:url" content="https://netenroll.com/">
 <meta property="og:title" content="Every call is free until it becomes an application.">
-<meta property="og:description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $199 · $125 · $100 per submitted application. $0 per call.">
+<meta property="og:description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $0 per call. $199 · $125 · $100 per submitted application.">
 <meta property="og:image" content="https://netenroll.com/og-home.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Every call is free until it becomes an application.">
-<meta name="twitter:description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $199 · $125 · $100 per submitted application. $0 per call.">
+<meta name="twitter:description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $0 per call. $199 · $125 · $100 per submitted application.">
 <meta name="twitter:image" content="https://netenroll.com/og-home.png">
 
 <link rel="preconnect" href="https://api.fontshare.com">
@@ -35,10 +35,13 @@
    the other routes (which share site.css) are untouched. /site.js is reused
    for the menu, scroll reveals, the mobile sticky CTA and the analytics hook.
 
-   One argument, made three times: the invoice sits at the END of the call.
-   General Sans carries the headlines, Satoshi the reading. Green is the
-   brand and it means money: it appears on the application line, on the
-   primary action, and on the two sections that make the case.
+   The page tells one story: the invoice moved from the ring to the
+   application, and that changes who carries the risk of a bad call. Each
+   section makes that point in a different form (statement, comparison,
+   rate sheet, benefits, agency math, written proof, questions) rather than
+   repeating the sentence. General Sans carries the headlines, Satoshi the
+   reading. Green means money: the application line, the primary action,
+   and the two sections that make the case.
 --------------------------------------------------------------------------- */
 :root {
     --bg: #FFFFFF;
@@ -102,13 +105,13 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 
 /* ---- Type ---------------------------------------------------------------- */
 .eyebrow {
-    display: inline-flex; align-items: center; gap: 10px;
+    display: inline-flex; align-items: flex-start; gap: 10px; line-height: 1.4;
     font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green);
 }
-.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.eyebrow::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: currentColor; }
 .on-green .eyebrow { color: var(--green-bright); }
 .h1, .h2, .h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; text-wrap: balance; }
-.h1 { font-size: clamp(2.6rem, 5vw, 4.4rem); line-height: 1.02; }
+.h1 { font-size: clamp(2.4rem, 4.6vw, 3.9rem); line-height: 1.02; }
 .h2 { font-size: clamp(2rem, 3.9vw, 3.3rem); line-height: 1.05; }
 .h3 { font-size: clamp(1.25rem, 1.7vw, 1.5rem); line-height: 1.2; letter-spacing: -.02em; }
 .lede { font-size: clamp(1.1rem, 1.4vw, 1.25rem); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
@@ -145,6 +148,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .textlink { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--green); text-decoration: none; }
 .textlink:hover { text-decoration: underline; text-underline-offset: 4px; }
 .textlink svg { width: 16px; height: 16px; }
+.cta-note { margin-top: 12px; font-size: 14px; color: var(--muted); }
 
 /* ---- Header -------------------------------------------------------------- */
 .site-header {
@@ -170,14 +174,16 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .mobile-nav { display: none; }
 
 /* ---- Hero ---------------------------------------------------------------- */
-.hero { padding: clamp(48px, 6vw, 88px) 0 clamp(56px, 6vw, 88px); }
+.hero { padding: clamp(44px, 6vw, 80px) 0 clamp(56px, 6vw, 88px); }
 .hero-grid { display: grid; grid-template-columns: 1.18fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
-.hero h1 { margin-top: 22px; max-width: 18ch; }
-.hero .lede { margin-top: 24px; max-width: 32rem; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
-.hero-proof { display: flex; flex-wrap: wrap; gap: 10px 0; margin-top: 34px; font-size: 14.5px; font-weight: 500; color: var(--muted); }
-.hero-proof li { padding-right: 16px; margin-right: 16px; border-right: 1px solid var(--line-2); line-height: 1.3; }
+.hero h1 { margin-top: 22px; max-width: 21ch; }
+.hero h1 em { font-style: normal; color: var(--green); }
+.hero .lede { margin-top: 22px; max-width: 33rem; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+.hero-proof { display: flex; flex-wrap: wrap; gap: 10px 0; margin-top: 30px; font-size: 14px; font-weight: 500; color: var(--muted); }
+.hero-proof li { padding-right: 12px; margin-right: 12px; border-right: 1px solid var(--line-2); line-height: 1.3; }
 .hero-proof li:last-child { border: 0; padding-right: 0; margin-right: 0; }
+.hero-proof b { color: var(--ink); font-weight: 700; }
 
 .hero-visual { background: var(--mint); border-radius: var(--r-lg); padding: clamp(18px, 3vw, 36px); }
 
@@ -234,15 +240,30 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .rates .zero { justify-self: end; text-align: right; font-size: 14px; color: var(--muted); }
 .rates .zero b { color: var(--ink); }
 
-/* ---- The difference ------------------------------------------------------ */
-.difference { background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.difference .h2 { max-width: 20ch; }
-.difference .h2 em { font-style: normal; color: var(--green-bright); }
-.tracks { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); margin-top: clamp(40px, 5vw, 64px); }
+/* ---- The shift: who pays for the call that goes nowhere ------------------ */
+.shift { background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
+.shift .h2 { max-width: 16ch; }
+.shift .sec-head { margin-bottom: clamp(32px, 4vw, 48px); }
+.stmts { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); }
+.stmt { border-radius: var(--r-lg); padding: clamp(24px, 3vw, 40px); border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05); display: grid; gap: 18px; align-content: start; }
+.stmt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stmt-head h3 { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: #9DB8AB; }
+.stmt blockquote { margin: 0; font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1.08; font-size: clamp(1.7rem, 2.9vw, 2.6rem); color: #C5DDD1; text-wrap: balance; }
+.stmt p { font-size: 16px; line-height: 1.55; color: #9DB8AB; max-width: 26rem; }
+.stmt-ne { background: rgba(46, 209, 142, .08); border-color: rgba(46, 209, 142, .45); box-shadow: 0 30px 60px -40px rgba(0, 0, 0, .8); }
+.stmt-ne .stmt-head h3 { color: var(--green-bright); }
+.stmt-ne blockquote { color: #fff; }
+.stmt-ne blockquote em { font-style: normal; color: var(--green-bright); }
+.stmt-ne p { color: #C5DDD1; }
+.shift .sub { margin-top: clamp(40px, 5vw, 64px); padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .14); display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; }
+.shift .sub h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
+.shift .sub p { font-size: 15.5px; color: #9DB8AB; max-width: 34rem; }
+
+.tracks { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); margin-top: 24px; }
 .track { --row: 58px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-lg); padding: clamp(20px, 2.6vw, 32px); }
 .track-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, .14); }
 .track-head h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
-.pill { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.pill { flex: none; white-space: nowrap; display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .pill-dim { background: rgba(255, 255, 255, .1); color: #D3E4DB; }
 .pill-bright { background: var(--green-bright); color: var(--green-ink); }
 .track ol { position: relative; margin-top: 10px; }
@@ -283,8 +304,24 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .row.zero .desc { color: var(--green-deep); }
 .sheet-foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 20px; font-size: 14.5px; color: var(--muted); }
 
+/* ---- Why producers care -------------------------------------------------- */
+.why { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.why-grid li { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 28px 30px; display: grid; gap: 10px; align-content: start; }
+.why-grid .k { font-family: var(--display); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--green); }
+.why-grid h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.025em; line-height: 1.15; text-wrap: balance; }
+.why-grid p { font-size: 15.5px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+.callout { margin-top: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 40px); }
+.callout .big { font-family: var(--display); font-size: clamp(2.4rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; white-space: nowrap; }
+.callout .big small { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DE5C4; margin-top: 8px; white-space: normal; max-width: 12ch; }
+.callout h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.8vw, 1.55rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
+.callout p { margin-top: 8px; font-size: 15.5px; line-height: 1.55; color: #CDE5D9; max-width: 42rem; }
+.callout p a { color: #fff; text-underline-offset: 3px; }
+.callout .ref { justify-self: start; display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 6px; background: rgba(255, 255, 255, .12); color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; white-space: nowrap; }
+.callout .ref:hover { background: rgba(255, 255, 255, .2); }
+
 /* ---- How it works -------------------------------------------------------- */
-.how { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.how { padding: clamp(64px, 8vw, 112px) 0; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; counter-reset: step; }
 .steps li { position: relative; padding-top: 26px; }
 .steps li::before { content: ""; position: absolute; left: 0; right: -32px; top: 0; height: 2px; background: var(--line-2); }
@@ -294,19 +331,41 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .steps .k::before { content: "Step " counter(step); }
 .steps h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; margin-top: 10px; }
 .steps p { font-size: 15.5px; color: var(--muted); margin-top: 8px; max-width: 18rem; text-wrap: pretty; }
+.steps .cost { display: inline-flex; margin-top: 12px; height: 26px; align-items: center; padding: 0 10px; border-radius: 999px; background: var(--bg-2); font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--ink-2); letter-spacing: -.01em; }
 .steps li.last h3 { color: var(--green); }
+.steps li.last .cost { background: var(--mint); color: var(--green); }
+.how-foot { margin-top: clamp(36px, 5vw, 56px); display: flex; align-items: center; gap: 14px 24px; flex-wrap: wrap; }
 
 /* ---- Agencies ------------------------------------------------------------ */
-.agency { padding: clamp(64px, 8vw, 112px) 0; }
-.agency .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: center; }
+.agency { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.agency .wrap { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
+.agency .sticky { position: sticky; top: calc(var(--header) + 32px); }
 .agency .lede { margin-top: 20px; color: var(--muted); max-width: 30rem; }
 .agency .hero-actions { margin-top: 30px; }
 .facts { border-top: 1px solid var(--ink); }
-.facts li { display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--line); }
-.facts .ic { width: 44px; height: 44px; border-radius: var(--r); background: var(--mint); color: var(--green); display: grid; place-items: center; }
+.facts li { display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--line-2); }
+.facts .ic { width: 44px; height: 44px; border-radius: var(--r); background: #fff; border: 1px solid var(--line); color: var(--green); display: grid; place-items: center; }
 .facts .ic svg { width: 22px; height: 22px; }
 .facts h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
 .facts p { font-size: 15.5px; color: var(--muted); margin-top: 4px; text-wrap: pretty; }
+
+/* ---- Proof: in writing --------------------------------------------------- */
+.proof { padding: clamp(64px, 8vw, 112px) 0; }
+.proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.proof-grid li { border: 1px solid var(--line); border-radius: var(--r-lg); padding: 26px 26px 24px; display: grid; grid-template-rows: auto auto 1fr; gap: 12px; }
+.proof-grid .k { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.proof-grid h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.proof-grid p { font-size: 15px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+.proof-grid .ref { justify-self: start; align-self: end; display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 6px; background: var(--mint); color: var(--green); font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; white-space: nowrap; }
+.proof-grid .ref:hover { background: var(--mint-2); }
+.proof-grid li.co { background: var(--ink); color: #fff; border-color: var(--ink); }
+.proof-grid li.co .k { color: #9DB8AB; }
+.proof-grid li.co p { color: #C5DDD1; }
+.proof-grid li.co a { color: #fff; text-underline-offset: 3px; }
+.proof-grid li.co .ref { background: rgba(255, 255, 255, .12); color: #fff; }
+.proof-grid li.co .ref:hover { background: rgba(255, 255, 255, .2); }
+.proof-foot { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 14.5px; color: var(--muted); }
+.proof-foot a { color: var(--ink); text-underline-offset: 3px; }
 
 /* ---- Questions ----------------------------------------------------------- */
 .qa { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
@@ -316,22 +375,11 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .qa dd { margin-top: 10px; font-size: 16px; line-height: 1.6; color: var(--muted); text-wrap: pretty; }
 .qa dd a { color: var(--green); font-weight: 700; text-underline-offset: 3px; }
 
-/* ---- In writing ---------------------------------------------------------- */
-.terms { padding: clamp(56px, 7vw, 96px) 0; }
-.terms .wrap { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 80px); align-items: start; }
-.terms .h2 { font-size: clamp(1.7rem, 2.9vw, 2.5rem); }
-.terms .co { margin-top: 20px; font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 28rem; }
-.terms .co a { color: var(--ink); text-underline-offset: 3px; }
-.terms ul { border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
-.terms li { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 18px 24px; border-bottom: 1px solid var(--line); font-size: 16px; color: var(--ink-2); }
-.terms li:last-child { border-bottom: 0; }
-.terms li a { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 6px; background: var(--mint); color: var(--green); font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; white-space: nowrap; }
-.terms li a:hover { background: var(--mint-2); }
-
 /* ---- Final --------------------------------------------------------------- */
 .final { background: var(--green); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
 .final .wrap { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; }
-.final .h2 { max-width: 15ch; font-size: clamp(2.2rem, 4.6vw, 3.9rem); }
+.final .h2 { max-width: 16ch; font-size: clamp(2.2rem, 4.6vw, 3.9rem); }
+.final .h2 em { display: block; font-style: normal; color: #9DE5C4; }
 .final p { margin-top: 20px; font-size: 18px; color: #CDE5D9; max-width: 32rem; text-wrap: pretty; }
 .final-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; justify-self: end; }
 .final .tel { color: #fff; font-size: 15.5px; text-decoration: none; }
@@ -376,6 +424,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .steps { grid-template-columns: 1fr 1fr; gap: 40px 32px; }
     .steps li:nth-child(2)::before { right: 0; }
+    .why-grid, .proof-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 900px) {
     .nav, .signin, .header-actions .btn { display: none; }
@@ -391,23 +440,26 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .mobile-nav .cta-row .btn { width: 100%; }
 
     .hero-grid { grid-template-columns: 1fr; gap: 36px; }
-    .hero h1 { max-width: 14ch; }
+    .hero h1 { max-width: 16ch; }
     .rates .wrap { grid-template-columns: repeat(3, 1fr); }
     .rates .zero { grid-column: 1 / -1; justify-self: start; text-align: left; padding-bottom: 18px; margin-top: -8px; }
     .rates li { padding: 18px 0 14px; }
     .sec-head.split { grid-template-columns: 1fr; align-items: start; }
     .sec-head.split .lede { justify-self: start; }
-    .tracks { grid-template-columns: 1fr; }
-    .agency .wrap, .terms .wrap, .final .wrap { grid-template-columns: 1fr; }
+    .stmts, .tracks { grid-template-columns: 1fr; }
+    .agency .wrap, .final .wrap { grid-template-columns: 1fr; }
+    .agency .sticky { position: static; }
     .final-actions { justify-self: start; }
     .qa-grid { grid-template-columns: 1fr; }
+    .callout { grid-template-columns: 1fr; gap: 16px; }
+    .callout .big small { max-width: none; }
     .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
 @media (max-width: 640px) {
     :root { --header: 64px; }
     .brand img { height: 21px; }
     .hero { padding-top: 36px; }
-    .hero h1 { font-size: clamp(2.3rem, 10.5vw, 2.9rem); }
+    .hero h1 { font-size: clamp(2.1rem, 9.5vw, 2.7rem); }
     .hero-actions .btn { width: 100%; }
     .hero-proof li { border: 0; padding: 0; margin: 0 0 4px; width: 100%; }
     .hero-visual { padding: 14px; margin-left: calc(var(--gutter) * -1 + 8px); margin-right: calc(var(--gutter) * -1 + 8px); border-radius: 14px; }
@@ -430,7 +482,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .row .price span { font-size: 10.5px; max-width: 96px; margin-left: auto; line-height: 1.25; }
     .row .name { font-size: 1.35rem; }
     .row .price b { font-size: 1.9rem; }
-    .terms li { grid-template-columns: 1fr; gap: 10px; }
+    .why-grid, .proof-grid { grid-template-columns: 1fr; }
     .final-actions .btn { width: 100%; }
     .final-actions { width: 100%; }
     .foot-grid { grid-template-columns: 1fr; gap: 28px; }
@@ -469,12 +521,16 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "I really pay nothing if the call doesn't turn into an application?", "acceptedAnswer": { "@type": "Answer", "text": "Nothing. Not for the call, not for the minutes, not for the consumer who says no. A call without a submitted application never appears on your bill." } },
-        { "@type": "Question", "name": "What exactly triggers a charge?", "acceptedAnswer": { "@type": "Answer", "text": "A submitted application: one your producer completes and submits for a consumer who came in on a NetEnroll call, recorded against your account with the carrier and submission details. Duplicates and applications from calls that didn't come through NetEnroll aren't billable." } },
-        { "@type": "Question", "name": "Is there a monthly fee or a platform fee?", "acceptedAnswer": { "@type": "Answer", "text": "No monthly subscription and no charge for account access. You are billed per submitted application at the published rate for that program." } },
-        { "@type": "Question", "name": "Which programs can I receive?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense, Medicare and ACA Health. Turn on the ones you are licensed for and choose the states you want calls from." } },
-        { "@type": "Question", "name": "Can an agency run this for multiple producers?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. An agency account can enroll its producers. The agency is responsible for their licensing and is billed for the applications submitted under its account." } },
-        { "@type": "Question", "name": "Where do the calls come from?", "acceptedAnswer": { "@type": "Answer", "text": "Consumers who called in looking for coverage. Each call is routed live to an available producer matched to the consumer's state." } }
+        { "@type": "Question", "name": "When do I actually get charged?", "acceptedAnswer": { "@type": "Answer", "text": "When your producer submits an application for a consumer who came in on a NetEnroll call. That is the only event that costs anything. The charge is the published program rate ($199 Final Expense, $125 Medicare, $100 ACA Health) and it is recorded against your account with the carrier and submission details." } },
+        { "@type": "Question", "name": "So if the call goes nowhere, I owe nothing?", "acceptedAnswer": { "@type": "Answer", "text": "Nothing. Not for the call, not for the minutes, not for the consumer who says no. A call without a submitted application never shows up on your bill." } },
+        { "@type": "Question", "name": "Is there a monthly fee, a platform fee or a per-seat fee?", "acceptedAnswer": { "@type": "Answer", "text": "No. No subscription, no charge for account access and no per-producer fee. You pay per submitted application at the published rate for that program." } },
+        { "@type": "Question", "name": "Where do the calls come from?", "acceptedAnswer": { "@type": "Answer", "text": "Consumers who called in looking for coverage: Final Expense, Medicare or ACA Health. Each call is routed live to an available producer matched to the consumer's state." } },
+        { "@type": "Question", "name": "Can I choose which programs and states I take calls for?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Turn on the programs you are licensed for and choose the states you want calls from. Calls route to producers matched to the consumer's state." } },
+        { "@type": "Question", "name": "Can I run this across my whole agency?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. An agency account enrolls its producers under it. The agency is responsible for their licensing and is billed for the applications submitted under its account." } },
+        { "@type": "Question", "name": "Do you guarantee call volume?", "acceptedAnswer": { "@type": "Answer", "text": "No. Volume depends on consumer demand in the programs and states you turn on. What is guaranteed in writing is the price: $0 for the call, the published rate for the application." } },
+        { "@type": "Question", "name": "What if the policy never takes effect?", "acceptedAnswer": { "@type": "Answer", "text": "If the applicant never pays the first premium and you earn no commission, we credit your account with a replacement application on the same program at no charge. Tell us within 60 days with the submission details and the carrier's documentation. One replacement per application." } },
+        { "@type": "Question", "name": "What if I think I was billed for something I shouldn't have been?", "acceptedAnswer": { "@type": "Answer", "text": "Tell us within 30 days with the policy or submission number and applicant details and we investigate. Duplicates, applications that did not come from a NetEnroll call, and contacts without consumer consent are not billable under the Terms." } },
+        { "@type": "Question", "name": "How do I get started?", "acceptedAnswer": { "@type": "Answer", "text": "Open your producer account in the agent portal, choose your programs and states, and take the first call. Or call 904-512-8487 and a person will walk you through it." } }
       ]
     }
   ]
@@ -491,15 +547,15 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <img src="/netenroll-logo.png" width="918" height="179" alt="NetEnroll">
         </a>
         <nav class="nav" aria-label="Primary">
-            <a href="#how">How it works</a>
-            <a href="#programs">Programs &amp; rates</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#pricing">Rates</a>
             <a href="#agencies">For agencies</a>
-            <a href="#questions">Questions</a>
+            <a href="#faq">Questions</a>
             <a href="/aca-agent-recruiting">Agent Recruiting</a>
         </nav>
         <div class="header-actions">
             <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
-            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com" data-track="cta_click" data-loc="header" data-label="Get started">Get started</a>
+            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="header" data-label="Open an account">Open an account</a>
         </div>
         <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
             <svg class="open" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -507,43 +563,43 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         </button>
     </div>
     <div class="mobile-nav" id="mobile-nav" hidden>
-        <a href="#how">How it works</a>
-        <a href="#programs">Programs &amp; rates</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#pricing">Rates</a>
         <a href="#agencies">For agencies</a>
-        <a href="#questions">Questions</a>
+        <a href="#faq">Questions</a>
         <a href="/aca-agent-recruiting">Agent Recruiting</a>
         <a href="/licensing-value">State License Tool</a>
         <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in to the agent portal</a>
         <div class="cta-row">
-            <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="cta_click" data-loc="mobile-nav" data-label="Get started">Get started</a>
+            <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="mobile-nav" data-label="Open My Producer Account">Open My Producer Account</a>
         </div>
     </div>
 </header>
 
 <main id="main">
 
-<!-- 1. The proposition, and the bill that proves it -->
+<!-- 1. Hero: outcome, then the economic difference, then the mechanism -->
 <section class="hero" id="top" aria-labelledby="hero-title">
     <div class="wrap hero-grid">
         <div>
-            <p class="eyebrow">Live insurance calls for producers and agencies</p>
-            <h1 id="hero-title" class="h1">Every call is free until it becomes an application.</h1>
-            <p class="lede">Live Final Expense, Medicare and ACA Health calls, routed to your licensed producers. No charge for the call. No charge for the conversation. A flat program rate when an application is submitted, and nothing when it isn't.</p>
+            <p class="eyebrow">Live Final Expense, Medicare &amp; ACA calls for licensed producers</p>
+            <h1 id="hero-title" class="h1">Live insurance calls for your producers. <em>Every call is free until it becomes an application.</em></h1>
+            <p class="lede">Consumers who called in about coverage, connected live to a producer in their state. The call is $0, however long it runs. When your producer submits an application, you pay one flat published rate. When they don't, you pay nothing.</p>
             <div class="hero-actions">
-                <a class="btn btn-primary" href="https://agents.netenroll.com" data-track="cta_click" data-loc="hero" data-label="Get started">Get started <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                <a class="btn btn-outline" href="#how" data-track="cta_click" data-loc="hero" data-label="See how it works">See how it works</a>
+                <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="hero" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                <a class="btn btn-outline" href="#how-it-works" data-track="cta_click" data-loc="hero" data-label="See how it works">See how it works</a>
             </div>
             <ul class="hero-proof">
-                <li>No per-call charge</li>
-                <li>No monthly subscription</li>
-                <li>Rates confirmed at checkout</li>
+                <li><b>$0 per call</b>, in the Terms</li>
+                <li><b>$199 · $125 · $100</b>, published</li>
+                <li><b>No monthly</b> or seat fees</li>
             </ul>
         </div>
 
         <div class="hero-visual">
             <figure class="bill" aria-label="How one call is billed">
                 <div class="bill-head">
-                    <h2>How one call is billed <span>· <span id="bill-prog">Final Expense</span></span></h2>
+                    <h2>One call, as it's billed <span>· <span id="bill-prog">Final Expense</span></span></h2>
                     <div class="seg" role="group" aria-label="Program">
                         <button type="button" data-prog="fe" aria-pressed="true">Final Expense</button>
                         <button type="button" data-prog="med" aria-pressed="false">Medicare</button>
@@ -576,15 +632,31 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     </ul>
 </div>
 
-<!-- 2. The difference: same steps, the invoice moved -->
-<section class="difference on-green" id="how" aria-labelledby="how-title">
+<!-- 2. The economic shift -->
+<section class="shift on-green" id="difference" aria-labelledby="shift-title">
     <div class="wrap">
         <div class="sec-head reveal">
-            <p class="eyebrow">The difference</p>
-            <h2 id="how-title" class="h2">Other call programs bill you for the ring. <em>We bill you for the application.</em></h2>
-            <p class="lede">Same call, same consumer, same conversation. The only thing that moved is where the invoice sits, and that decides who carries the risk.</p>
+            <p class="eyebrow">The economic shift</p>
+            <h2 id="shift-title" class="h2">Who pays for the call that goes nowhere?</h2>
         </div>
 
+        <div class="stmts">
+            <div class="stmt reveal">
+                <div class="stmt-head"><h3>Traditional call programs</h3><span class="pill pill-dim">Pay first</span></div>
+                <blockquote>You pay for the opportunity.</blockquote>
+                <p>The invoice arrives with the ring. Whether the consumer answers, qualifies or applies is your problem, and the vendor was paid either way.</p>
+            </div>
+            <div class="stmt stmt-ne reveal">
+                <div class="stmt-head"><h3>NetEnroll</h3><span class="pill pill-bright">Pay last</span></div>
+                <blockquote>You pay when the opportunity <em>becomes an application.</em></blockquote>
+                <p>Wrong fit, not eligible, not interested, not today: none of it is billed. The submitted application is. Nothing else ever reaches your statement.</p>
+            </div>
+        </div>
+
+        <div class="sub reveal">
+            <h3>Same call, step by step</h3>
+            <p>Same consumer, same conversation, same producer. The only thing that moved is where the invoice sits, and that decides who carries the risk.</p>
+        </div>
         <div class="tracks">
             <div class="track track-old reveal">
                 <div class="track-head"><h3>The usual model</h3><span class="pill pill-dim">Pay first</span></div>
@@ -614,14 +686,14 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 </section>
 
 <!-- 3. Programs and rates -->
-<section class="programs" id="programs" aria-labelledby="programs-title">
+<section class="programs" id="pricing" aria-labelledby="programs-title">
     <div class="wrap">
         <div class="sec-head split reveal">
             <div>
                 <p class="eyebrow">Programs &amp; rates</p>
-                <h2 id="programs-title" class="h2" style="margin-top:14px">Three programs. One way to be billed.</h2>
+                <h2 id="programs-title" class="h2" style="margin-top:14px">Three programs. One price each. Published.</h2>
             </div>
-            <p class="lede">Turn on the programs you're licensed for and choose the states you want calls from. Every program bills the same way.</p>
+            <p class="lede">Turn on the programs you're licensed for and the states you want calls from. The rate you see here is the rate confirmed at checkout, and it's the same for every call in the program.</p>
         </div>
         <div class="sheet reveal">
             <div class="sheet-head" aria-hidden="true"><span>Program</span><span>Who's calling</span><span>What you pay</span></div>
@@ -647,129 +719,254 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             </div>
         </div>
         <div class="sheet-foot reveal">
-            <p>Published rates. The rate shown for your program at checkout is the rate that applies to your account.</p>
-            <a class="textlink" href="https://agents.netenroll.com" data-track="cta_click" data-loc="programs" data-label="Get started">Get started <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <p>No monthly fee. No platform fee. No per-producer fee. Payments processed by Stripe.</p>
+            <a class="textlink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="programs" data-label="Open My Producer Account">Open my producer account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
     </div>
 </section>
 
-<!-- 4. How it works -->
-<section class="how" id="setup" aria-labelledby="setup-title">
+<!-- 4. Why producers care -->
+<section class="why" id="why" aria-labelledby="why-title">
+    <div class="wrap">
+        <div class="sec-head reveal">
+            <p class="eyebrow">What changes for you</p>
+            <h2 id="why-title" class="h2">When the call is free, the whole afternoon changes.</h2>
+            <p class="lede">Billing at the application isn't a pricing detail. It changes what a bad call costs, how you test a new source, and how far a budget goes.</p>
+        </div>
+        <ul class="why-grid reveal">
+            <li>
+                <span class="k">Wasted spend</span>
+                <h3>A bad call costs you time, not money.</h3>
+                <p>The wrong number, the not-eligible, the tire-kicker: all $0. The only calls you ever pay for are the ones your producer chose to write.</p>
+            </li>
+            <li>
+                <span class="k">Order of operations</span>
+                <h3>You work the call before you pay for it.</h3>
+                <p>You've heard the consumer, qualified them and completed the application before a dollar is owed. You never pay for a stranger.</p>
+            </li>
+            <li>
+                <span class="k">Testing</span>
+                <h3>Try a new source without funding a campaign.</h3>
+                <p>Turn on one program in one state. No monthly commitment, no block of calls to buy. The test costs the applications it produces, and nothing else.</p>
+            </li>
+            <li>
+                <span class="k">Pricing</span>
+                <h3>The rate is printed, not negotiated.</h3>
+                <p>$199, $125 or $100, the same for every call in the program, confirmed at checkout and written into the Terms. Your cost per application is fixed before the first call.</p>
+            </li>
+            <li>
+                <span class="k">The calls</span>
+                <h3>A live consumer who called in about coverage.</h3>
+                <p>Not a list, not a form fill from last week. A person on the line who reached out about Final Expense, Medicare or ACA Health, routed to you while they're still on it.</p>
+            </li>
+            <li>
+                <span class="k">Scale</span>
+                <h3>Ten producers cost the same as one, until they submit.</h3>
+                <p>One agency account, your producers under it, and no seat licenses. The bill grows only with applications, not with headcount.</p>
+            </li>
+        </ul>
+        <div class="callout reveal">
+            <div class="big">+1<small>Replacement application</small></div>
+            <div>
+                <h3>If the policy never takes effect, the application comes back.</h3>
+                <p>Your producer wrote it, the applicant never paid the first premium, and no commission was earned? We credit a replacement application on the same program at no charge. One replacement per application, with the carrier's documentation, claimed within 60 days.</p>
+            </div>
+            <a class="ref" href="/terms#fees">Terms §5.5</a>
+        </div>
+    </div>
+</section>
+
+<!-- 5. How it works -->
+<section class="how" id="how-it-works" aria-labelledby="how-title">
     <div class="wrap">
         <div class="sec-head reveal">
             <p class="eyebrow">How it works</p>
-            <h2 id="setup-title" class="h2">From account to first application.</h2>
+            <h2 id="how-title" class="h2">From account to first application.</h2>
         </div>
         <ol class="steps reveal">
-            <li><span class="k"></span><h3>Open an account</h3><p>Choose your programs and the states your producers are licensed in.</p></li>
-            <li><span class="k"></span><h3>Calls route live</h3><p>Inbound consumers, matched to state, sent to an available producer.</p></li>
-            <li><span class="k"></span><h3>Work the call</h3><p>Quote, qualify, write it up. Same as any other opportunity.</p></li>
-            <li class="last"><span class="k"></span><h3>Submit, then pay</h3><p>The program rate posts when the application is submitted. Otherwise, nothing.</p></li>
+            <li><span class="k"></span><h3>Open your account</h3><p>Turn on the programs you're licensed for and the states your producers can write.</p><span class="cost">$0</span></li>
+            <li><span class="k"></span><h3>Calls route live</h3><p>A consumer calls in about coverage and is sent to an available producer matched to their state.</p><span class="cost">$0</span></li>
+            <li><span class="k"></span><h3>Work the call</h3><p>Quote, qualify, write it up. Same as any opportunity, minus the meter running.</p><span class="cost">$0</span></li>
+            <li class="last"><span class="k"></span><h3>Submit, then pay</h3><p>The program rate applies when the application is submitted. If it isn't, nothing does.</p><span class="cost">$199 · $125 · $100</span></li>
         </ol>
+        <div class="how-foot reveal">
+            <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="how" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="textlink" href="tel:+19045128487">Or talk to a person first: 904-512-8487</a>
+        </div>
     </div>
 </section>
 
-<!-- 5. Agencies -->
+<!-- 6. Agencies -->
 <section class="agency" id="agencies" aria-labelledby="agency-title">
     <div class="wrap">
-        <div class="reveal">
-            <p class="eyebrow">For agencies</p>
-            <h2 id="agency-title" class="h2" style="margin-top:14px">Built to run across a team of producers.</h2>
-            <p class="lede">One agency account, your producers under it, and a bill that only moves when they submit applications. No seat licenses, no platform fee per producer.</p>
+        <div class="sticky reveal">
+            <p class="eyebrow">For agency owners</p>
+            <h2 id="agency-title" class="h2" style="margin-top:14px">Built for the agency that runs the numbers.</h2>
+            <p class="lede">One account. Your producers under it. A cost per application that's fixed before the first call, and a bill that only moves when they submit.</p>
             <div class="hero-actions">
-                <a class="btn btn-ink" href="https://agents.netenroll.com" data-track="cta_click" data-loc="agency" data-label="Get started">Set up an agency account</a>
+                <a class="btn btn-ink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="agency" data-label="Set up an agency account">Set up an agency account</a>
                 <a class="btn btn-outline" href="tel:+19045128487">Call 904-512-8487</a>
             </div>
         </div>
         <ul class="facts reveal">
             <li>
                 <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19M20 19v-1.5a3.5 3.5 0 0 0-2.5-3.36M14.5 5.14a3.5 3.5 0 0 1 0 6.72M13.5 7.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                <div><h3>Enroll your producers under one account</h3><p>The agency holds the account and the billing. Producers take the calls. Applications submitted under the account roll up to one bill.</p></div>
+                <div><h3>Add producers without adding cost</h3><p>Enroll producers under the agency account. No seat licenses, no per-producer platform fee. A producer who takes calls and submits nothing costs the agency nothing.</p></div>
             </li>
             <li>
                 <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m16 15 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                <div><h3>Programs and states, set to your licensing</h3><p>Choose the programs and the states your producers are licensed to write. Calls route to producers matched to the consumer's state.</p></div>
+                <div><h3>Route by state and licensing</h3><p>Set the programs and the states your producers are licensed to write. Each consumer is matched to a producer set up for their state, so a Florida call doesn't land on a producer who can't write Florida.</p></div>
+            </li>
+            <li>
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M7 8l5-5 5 5M4 21h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><h3>Put available producers on live calls</h3><p>Calls go to whichever of your producers is available. Time between appointments becomes a live conversation with someone who called in about coverage.</p></div>
+            </li>
+            <li>
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7ZM4 10h16M8 15h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><h3>One bill, at the published rate</h3><p>Every application submitted under the account rolls up to one statement, each line at the program rate. Payment runs through Stripe; card details never touch our systems.</p></div>
             </li>
             <li>
                 <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-                <div><h3>Call and application activity, on the record</h3><p>Every call and every submitted application is recorded against your account and available in reporting, so the bill is never a surprise.</p></div>
+                <div><h3>See who's taking calls and what they're writing</h3><p>Every call and every submitted application is recorded against the account and available in reporting. You can see which producers are producing, and the bill is never a surprise.</p></div>
+            </li>
+            <li>
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 7.5h7M8.5 12h2M13.5 12h2M8.5 16h2M13.5 16h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                <div><h3>Program economics you can model in advance</h3><p>Cost per application is fixed and public. The only variable in the equation is how many applications your producers submit, which is the variable you control.</p></div>
             </li>
         </ul>
     </div>
 </section>
 
-<!-- 6. Questions -->
-<section class="qa" id="questions" aria-labelledby="qa-title">
+<!-- 7. In writing -->
+<section class="proof" id="in-writing" aria-labelledby="proof-title">
+    <div class="wrap">
+        <div class="sec-head split reveal">
+            <div>
+                <p class="eyebrow">Why you can believe it</p>
+                <h2 id="proof-title" class="h2" style="margin-top:14px">Every claim here is written where you can check it.</h2>
+            </div>
+            <p class="lede">No testimonials, no counts, no conversion rates. The billing rules are in the Terms, the consent rules are in the compliance policy, and the rates are on this page.</p>
+        </div>
+        <ul class="proof-grid reveal">
+            <li>
+                <span class="k">Rates</span>
+                <h3>$199 · $125 · $100, published</h3>
+                <p>The rate displayed for your program at checkout is the rate that applies to your account. No "from" pricing.</p>
+                <a class="ref" href="/terms#fees">Terms §5.1</a>
+            </li>
+            <li>
+                <span class="k">The call</span>
+                <h3>$0 per call, in the Terms</h3>
+                <p>"No separate charge for receiving a call, for speaking with a consumer, or for the duration of a conversation." Quoted from the Terms, not paraphrased.</p>
+                <a class="ref" href="/terms#fees">Terms §5.1</a>
+            </li>
+            <li>
+                <span class="k">Not billable</span>
+                <h3>The exceptions are spelled out</h3>
+                <p>Duplicates, applications that didn't come from a NetEnroll call, and contacts without consumer consent are not billable. By rule, not by request.</p>
+                <a class="ref" href="/terms#fees">Terms §5.2</a>
+            </li>
+            <li>
+                <span class="k">Disputes</span>
+                <h3>Billed in error? 30 days to say so</h3>
+                <p>Send the submission details and we investigate. The process is written down before you ever need it.</p>
+                <a class="ref" href="/terms#fees">Terms §5.4</a>
+            </li>
+            <li>
+                <span class="k">Payment</span>
+                <h3>Processed by Stripe</h3>
+                <p>Card details are entered on Stripe's systems and are never collected or stored by us.</p>
+                <a class="ref" href="/terms#fees">Terms §5.3</a>
+            </li>
+            <li>
+                <span class="k">Consent</span>
+                <h3>Every consumer inquiry carries a consent record</h3>
+                <p>The exact language shown, the page it was shown on, the timestamp and the device. One-to-one consent naming the seller, never a list of "marketing partners".</p>
+                <a class="ref" href="/tcpa-compliance">TCPA &amp; Compliance</a>
+            </li>
+            <li>
+                <span class="k">Licensing</span>
+                <h3>You control programs and states</h3>
+                <p>Calls are matched to the consumer's state and go only to the programs you turn on. Licensing stays your responsibility, and the controls are yours.</p>
+                <a class="ref" href="/terms#eligibility">Terms §3</a>
+            </li>
+            <li>
+                <span class="k">A person</span>
+                <h3>904-512-8487</h3>
+                <p>Questions before you open an account, or a bill you want to talk through. A phone number, not a ticket queue.</p>
+                <a class="ref" href="tel:+19045128487">Call</a>
+            </li>
+            <li class="co">
+                <span class="k">The company</span>
+                <h3>NetEnroll is a service of PVN LLC</h3>
+                <p>2800 N 6th Street #796, Saint Augustine, FL 32084. <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/tcpa-compliance">TCPA &amp; Compliance</a>, each at its own address.</p>
+                <a class="ref" href="/terms">Read the Terms</a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- 8. Questions -->
+<section class="qa" id="faq" aria-labelledby="qa-title">
     <div class="wrap">
         <div class="sec-head reveal">
-            <p class="eyebrow">Before you sign up</p>
-            <h2 id="qa-title" class="h2">Straight answers.</h2>
-            <p class="lede">The things agents and agency owners ask us before they open an account.</p>
+            <p class="eyebrow">Before you open an account</p>
+            <h2 id="qa-title" class="h2">What producers ask us first.</h2>
         </div>
         <dl class="qa-grid reveal">
             <div class="q">
-                <dt>I really pay nothing if the call doesn't turn into an application?</dt>
-                <dd>Nothing. Not for the call, not for the minutes, not for the consumer who says no. A call without a submitted application never appears on your bill.</dd>
+                <dt>When do I actually get charged?</dt>
+                <dd>When your producer submits an application for a consumer who came in on a NetEnroll call. That's the only event that costs anything. The charge is the published program rate ($199, $125 or $100) and it's recorded against your account with the carrier and submission details.</dd>
             </div>
             <div class="q">
-                <dt>What exactly triggers a charge?</dt>
-                <dd>A submitted application: one your producer completes and submits for a consumer who came in on a NetEnroll call, recorded against your account with the carrier and submission details. Duplicates, and applications from calls that didn't come through NetEnroll, aren't billable.</dd>
+                <dt>So if the call goes nowhere, I owe nothing?</dt>
+                <dd>Nothing. Not for the call, not for the minutes, not for the consumer who says no. A call without a submitted application never shows up on your bill.</dd>
             </div>
             <div class="q">
-                <dt>Is there a monthly fee or a platform fee?</dt>
-                <dd>No monthly subscription and no charge for account access. You're billed per submitted application at the published rate for that program.</dd>
-            </div>
-            <div class="q">
-                <dt>Which programs can I receive?</dt>
-                <dd>Final Expense, Medicare and ACA Health. Turn on the ones you're licensed for and choose the states you want calls from.</dd>
-            </div>
-            <div class="q">
-                <dt>Can an agency run this for multiple producers?</dt>
-                <dd>Yes. An agency account can enroll its producers. The agency is responsible for their licensing and is billed for the applications submitted under its account.</dd>
+                <dt>Is there a monthly fee, a platform fee or a per-seat fee?</dt>
+                <dd>No. No subscription, no charge for account access and no per-producer fee. You pay per submitted application at the published rate for that program.</dd>
             </div>
             <div class="q">
                 <dt>Where do the calls come from?</dt>
-                <dd>Consumers who called in looking for coverage. Each call is routed live to an available producer matched to the consumer's state.</dd>
+                <dd>Consumers who called in looking for coverage: Final Expense, Medicare or ACA Health. Each call is routed live to an available producer matched to the consumer's state.</dd>
+            </div>
+            <div class="q">
+                <dt>Can I choose which programs and states I take calls for?</dt>
+                <dd>Yes. Turn on the programs you're licensed for and choose the states you want calls from. Calls route to producers matched to the consumer's state.</dd>
+            </div>
+            <div class="q">
+                <dt>Can I run this across my whole agency?</dt>
+                <dd>Yes. An agency account enrolls its producers under it. The agency is responsible for their licensing and is billed for the applications submitted under its account.</dd>
+            </div>
+            <div class="q">
+                <dt>Do you guarantee call volume?</dt>
+                <dd>No. Volume depends on consumer demand in the programs and states you turn on. What's guaranteed in writing is the price: $0 for the call, the published rate for the application.</dd>
+            </div>
+            <div class="q">
+                <dt>What if the policy never takes effect?</dt>
+                <dd>If the applicant never pays the first premium and you earn no commission, we credit your account with a replacement application on the same program at no charge. Tell us within 60 days with the submission details and the carrier's documentation. One replacement per application. <a href="/terms#fees">Terms §5.5</a></dd>
+            </div>
+            <div class="q">
+                <dt>What if I think I was billed for something I shouldn't have been?</dt>
+                <dd>Tell us within 30 days with the policy or submission number and applicant details and we investigate. Duplicates, applications that didn't come from a NetEnroll call, and contacts without consumer consent aren't billable under the Terms.</dd>
             </div>
             <div class="q">
                 <dt>How do I get started?</dt>
-                <dd>Open an account in the agent portal, choose your programs and states, and take the first call. <a href="https://agents.netenroll.com" data-track="cta_click" data-loc="faq" data-label="Get started">Get started</a></dd>
-            </div>
-            <div class="q">
-                <dt>What if I think an application was billed in error?</dt>
-                <dd>Tell us within 30 days with the submission details and we investigate. The billing rules are written into the Terms, not just this page.</dd>
+                <dd>Open your producer account in the agent portal, choose your programs and states, and take the first call. Or call 904-512-8487 and a person will walk you through it. <a href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="faq" data-label="Open My Producer Account">Open my producer account</a></dd>
             </div>
         </dl>
     </div>
 </section>
 
-<!-- 7. In writing -->
-<section class="terms" id="in-writing" aria-labelledby="terms-title">
-    <div class="wrap">
-        <div class="reveal">
-            <p class="eyebrow">In writing</p>
-            <h2 id="terms-title" class="h2" style="margin-top:14px">The billing rules are in the Terms, not just on this page.</h2>
-            <p class="co">NetEnroll is a service of PVN LLC, 2800 N 6th Street #796, Saint Augustine, FL 32084. Questions before you sign up: <a href="tel:+19045128487">904-512-8487</a>. Consumer consent and call handling are covered in our <a href="/tcpa-compliance">TCPA &amp; Compliance</a> statement.</p>
-        </div>
-        <ul class="reveal">
-            <li>No separate charge for receiving a call, speaking with a consumer, or the length of the conversation. <a href="/terms#fees">Terms §5.1</a></li>
-            <li>No monthly subscription and no separate charge for account access. <a href="/terms#fees">Terms §5.1</a></li>
-            <li>Not billable: duplicate applications, applications that didn't come from a NetEnroll call, and contacts without consumer consent. <a href="/terms#fees">Terms §5.2</a></li>
-            <li>Billed in error? Tell us within 30 days and we investigate. <a href="/terms#fees">Terms §5.4</a></li>
-            <li>Payments are processed by Stripe. Card details never touch our systems. <a href="/terms#fees">Terms §5.3</a></li>
-        </ul>
-    </div>
-</section>
-
-<!-- 8. Final -->
+<!-- 9. Final -->
 <section class="final on-green" id="final" aria-labelledby="final-title">
     <div class="wrap">
         <div class="reveal">
-            <h2 id="final-title" class="h2">Your next call costs nothing. Take it.</h2>
-            <p>Open an account, pick your programs and states, and put your producers on live Final Expense, Medicare and ACA Health calls.</p>
+            <h2 id="final-title" class="h2">Take the call first. <em>Pay only when it becomes an application.</em></h2>
+            <p>Open your account, switch on your programs and states, and put your producers on live Final Expense, Medicare and ACA Health calls. The first application costs $199, $125 or $100. Everything before it costs nothing.</p>
         </div>
         <div class="final-actions reveal">
-            <a class="btn btn-white" href="https://agents.netenroll.com" data-track="cta_click" data-loc="final" data-label="Get started">Get started <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="btn btn-white" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="final" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
             <a class="tel" href="tel:+19045128487">Or talk to a person: <b>904-512-8487</b></a>
         </div>
     </div>
@@ -787,7 +984,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <div>
                 <h3>Services</h3>
                 <ul>
-                    <li><a href="/#programs">Insurance calls</a></li>
+                    <li><a href="/#pricing">Insurance calls</a></li>
                     <li><a href="/aca-agent-recruiting">ACA agent recruiting</a></li>
                     <li><a href="/licensing-value">State license value tool</a></li>
                 </ul>
@@ -796,7 +993,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
                 <h3>Account</h3>
                 <ul>
                     <li><a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="footer">Agent portal</a></li>
-                    <li><a href="https://agents.netenroll.com" data-track="cta_click" data-loc="footer" data-label="Get started">Get started</a></li>
+                    <li><a href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="footer" data-label="Open My Producer Account">Open a producer account</a></li>
                     <li><a href="tel:+19045128487">904-512-8487</a></li>
                 </ul>
             </div>
@@ -818,7 +1015,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 
 <div class="sticky-cta" data-sticky-after="#top" data-sticky-until="#final" aria-hidden="true">
     <span class="lbl">$0 per call<small>Pay per submitted application</small></span>
-    <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com" data-track="cta_click" data-loc="sticky" data-label="Get started" tabindex="-1">Get started</a>
+    <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="sticky" data-label="Open an account" tabindex="-1">Open an account</a>
 </div>
 
 <script src="/site.js" defer></script>
