@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Insurance Agent Recruiting: Medicare, Final Expense &amp; ACA Producers | NetEnroll</title>
 <meta name="description" content="NetEnroll recruits licensed Medicare, Final Expense and ACA Health producers for your agency. We find them, verify them and put them on your calendar; you interview and sign them on your contract. $500 per signed producer, $450 each at ten or more, 30-day replacement included.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F6F4EE">
 <link rel="canonical" href="https://netenroll.com/aca-agent-recruiting">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" sizes="32x32" type="image/png">
@@ -14,41 +14,43 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NetEnroll">
 <meta property="og:url" content="https://netenroll.com/aca-agent-recruiting">
-<meta property="og:title" content="Stop chasing resumes. Sign licensed producers.">
-<meta property="og:description" content="Licensed Medicare, Final Expense and ACA producers, verified and put on your calendar. $500 per signed producer, $450 each at ten or more. 30-day replacement included.">
+<meta property="og:title" content="Producers, signed. Medicare, Final Expense and ACA recruiting.">
+<meta property="og:description" content="Licensed producers, verified and put on your calendar. $500 per signed producer, $450 each at ten or more. 30-day replacement included.">
 <meta property="og:image" content="https://netenroll.com/og-recruiting.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stop chasing resumes. Sign licensed producers.">
-<meta name="twitter:description" content="Licensed Medicare, Final Expense and ACA producers, verified and put on your calendar. $500 per signed producer, $450 each at ten or more. 30-day replacement included.">
+<meta name="twitter:title" content="Producers, signed. Medicare, Final Expense and ACA recruiting.">
+<meta name="twitter:description" content="Licensed producers, verified and put on your calendar. $500 per signed producer, $450 each at ten or more. 30-day replacement included.">
 <meta name="twitter:image" content="https://netenroll.com/og-recruiting.png">
 
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=jetbrains-mono@500,700&display=swap">
 
 <style>
 /* ---------------------------------------------------------------------------
-   Producer recruiting. Self-contained like the homepage, on the same design
-   system, so /licensing-value (which shares site.css) is untouched. /site.js
-   is reused for the menu, reveals, the sticky CTA, the season line and the
-   three-step inquiry form; the form's class names are the contract with it.
+   Producer recruiting. Its own design: a roster sheet. Paper ground, ink,
+   hairline rules, oversized numerals, monospace section indexes, no card
+   grids. Self-contained; /site.js is reused for the menu, reveals, the
+   sticky CTA, the season line and the inquiry form (its class names are
+   the contract).
 --------------------------------------------------------------------------- */
 :root {
-    --bg: #FFFFFF; --bg-2: #F4F6F4; --ink: #0E1512; --ink-2: #2B342F; --muted: #5A6660;
-    --line: #E1E6E2; --line-2: #C9D1CC;
-    --green: #0C5C43; --green-hover: #094A36; --green-deep: #073B2C; --green-ink: #052A1F; --green-bright: #2ED18E;
-    --mint: #E6F3EC; --mint-2: #CBE7D8; --red: #B42318; --red-soft: #FEF3F2;
-    --display: 'General Sans', 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --paper: #F6F4EE; --paper-2: #EEEBE2; --ink: #101411; --ink-2: #2E332F; --muted: #626A64;
+    --rule: #D8D3C6; --rule-2: #C4BEAE;
+    --green: #0C5C43; --green-hover: #094A36; --bright: #2ED18E; --bright-ink: #052A1F;
+    --night: #0F1412; --night-2: #171E1A; --red: #B42318; --red-soft: #FEF3F2;
+    --display: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     --text: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    --wrap: 1200px; --gutter: clamp(20px, 4vw, 40px); --header: 72px; --r: 10px; --r-lg: 18px;
-    --ease: cubic-bezier(.2, .7, .2, 1);
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+    --wrap: 1280px; --gutter: clamp(20px, 4vw, 48px); --header: 68px; --ease: cubic-bezier(.2, .7, .2, 1);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-body { margin: 0; font-family: var(--text); font-size: 17px; line-height: 1.6; color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
+body { margin: 0; font-family: var(--text); font-size: 17px; line-height: 1.6; color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
@@ -56,286 +58,255 @@ h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote, fieldset { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 strong, b { font-weight: 700; }
 [hidden] { display: none !important; }
-:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 3px; }
-::selection { background: var(--green); color: #fff; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+::selection { background: var(--ink); color: var(--paper); }
 section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
-.skip-link { position: absolute; left: 16px; top: -60px; z-index: 100; padding: 10px 14px; background: var(--ink); color: #fff; border-radius: var(--r); font-size: 14px; font-weight: 700; text-decoration: none; }
+.skip-link { position: absolute; left: 16px; top: -60px; z-index: 100; padding: 10px 14px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; }
 .skip-link:focus { top: 12px; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
 
-/* ---- Type ---------------------------------------------------------------- */
-.eyebrow { display: inline-flex; align-items: flex-start; gap: 10px; line-height: 1.4; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green); }
-.eyebrow::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: currentColor; }
-.on-dark .eyebrow { color: var(--green-bright); }
-.h1, .h2, .h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; text-wrap: balance; }
-.h1 { font-size: clamp(2.5rem, 3.9vw, 3.6rem); line-height: 1.04; }
-.h2 { font-size: clamp(2rem, 3.9vw, 3.3rem); line-height: 1.05; }
-.h3 { font-size: clamp(1.25rem, 1.7vw, 1.5rem); line-height: 1.2; letter-spacing: -.02em; }
-.lede { font-size: clamp(1.1rem, 1.4vw, 1.25rem); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
-.lede strong, .lede b { color: var(--ink); }
-.on-dark .lede { color: #C5DDD1; }
-.on-dark .lede b { color: #fff; }
-.num { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-.sec-head { display: grid; gap: 16px; margin-bottom: clamp(36px, 5vw, 56px); max-width: 46rem; }
-.sec-head .lede { color: var(--muted); }
-.on-dark .sec-head .lede { color: #C5DDD1; }
-.sec-head.split { max-width: none; grid-template-columns: 1.1fr 1fr; align-items: end; gap: 40px; }
-.sec-head.split .lede { max-width: 30rem; justify-self: end; }
+/* ---- Type: display for statements, mono for labels ----------------------- */
+.mono { font-family: var(--mono); font-size: 12.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.display { font-family: var(--display); font-weight: 600; letter-spacing: -.035em; line-height: .98; text-wrap: balance; }
+.h1 { font-size: clamp(3rem, 6.4vw, 6rem); }
+.h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.35rem, 1.9vw, 1.7rem); }
+.lede { font-size: clamp(1.1rem, 1.45vw, 1.3rem); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.lede b { color: var(--ink); }
+.num { font-family: var(--display); font-weight: 600; letter-spacing: -.05em; line-height: .9; font-variant-numeric: tabular-nums; }
 
 /* ---- Buttons ------------------------------------------------------------- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px; border-radius: var(--r); border: 1px solid transparent; font-family: var(--text); font-size: 16px; font-weight: 700; letter-spacing: -.005em; line-height: 1; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 56px; padding: 0 28px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-family: var(--text); font-size: 16px; font-weight: 700; line-height: 1; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color .18s var(--ease), color .18s var(--ease), border-color .18s var(--ease); }
 .btn svg { width: 16px; height: 16px; flex: none; transition: transform .25s var(--ease); }
-.btn:hover svg { transform: translateX(3px); }
-.btn-primary { background: var(--green); color: #fff; }
-.btn-primary:hover { background: var(--green-hover); }
-.btn-primary:disabled { opacity: .7; cursor: default; }
-.btn-ink { background: var(--ink); color: #fff; }
-.btn-ink:hover { background: #24302A; }
-.btn-outline { background: transparent; color: var(--ink); border-color: var(--line-2); }
-.btn-outline:hover { border-color: var(--ink); }
-.on-dark .btn-outline { color: #fff; border-color: rgba(255, 255, 255, .35); }
-.on-dark .btn-outline:hover { border-color: #fff; }
-.btn-white { background: #fff; color: var(--green-deep); }
-.btn-white:hover { background: var(--mint); }
+.btn:hover { background: var(--green); border-color: var(--green); }
+.btn:hover svg { transform: translateX(4px); }
+.btn:disabled { opacity: .7; cursor: default; }
+.btn-line { background: transparent; color: var(--ink); }
+.btn-line:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn-bright { background: var(--bright); border-color: var(--bright); color: var(--bright-ink); }
+.btn-bright:hover { background: #fff; border-color: #fff; color: var(--bright-ink); }
 .btn-sm { min-height: 44px; padding: 0 18px; font-size: 15px; }
-.textlink { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--green); text-decoration: none; }
-.textlink:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* ---- Header -------------------------------------------------------------- */
-.site-header { position: sticky; top: 0; z-index: 30; background: rgba(255, 255, 255, .9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
-.site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
-.brand img { height: 44px; width: auto; }
-.nav { display: flex; gap: 30px; font-size: 15px; font-weight: 500; }
-.nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; }
+.site-header { position: sticky; top: 0; z-index: 30; background: rgba(246, 244, 238, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--rule); }
+.site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 36px; }
+.brand img { height: 42px; width: auto; }
+.nav { display: flex; gap: 28px; font-size: 15px; font-weight: 500; }
+.nav a { color: var(--ink-2); text-decoration: none; }
 .nav a:hover, .nav a[aria-current="page"] { color: var(--green); }
-.header-actions { margin-left: auto; display: flex; align-items: center; gap: 24px; }
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 22px; }
 .signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; }
 .signin:hover { color: var(--green); }
-.menu-btn { display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--line-2); border-radius: var(--r); cursor: pointer; }
+.menu-btn { display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--rule-2); cursor: pointer; }
 .menu-btn .close { display: none; }
 .menu-btn[aria-expanded="true"] .open { display: none; }
 .menu-btn[aria-expanded="true"] .close { display: block; }
 .mobile-nav { display: none; }
 
+/* ---- Section frame: an index number, a short title, a rule --------------- */
+.sec { padding: clamp(56px, 7vw, 104px) 0; }
+.sec-bar { display: grid; grid-template-columns: 96px 1fr auto; gap: 24px; align-items: baseline; padding-bottom: 18px; border-bottom: 2px solid var(--ink); margin-bottom: clamp(32px, 4vw, 56px); }
+.sec-bar .idx { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--green); }
+.sec-bar h2 { font-family: var(--display); font-weight: 600; letter-spacing: -.035em; line-height: 1; font-size: clamp(2rem, 4vw, 3.6rem); }
+.sec-bar .aside { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); text-align: right; }
+.on-night .sec-bar { border-color: rgba(255, 255, 255, .5); }
+.on-night .sec-bar .aside { color: #8FAA9D; }
+.on-night .sec-bar .idx { color: var(--bright); }
+
 /* ---- Hero ---------------------------------------------------------------- */
-.hero { padding: clamp(44px, 6vw, 84px) 0 clamp(56px, 6vw, 88px); }
-.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: start; }
-.hero h1 { margin-top: 20px; font-size: clamp(2.3rem, 3.5vw, 3.2rem); text-wrap: normal; }
-.hero h1 em { display: block; font-style: normal; color: var(--green); }
-.hero .lede { margin-top: 22px; max-width: 31rem; }
-.hero .lede + .lede { margin-top: 14px; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
-.hero-micro { display: flex; flex-wrap: wrap; gap: 6px 0; margin-top: 22px; font-size: 14.5px; font-weight: 500; color: var(--muted); }
-.hero-micro li:not(:last-child)::after { content: "·"; margin: 0 12px; color: var(--line-2); }
-.hero-micro b { color: var(--ink); }
-.hero-visual { background: var(--mint); border-radius: var(--r-lg); padding: clamp(18px, 3vw, 36px); }
+.hero { padding: clamp(40px, 5vw, 72px) 0 clamp(48px, 6vw, 80px); }
+.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--rule-2); }
+.hero-top .lines { display: flex; flex-wrap: wrap; gap: 8px 0; }
+.hero-top .lines li { font-family: var(--mono); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.hero-top .lines li:not(:last-child)::after { content: "/"; margin: 0 12px; color: var(--rule-2); font-weight: 500; }
+.hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: start; padding-top: clamp(32px, 4vw, 56px); }
+.hero h1 { max-width: 12ch; }
+.hero h1 em { font-style: normal; color: var(--green); }
+.hero .lede { margin-top: 26px; max-width: 30rem; }
+.hero-price { display: flex; align-items: flex-end; gap: 18px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule-2); }
+.hero-price .num { font-size: clamp(3.2rem, 5.6vw, 5rem); }
+.hero-price .unit { padding-bottom: 6px; font-size: 15px; line-height: 1.35; color: var(--muted); }
+.hero-price .unit b { display: block; color: var(--ink); font-size: 16px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.hero-note { margin-top: 18px; font-size: 14.5px; color: var(--muted); }
+.hero-note b { color: var(--ink); }
 
-/* The offer, as a bill: what one signed producer costs. */
-.bill { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 30px 60px -36px rgba(14, 21, 18, .35); overflow: hidden; }
-.bill-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
-.bill-head h2 { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.015em; }
-.bill-head .badge { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--mint); color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-.bill-body { padding: 4px 22px 0; }
-.line { display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
-.line:last-child { border-bottom: 0; }
-.line .n { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--muted); }
-.line .what { font-size: 16px; font-weight: 500; line-height: 1.3; }
-.line .what small { display: block; font-size: 13.5px; font-weight: 400; color: var(--muted); margin-top: 2px; }
-.tag { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--bg-2); font-family: var(--display); font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--ink-2); }
-.line.pay { padding: 16px 0 18px; }
-.line.pay .n { background: var(--green); border-color: var(--green); color: #fff; }
-.line.pay .what { font-weight: 700; font-size: 17px; }
-.line.pay .amt { text-align: right; }
-.line.pay .amt b { display: block; font-family: var(--display); font-size: 36px; font-weight: 600; letter-spacing: -.03em; line-height: 1; color: var(--green); font-variant-numeric: tabular-nums; }
-.line.pay .amt span { display: block; max-width: 140px; margin-left: auto; margin-top: 5px; line-height: 1.25; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--green); }
-.bill-foot { padding: 16px 22px; background: var(--green); color: #fff; font-family: var(--display); font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; line-height: 1.4; text-wrap: pretty; }
+/* The roster: five seats, filling. The page's signature element. */
+.roster { border: 1px solid var(--ink); background: #fff; box-shadow: 14px 14px 0 var(--paper-2); }
+.roster-head { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; padding: 18px 22px 14px; border-bottom: 1px solid var(--ink); }
+.roster-head h2 { font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+.roster-head .mono { margin-top: 2px; }
+.roster-head .count { text-align: right; }
+.roster-head .count b { display: block; font-family: var(--display); font-size: 30px; font-weight: 600; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.roster-cols { display: grid; grid-template-columns: 44px 1fr 108px; gap: 12px; padding: 8px 22px; background: var(--paper); border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.roster-cols span:last-child { text-align: right; }
+.seat { display: grid; grid-template-columns: 44px 1fr 108px; gap: 12px; align-items: center; padding: 13px 22px; border-bottom: 1px solid var(--rule); }
+.seat:last-of-type { border-bottom: 0; }
+.seat .id { font-family: var(--mono); font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.seat .who { font-size: 15px; font-weight: 700; line-height: 1.25; }
+.seat .who small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+.seat .st { justify-self: end; display: inline-flex; align-items: center; gap: 7px; height: 26px; padding: 0 10px; border: 1px solid var(--rule-2); font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.seat .st::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--rule-2); }
+.seat.s2 .st::before { background: var(--ink); }
+.seat.s3 .st { border-color: var(--green); color: var(--green); }
+.seat.s3 .st::before { background: var(--green); }
+.seat.s4 { background: #EAF6EF; }
+.seat.s4 .st { background: var(--green); border-color: var(--green); color: #fff; }
+.seat.s4 .st::before { background: var(--bright); }
+.seat.s0 .who, .seat.s0 .id { color: var(--rule-2); }
+.seat.s0 .who small { color: var(--rule-2); }
+.roster-foot { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 22px; border-top: 1px solid var(--ink); background: var(--ink); color: #fff; font-size: 14px; }
+.roster-foot b { color: var(--bright); }
+.roster-foot .r { font-family: var(--mono); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: #9DB8AB; }
 @keyframes print { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-.bill .line { opacity: 0; animation: print .5s var(--ease) forwards; }
-.bill .line:nth-child(1) { animation-delay: .2s; }
-.bill .line:nth-child(2) { animation-delay: .36s; }
-.bill .line:nth-child(3) { animation-delay: .52s; }
-.bill .line:nth-child(4) { animation-delay: .68s; }
-.bill .line:nth-child(5) { animation-delay: .86s; }
-.bill-foot { opacity: 0; animation: print .5s var(--ease) 1.15s forwards; }
+.seat { opacity: 0; animation: print .5s var(--ease) forwards; }
+.seat:nth-of-type(1) { animation-delay: .15s; } .seat:nth-of-type(2) { animation-delay: .3s; } .seat:nth-of-type(3) { animation-delay: .45s; } .seat:nth-of-type(4) { animation-delay: .6s; } .seat:nth-of-type(5) { animation-delay: .75s; }
+.roster-foot { opacity: 0; animation: print .5s var(--ease) 1s forwards; }
 
-/* ---- Rate strip ---------------------------------------------------------- */
-.rates { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.rates .wrap { display: grid; grid-template-columns: repeat(3, 1fr) auto; align-items: center; gap: 0 32px; }
-.rates li { display: flex; align-items: baseline; gap: 14px; padding: 22px 0; }
-.rates li + li { border-left: 1px solid var(--line-2); padding-left: 32px; }
-.rates .num { font-size: clamp(1.7rem, 2.6vw, 2.2rem); line-height: 1; }
-.rates .lbl { display: block; font-size: 15px; font-weight: 700; line-height: 1.2; }
-.rates .lbl small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-top: 3px; }
-.rates .zero { justify-self: end; text-align: right; font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); }
+/* ---- 01 The offer: three numbers ------------------------------------------ */
+.figures { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.figures li { padding: clamp(24px, 3vw, 40px) 0; display: grid; gap: 14px; align-content: start; }
+.figures li + li { border-left: 1px solid var(--rule-2); padding-left: clamp(20px, 3vw, 40px); }
+.figures .num { font-size: clamp(3.4rem, 7vw, 6.4rem); }
+.figures .num small { font-size: .38em; letter-spacing: -.02em; margin-left: .1em; }
+.figures .k { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.figures p { font-size: 15px; color: var(--muted); max-width: 24rem; }
+.offer-line { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 18px; font-size: 15px; color: var(--muted); }
+.offer-line b { color: var(--ink); }
 
-/* ---- Lines: Medicare, Final Expense, ACA ---------------------------------- */
-.lines { position: relative; overflow: hidden; background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.lines::before { content: ""; position: absolute; right: -10%; top: -30%; width: 60%; height: 90%; background: radial-gradient(closest-side, rgba(46, 209, 142, .16), transparent 70%); pointer-events: none; }
-.lines .wrap { position: relative; }
-.lines .sec-head.split { align-items: end; }
-.lines .status { justify-self: end; max-width: 26rem; padding-left: 24px; border-left: 2px solid var(--green-bright); font-size: 17px; line-height: 1.5; color: #C5DDD1; }
-.lines .status b { display: block; color: #fff; font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 4px; }
-.line-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2vw, 24px); }
-.line-card { border-radius: 20px; padding: clamp(24px, 3vw, 32px); border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .04); display: grid; gap: 16px; align-content: start; }
-.line-card h3 { font-family: var(--display); font-size: clamp(1.5rem, 2.2vw, 1.9rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }
-.line-card .when { display: grid; gap: 2px; padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, .06); }
-.line-card .when small { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; }
-.line-card .when b { font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: -.01em; color: #fff; }
-.line-card p { font-size: 15.5px; line-height: 1.55; color: #B9C8C0; }
-.line-card ul { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .14); }
-.line-card li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; line-height: 1.4; color: #D3E4DB; }
-.line-card li::before { content: ""; flex: none; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; background: var(--green-bright) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23052A1F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 11px no-repeat; }
-.lines-close { margin-top: clamp(36px, 5vw, 56px); padding-top: clamp(24px, 3vw, 32px); border-top: 1px solid rgba(255, 255, 255, .14); text-align: center; font-family: var(--display); font-size: clamp(1.8rem, 3.4vw, 2.9rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
-.lines-close em { display: block; font-style: normal; color: var(--green-bright); }
+/* ---- 02 Lines ------------------------------------------------------------- */
+.lines-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.line-col { padding: 0 clamp(20px, 3vw, 40px) 8px; border-left: 1px solid var(--rule-2); display: grid; gap: 16px; align-content: start; }
+.line-col:first-child { padding-left: 0; border-left: 0; }
+.line-col h3 { font-family: var(--display); font-size: clamp(1.7rem, 2.8vw, 2.5rem); font-weight: 600; letter-spacing: -.035em; line-height: 1; }
+.line-col .when { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--green); }
+.line-col .when b { display: block; font-family: var(--display); font-size: 18px; font-weight: 600; letter-spacing: -.02em; text-transform: none; color: var(--ink); margin-top: 2px; }
+.line-col p { font-size: 15.5px; color: var(--muted); }
+.line-col ul { padding-top: 14px; border-top: 1px solid var(--rule-2); display: grid; gap: 8px; }
+.line-col li { position: relative; padding-left: 18px; font-size: 14.5px; line-height: 1.4; }
+.line-col li::before { content: ""; position: absolute; left: 0; top: .6em; width: 9px; height: 2px; background: var(--green); }
+.season { margin-top: clamp(28px, 4vw, 44px); display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; padding: 16px 20px; border: 1px solid var(--ink); font-size: 15.5px; }
+.season .mono { color: var(--green); font-weight: 700; }
 
-/* ---- The offer: five steps ---------------------------------------------- */
-.offer { padding: clamp(64px, 8vw, 112px) 0; }
-.offer-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
-.offer-lead { position: sticky; top: calc(var(--header) + 32px); }
-.offer-lead .h2 { margin-top: 14px; }
-.offer-lead .lede { margin-top: 18px; color: var(--muted); max-width: 26rem; }
-.offer-lead .hero-actions { margin-top: 28px; }
-.steps-list { border-top: 1px solid var(--ink); counter-reset: st; }
-.steps-list li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line-2); counter-increment: st; }
-.steps-list li::before { content: counter(st, decimal-leading-zero); font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--green); padding-top: 5px; font-variant-numeric: tabular-nums; }
-.steps-list h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.7vw, 1.45rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.15; }
-.steps-list h3 .who { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; margin-right: 10px; border-radius: 999px; background: var(--mint); color: var(--green); font-family: var(--text); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; vertical-align: 3px; }
-.steps-list h3 .who.you { background: var(--bg-2); color: var(--ink-2); }
-.steps-list p { font-size: 15.5px; line-height: 1.55; color: var(--muted); margin-top: 6px; max-width: 34rem; text-wrap: pretty; }
-.steps-list li.outcome h3 { color: var(--green); }
+/* ---- 03 How it works: a five-step timeline ---------------------------------- */
+.timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0 clamp(16px, 2vw, 28px); }
+.timeline li { position: relative; padding-top: 22px; border-top: 2px solid var(--rule-2); }
+.timeline li::before { content: ""; position: absolute; left: 0; top: -2px; width: 44px; height: 2px; background: var(--ink); }
+.timeline .who { display: inline-block; font-family: var(--mono); font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
+.timeline .who.you { color: var(--muted); }
+.timeline .n { display: block; margin-top: 10px; font-family: var(--display); font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 600; letter-spacing: -.05em; line-height: .9; }
+.timeline h3 { margin-top: 12px; font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.025em; line-height: 1.15; }
+.timeline p { margin-top: 8px; font-size: 14.5px; line-height: 1.5; color: var(--muted); text-wrap: pretty; }
+.timeline li.last .n, .timeline li.last h3 { color: var(--green); }
+.how-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px 28px; flex-wrap: wrap; margin-top: clamp(32px, 4vw, 48px); padding-top: 22px; border-top: 1px solid var(--rule-2); }
+.how-foot p { font-size: 15.5px; color: var(--muted); max-width: 36rem; }
 
-/* ---- Verification --------------------------------------------------------- */
-.verify { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
-.verify .wrap { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
-.verify .sticky { position: sticky; top: calc(var(--header) + 32px); }
-.verify .lede { margin-top: 20px; color: var(--muted); max-width: 30rem; }
-.checks { border-top: 1px solid var(--ink); }
-.checks li { display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line-2); font-size: 17px; font-weight: 500; }
-.checks li::before { content: ""; width: 22px; height: 22px; border-radius: 50%; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 13px no-repeat; }
-.checks li small { font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.verify-close { margin-top: 28px; font-family: var(--display); font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; text-wrap: balance; }
+/* ---- 04 Verified: two-column checklist ------------------------------------- */
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(24px, 4vw, 64px); }
+.checks li { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--rule-2); font-size: 17px; font-weight: 500; }
+.checks li::before { content: ""; width: 20px; height: 20px; background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+.checks li small { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.checks li small.line { color: var(--green); }
+.verify-close { margin-top: 28px; font-family: var(--display); font-size: clamp(1.4rem, 2.3vw, 2rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }
 .verify-close em { font-style: normal; color: var(--green); }
 
-/* ---- Sourcing ------------------------------------------------------------- */
-.sourcing { padding: clamp(64px, 8vw, 112px) 0; }
-.sources { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-.sources li { padding-top: 20px; border-top: 2px solid var(--line-2); position: relative; }
-.sources li::before { content: ""; position: absolute; left: 0; top: -2px; width: 48px; height: 2px; background: var(--green); }
-.sources h3 { font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
-.sources p { font-size: 15.5px; color: var(--muted); margin-top: 8px; text-wrap: pretty; }
+/* ---- 05 Sourced: four rows ---------------------------------------------------- */
+.sources { border-top: 1px solid var(--ink); }
+.sources li { display: grid; grid-template-columns: 96px 1fr 1.4fr; gap: 24px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--rule-2); }
+.sources .idx { font-family: var(--mono); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; color: var(--green); }
+.sources h3 { font-family: var(--display); font-size: clamp(1.3rem, 1.9vw, 1.65rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }
+.sources p { font-size: 15.5px; color: var(--muted); max-width: 34rem; }
 
-/* ---- Responsibilities: two ledgers ---------------------------------------- */
-.duty { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
-.duty-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); align-items: stretch; }
-.duty-col { display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: clamp(24px, 3vw, 36px); }
-.duty-col .k { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--line); font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.duty-col .k .pill { height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: .04em; background: var(--bg-2); color: var(--ink-2); display: inline-flex; align-items: center; }
-.duty-col h3 { font-family: var(--display); font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.08; }
-.duty-col ol { display: grid; gap: 6px; align-content: start; }
-.duty-col li { display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 14px; border-radius: 12px; background: var(--bg-2); font-size: 16px; font-weight: 500; }
-.duty-col li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
-.duty-col .foot { padding-top: 16px; border-top: 1px solid var(--line); font-size: 15px; line-height: 1.5; color: var(--muted); }
-.duty-col.us { background: var(--green-deep); color: #fff; border-color: var(--green-deep); box-shadow: 0 0 0 1px rgba(46, 209, 142, .25), 0 40px 80px -40px rgba(46, 209, 142, .4); }
-.duty-col.us .k { color: var(--green-bright); border-color: rgba(255, 255, 255, .14); }
-.duty-col.us .k .pill { background: var(--green-bright); color: var(--green-ink); }
-.duty-col.us li { background: rgba(255, 255, 255, .07); }
-.duty-col.us li::before { background: var(--green-bright); }
-.duty-col.us .foot { color: #C5DDD1; border-color: rgba(255, 255, 255, .14); }
-.duty-col.you .k .pill { background: var(--ink); color: #fff; }
+/* ---- 06 Who does what: one rule down the middle ---------------------------- */
+.split { display: grid; grid-template-columns: 1fr 1fr; }
+.split > div { padding: 0 clamp(24px, 4vw, 64px) 0 0; }
+.split > div + div { padding: 0 0 0 clamp(24px, 4vw, 64px); border-left: 1px solid var(--ink); }
+.split .k { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
+.split .k span:last-child { font-weight: 500; color: var(--muted); }
+.split h3 { margin-top: 14px; font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 600; letter-spacing: -.035em; line-height: 1; }
+.split ol { margin-top: 22px; counter-reset: d; }
+.split li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--rule-2); font-size: 16.5px; font-weight: 500; counter-increment: d; }
+.split li::before { content: counter(d, decimal-leading-zero); font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--muted); padding-top: 4px; }
+.split .foot { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-2); font-size: 15px; line-height: 1.5; color: var(--muted); }
 
-/* ---- 30-day replacement ---------------------------------------------------- */
-.guarantee { background: var(--ink); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.guarantee .wrap { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(40px, 6vw, 88px); align-items: center; }
-.guarantee .h2 { margin-top: 14px; max-width: 16ch; }
-.guarantee .lede { margin-top: 20px; color: #B9C8C0; max-width: 30rem; }
-.guarantee .hero-actions { margin-top: 28px; }
-.gv { background: #131B17; border: 1px solid rgba(255, 255, 255, .12); border-radius: var(--r-lg); overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .8); }
-.gv-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 24px; border-bottom: 1px solid rgba(255, 255, 255, .12); font-family: var(--display); font-size: 15px; font-weight: 600; }
-.gv-head span:last-child { font-family: var(--text); font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #8FAA9D; }
-.gv-days { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 22px 24px 8px; font-family: var(--display); font-size: 14px; font-weight: 600; color: #fff; }
-.gv-days .bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--green-bright), rgba(46, 209, 142, .25)); }
-.gv-steps { display: grid; gap: 6px; padding: 12px 24px 18px; }
-.gv-steps li { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 14px; border-radius: 12px; background: rgba(255, 255, 255, .05); font-size: 15.5px; color: #D3E4DB; }
-.gv-steps li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green-bright); }
-.gv-steps li.q { color: #fff; font-weight: 700; outline: 1px dashed rgba(255, 255, 255, .25); outline-offset: -1px; background: transparent; }
-.gv-steps li.q::before { background: #fff; }
-.gv-branch { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255, 255, 255, .12); border-top: 1px solid rgba(255, 255, 255, .12); }
-.gv-branch div { padding: 20px 24px; background: #131B17; }
-.gv-branch .t { display: block; margin-top: 8px; font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; color: #fff; }
-.gv-branch .tag { background: rgba(255, 255, 255, .1); color: #fff; height: 26px; min-width: 0; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
-.gv-branch .no { background: rgba(46, 209, 142, .08); }
-.gv-branch .no .tag { background: var(--green-bright); color: var(--green-ink); }
-.gv-branch .no .t { color: var(--green-bright); }
+/* ---- 07 Thirty days: night ---------------------------------------------------- */
+.thirty { background: var(--night); color: #fff; }
+.thirty .wrap { display: grid; grid-template-columns: auto 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+.thirty .big { font-family: var(--display); font-size: clamp(8rem, 22vw, 20rem); font-weight: 600; letter-spacing: -.07em; line-height: .8; color: var(--bright); }
+.thirty .big small { display: block; margin-top: 18px; font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8FAA9D; }
+.thirty h2 { font-family: var(--display); font-size: clamp(2rem, 3.8vw, 3.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1; }
+.thirty .lede { margin-top: 20px; color: #B9C8C0; max-width: 32rem; }
+.thirty ol { margin-top: 26px; border-top: 1px solid rgba(255, 255, 255, .2); }
+.thirty li { display: grid; grid-template-columns: 90px 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, .12); font-size: 16px; color: #D3E4DB; }
+.thirty li .d { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; padding-top: 4px; }
+.thirty li.out { color: #fff; font-weight: 700; }
+.thirty li.out .d { color: var(--bright); }
+.thirty .hero-actions { margin-top: 26px; }
 
-/* ---- Questions ----------------------------------------------------------- */
-.qa { padding: clamp(64px, 8vw, 112px) 0; }
-.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(32px, 5vw, 72px); border-top: 1px solid var(--line-2); }
-.qa .q { padding: 26px 0; border-bottom: 1px solid var(--line-2); }
+/* ---- 08 Questions ---------------------------------------------------------- */
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(24px, 4vw, 64px); }
+.qa .q { padding: 22px 0; border-bottom: 1px solid var(--rule-2); }
 .qa dt { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
-.qa dd { margin-top: 10px; font-size: 16px; line-height: 1.6; color: var(--muted); text-wrap: pretty; }
-.qa dd b { color: var(--ink); }
-.qa dd .yes { display: block; font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; color: var(--green); margin-bottom: 6px; }
-.qa dd p + p { margin-top: 6px; }
+.qa dd { margin-top: 8px; font-size: 15.5px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+.qa dd .yes { display: block; font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; color: var(--green); margin-bottom: 4px; }
 
-/* ---- Closing + inquiry form ------------------------------------------------ */
-.closing { position: relative; overflow: hidden; background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
-.closing::before { content: ""; position: absolute; left: -20%; top: -40%; width: 70%; height: 120%; background: radial-gradient(closest-side, rgba(46, 209, 142, .18), transparent 70%); pointer-events: none; }
-.closing .wrap { position: relative; display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(40px, 6vw, 88px); align-items: start; }
-.closing .sticky { position: sticky; top: calc(var(--header) + 32px); }
-.closing .h2 { margin-top: 14px; }
-.closing .lede { margin-top: 20px; max-width: 30rem; }
-.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 28px; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-lg); overflow: hidden; }
-.tiles li { background: var(--green-deep); padding: 18px 16px; }
-.tiles b { display: block; font-family: var(--display); font-size: clamp(1.6rem, 2.4vw, 2.1rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; color: var(--green-bright); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.tiles span { display: block; margin-top: 8px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DB8AB; }
-.closing .contact { margin-top: 22px; font-size: 15.5px; color: #C5DDD1; }
-.closing .contact a { color: #fff; font-weight: 700; text-underline-offset: 4px; }
-.form-card { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 16px; padding: 28px 26px 26px; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .7); }
-.progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.progress span { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; position: relative; }
-.progress span::after { content: ""; position: absolute; inset: 0; background: var(--green); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+/* ---- 09 Start: the form ----------------------------------------------------- */
+.start { background: var(--paper-2); border-top: 1px solid var(--rule-2); }
+.start-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(32px, 5vw, 80px); align-items: start; }
+.start .sticky { position: sticky; top: calc(var(--header) + 28px); }
+.start .sticky h2 { font-family: var(--display); font-size: clamp(2.2rem, 4.2vw, 3.8rem); font-weight: 600; letter-spacing: -.035em; line-height: .98; }
+.start .lede { margin-top: 20px; max-width: 28rem; }
+.start-figs { margin-top: 28px; border-top: 1px solid var(--ink); }
+.start-figs li { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--rule-2); }
+.start-figs .num { font-size: 30px; min-width: 96px; }
+.start-figs span { font-size: 15px; color: var(--muted); }
+.start .contact { margin-top: 20px; font-size: 15.5px; color: var(--muted); }
+.start .contact a { color: var(--ink); font-weight: 700; text-underline-offset: 4px; }
+.form-card { background: #fff; border: 1px solid var(--ink); padding: 28px 28px 26px; box-shadow: 14px 14px 0 var(--rule); }
+.progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.progress span { height: 3px; background: var(--rule); position: relative; overflow: hidden; }
+.progress span::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
 .progress span.is-done::after { transform: scaleX(1); }
-.progress-label { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.progress-label .cur { color: var(--green); }
+.progress-label { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.progress-label .cur { color: var(--ink); font-weight: 700; }
 .fs { border: 0; padding: 0; margin: 26px 0 0; min-width: 0; display: grid; gap: 18px; }
-.fs legend { padding: 0; margin-bottom: 4px; font-family: var(--display); font-weight: 600; font-size: 1.5rem; letter-spacing: -.025em; line-height: 1.15; }
+.fs legend { padding: 0; margin-bottom: 4px; font-family: var(--display); font-weight: 600; font-size: 1.6rem; letter-spacing: -.03em; line-height: 1.1; }
 .fs .hint { margin-top: -10px; font-size: 14.5px; color: var(--muted); }
 .field label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
 .field label small { font-weight: 400; color: var(--muted); }
-.input { display: block; width: 100%; min-height: 50px; padding: 12px 14px; font: inherit; font-size: 16px; line-height: 1.4; color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: var(--r); transition: border-color .15s var(--ease), box-shadow .15s var(--ease); }
-.input::placeholder { color: #9AA59F; }
-.input:hover { border-color: #A9B4AE; }
-.input:focus { outline: 0; border-color: var(--green); box-shadow: 0 0 0 3px rgba(12, 92, 67, .16); }
+.input { display: block; width: 100%; min-height: 50px; padding: 12px 14px; font: inherit; font-size: 16px; line-height: 1.4; color: var(--ink); background: #fff; border: 1px solid var(--rule-2); border-radius: 0; transition: border-color .15s var(--ease), box-shadow .15s var(--ease); }
+.input::placeholder { color: #A5AAA3; }
+.input:hover { border-color: var(--ink-2); }
+.input:focus { outline: 0; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(16, 20, 17, .12); }
 .input[aria-invalid="true"] { border-color: var(--red); }
 textarea.input { resize: vertical; min-height: 104px; }
-select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><path d='M4 6l4 4 4-4' stroke='%235A6660' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; background-size: 14px; }
+select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><path d='M4 6l4 4 4-4' stroke='%23626A64' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; background-size: 14px; }
 .field .err { display: none; margin-top: 6px; font-size: 13.5px; color: var(--red); }
 .field.is-invalid .err { display: block; }
 .two { display: grid; gap: 18px; }
 @media (min-width: 640px) { .two { grid-template-columns: 1fr 1fr; } }
 .form-actions { display: flex; gap: 10px; margin-top: 8px; }
-.form-actions .btn-primary { flex: 1; }
+.form-actions .btn:not(.btn-line) { flex: 1; }
 .form-note { margin-top: 14px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
-.form-error { display: none; padding: 12px 14px; border: 1px solid #FDA29B; background: var(--red-soft); border-radius: var(--r); color: var(--red); font-size: 14.5px; line-height: 1.5; }
+.form-error { display: none; padding: 12px 14px; border: 1px solid #FDA29B; background: var(--red-soft); color: var(--red); font-size: 14.5px; line-height: 1.5; }
 .form-error.is-on { display: block; }
 .form-success { padding: 8px 0; }
 .form-success .h3 { margin-top: 14px; }
 .form-success p { margin-top: 12px; color: var(--muted); }
-.form-success .mark { width: 44px; height: 44px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; }
-.form-success a { color: var(--green); font-weight: 700; }
+.form-success .mark { width: 44px; height: 44px; background: var(--ink); color: #fff; display: grid; place-items: center; }
+.form-success a { color: var(--ink); font-weight: 700; }
 
 /* ---- Footer -------------------------------------------------------------- */
-.site-footer { padding: clamp(48px, 6vw, 72px) 0 32px; font-size: 15px; }
+.site-footer { padding: clamp(48px, 6vw, 72px) 0 32px; font-size: 15px; border-top: 1px solid var(--rule-2); }
 .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
 .foot-brand img { height: 40px; width: auto; }
 .foot-brand p { margin-top: 16px; color: var(--muted); max-width: 22rem; font-size: 14.5px; }
-.site-footer h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.site-footer h3 { font-family: var(--mono); font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
 .site-footer li a { display: inline-block; padding: 4px 0; color: var(--ink-2); text-decoration: none; }
 .site-footer li a:hover { color: var(--green); }
-.foot-legal { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+.foot-legal { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 13.5px; }
 
 /* ---- Sticky mobile CTA --------------------------------------------------- */
-.sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: none; align-items: center; justify-content: space-between; gap: 14px; padding: 10px var(--gutter); background: rgba(255, 255, 255, .96); border-top: 1px solid var(--line); transform: translateY(110%); transition: transform .3s var(--ease); }
+.sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: none; align-items: center; justify-content: space-between; gap: 14px; padding: 10px var(--gutter); background: rgba(246, 244, 238, .97); border-top: 1px solid var(--ink); transform: translateY(110%); transition: transform .3s var(--ease); }
 .sticky-cta.is-on { transform: none; }
 .sticky-cta .lbl { font-size: 14px; font-weight: 700; }
 .sticky-cta .lbl small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); }
@@ -345,62 +316,53 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 .js .reveal.is-in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .bill .line, .bill-foot { animation: none; opacity: 1; }
+    .seat, .roster-foot { animation: none; opacity: 1; }
     .js .reveal { opacity: 1; transform: none; transition: none; }
     .btn svg { transition: none; }
 }
 
 /* ---- Responsive ---------------------------------------------------------- */
 @media (max-width: 1080px) {
-    .hero-grid { grid-template-columns: 1fr 1fr; }
-    .sources { grid-template-columns: 1fr 1fr; }
+    .timeline { grid-template-columns: repeat(3, 1fr); gap: 32px 24px; }
+    .hero h1 { max-width: none; }
 }
 @media (max-width: 900px) {
     .nav, .signin, .header-actions .btn { display: none; }
     .menu-btn { display: inline-flex; }
-    .mobile-nav { display: block; position: absolute; top: var(--header); left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 24px 40px -24px rgba(14, 21, 18, .3); padding: 8px var(--gutter) 24px; }
-    .mobile-nav > a { display: block; padding: 15px 0; border-bottom: 1px solid var(--line); font-family: var(--display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; text-decoration: none; }
+    .mobile-nav { display: block; position: absolute; top: var(--header); left: 0; right: 0; background: var(--paper); border-bottom: 1px solid var(--rule-2); padding: 8px var(--gutter) 24px; }
+    .mobile-nav > a { display: block; padding: 15px 0; border-bottom: 1px solid var(--rule); font-family: var(--display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; text-decoration: none; }
     .mobile-nav > a.signin { display: block; font-family: var(--text); font-size: 16px; font-weight: 700; color: var(--ink-2); }
     .mobile-nav .cta-row { padding-top: 20px; }
     .mobile-nav .cta-row .btn { width: 100%; }
-    .hero-grid { grid-template-columns: 1fr; gap: 36px; }
-    .rates .wrap { grid-template-columns: repeat(3, 1fr); }
-    .rates .zero { grid-column: 1 / -1; justify-self: start; text-align: left; padding-bottom: 18px; margin-top: -8px; }
-    .rates li { padding: 18px 0 14px; }
-    .sec-head.split { grid-template-columns: 1fr; align-items: start; }
-    .sec-head.split .lede, .lines .status { justify-self: start; }
-    .line-grid, .offer-grid, .verify .wrap, .duty-grid, .guarantee .wrap, .closing .wrap { grid-template-columns: 1fr; }
-    .offer-lead, .verify .sticky, .closing .sticky { position: static; }
-    .qa-grid { grid-template-columns: 1fr; }
+    .hero-grid, .lines-grid, .checks, .split, .qa-grid, .start-grid, .thirty .wrap { grid-template-columns: 1fr; }
+    .hero-grid { gap: 40px; }
+    .line-col { padding: 24px 0 0; border-left: 0; border-top: 1px solid var(--rule-2); }
+    .line-col:first-child { padding-top: 0; border-top: 0; }
+    .split > div { padding: 0; }
+    .split > div + div { padding: 32px 0 0; margin-top: 32px; border-left: 0; border-top: 1px solid var(--ink); }
+    .sources li { grid-template-columns: 64px 1fr; }
+    .sources p { grid-column: 2; }
+    .start .sticky { position: static; }
+    .thirty .big { font-size: clamp(6rem, 28vw, 10rem); }
     .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .sec-bar { grid-template-columns: 64px 1fr; }
+    .sec-bar .aside { grid-column: 2; text-align: left; }
 }
 @media (max-width: 640px) {
-    :root { --header: 64px; }
-    .brand img { height: 38px; }
-    .hero { padding-top: 36px; }
-    .hero h1 { font-size: clamp(1.9rem, 8.8vw, 2.4rem); }
-    .hero .lede { font-size: 1.05rem; margin-top: 18px; }
-    .hero-actions { margin-top: 26px; }
+    :root { --header: 62px; }
+    .brand img { height: 36px; }
+    .hero { padding-top: 28px; }
     .hero-actions .btn { width: 100%; }
-    .hero-micro { margin-top: 16px; }
-    .hero-visual { padding: 14px; margin-left: calc(var(--gutter) * -1 + 8px); margin-right: calc(var(--gutter) * -1 + 8px); border-radius: 14px; }
-    .bill-head, .bill-body, .bill-foot { padding-left: 16px; padding-right: 16px; }
-    .line { grid-template-columns: 24px 1fr auto; gap: 12px; padding: 12px 0; }
-    .line .n { width: 24px; height: 24px; font-size: 11px; }
-    .line .what { font-size: 15px; }
-    .line.pay .amt b { font-size: 30px; }
-    .rates .wrap { grid-template-columns: 1fr; gap: 0; }
-    .rates li { padding: 14px 0; border-bottom: 1px solid var(--line-2); }
-    .rates li + li { border-left: 0; padding-left: 0; }
-    .rates .zero { padding: 14px 0 16px; margin: 0; }
-    .steps-list li { grid-template-columns: 32px 1fr; gap: 12px; padding: 20px 0; }
+    .hero-price { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .roster { box-shadow: 8px 8px 0 var(--paper-2); }
+    .roster-head, .roster-cols, .seat, .roster-foot { padding-left: 14px; padding-right: 14px; }
+    .roster-cols, .seat { grid-template-columns: 34px 1fr auto; gap: 10px; }
+    .figures { grid-template-columns: 1fr; }
+    .figures li + li { border-left: 0; border-top: 1px solid var(--rule-2); padding-left: 0; }
+    .timeline { grid-template-columns: 1fr; gap: 28px; }
     .checks li { grid-template-columns: 28px 1fr; }
     .checks li small { grid-column: 2; }
-    .sources { grid-template-columns: 1fr; gap: 24px; }
-    .duty-col { padding: 20px 16px; }
-    .gv-branch { grid-template-columns: 1fr; }
-    .tiles { grid-template-columns: 1fr; }
-    .form-card { padding: 22px 16px 20px; }
+    .form-card { padding: 22px 16px 20px; box-shadow: 8px 8px 0 var(--rule); }
     .form-actions { flex-direction: column; }
     .foot-grid { grid-template-columns: 1fr; gap: 28px; }
     .sticky-cta { display: flex; }
@@ -462,7 +424,7 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
         </nav>
         <div class="header-actions">
             <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
-            <a class="btn btn-primary btn-sm" href="#inquiry" data-track="cta_click" data-loc="header" data-label="See if it's a fit">See If It's a Fit</a>
+            <a class="btn btn-sm" href="#inquiry" data-track="cta_click" data-loc="header" data-label="Price my roster">Price my roster</a>
         </div>
         <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
             <svg class="open" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -477,409 +439,325 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
         <a href="/licensing-value">State License Tool</a>
         <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in to the agent portal</a>
         <div class="cta-row">
-            <a class="btn btn-primary" href="#inquiry" data-track="cta_click" data-loc="mobile-nav" data-label="See if it's a fit">See If It's a Fit</a>
+            <a class="btn" href="#inquiry" data-track="cta_click" data-loc="mobile-nav" data-label="Get the price for my roster">Get the price for my roster</a>
         </div>
     </div>
 </header>
 
 <main id="main">
 
-<!-- 1. Hero -->
+<!-- 00 Hero -->
 <section class="hero" id="top" aria-labelledby="hero-title">
-    <div class="wrap hero-grid">
-        <div>
-            <p class="eyebrow">Producer recruiting &middot; Medicare &middot; Final Expense &middot; ACA Health</p>
-            <h1 id="hero-title" class="h1">Stop chasing resumes. <em>Sign licensed producers.</em></h1>
-            <p class="lede">We find licensed Medicare, Final Expense and ACA Health producers who are already selling, verify them, and put them on your calendar.</p>
-            <p class="lede">You interview them. They sign with your agency, on your contract. <strong>If one doesn't last 30 days, we replace them.</strong></p>
-            <div class="hero-actions">
-                <a class="btn btn-primary" href="#inquiry" data-track="cta_click" data-loc="hero" data-label="See if it's a fit">See If It's a Fit <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                <a class="btn btn-outline" href="tel:+19045128487" data-track="cta_click" data-loc="hero" data-label="Talk to recruiting">Talk to Recruiting</a>
-            </div>
-            <ul class="hero-micro">
-                <li><b>$500</b> per signed producer</li>
-                <li><b>$450</b> each at 10+</li>
-                <li><b>30-day</b> replacement</li>
-            </ul>
+    <div class="wrap">
+        <div class="hero-top">
+            <ul class="lines" aria-label="Lines we recruit for"><li>Medicare</li><li>Final Expense</li><li>ACA Health</li></ul>
+            <span class="mono">Producer recruiting for agency owners</span>
         </div>
+        <div class="hero-grid">
+            <div>
+                <h1 id="hero-title" class="display h1">Producers, <em>signed.</em></h1>
+                <p class="lede">Licensed Medicare, Final Expense and ACA Health producers who are already selling. We find them, verify them and put them on your calendar. <b>You interview. They sign with your agency, on your contract.</b></p>
+                <div class="hero-price">
+                    <span class="num">$500</span>
+                    <span class="unit"><b>per signed producer</b>$450 each at ten or more. 30-day replacement included.</span>
+                </div>
+                <div class="hero-actions">
+                    <a class="btn" href="#inquiry" data-track="cta_click" data-loc="hero" data-label="Get the price for my roster">Get the price for my roster <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                    <a class="btn btn-line" href="tel:+19045128487" data-track="cta_click" data-loc="hero" data-label="Talk to recruiting">Talk to Recruiting</a>
+                </div>
+                <p class="hero-note">Measured in <b>producers signed to your agency</b>. Not resumes sent. Not interviews booked.</p>
+            </div>
 
-        <div class="hero-visual">
-            <figure class="bill" aria-label="What one signed producer costs">
-                <div class="bill-head">
-                    <h2>What does one signed producer cost?</h2>
-                    <span class="badge">No override, no split</span>
+            <figure class="roster" aria-label="A five-seat roster, filling">
+                <div class="roster-head">
+                    <div><h2>Your roster</h2><p class="mono">Medicare &middot; FL, GA, TX</p></div>
+                    <div class="count"><span class="mono">Signed</span><b>2 / 5</b></div>
                 </div>
-                <div class="bill-body">
-                    <div class="line"><span class="n">1</span><span class="what">We source producers already selling your lines</span><span class="tag">Included</span></div>
-                    <div class="line"><span class="n">2</span><span class="what">We verify license, NPN and line credentials</span><span class="tag">Included</span></div>
-                    <div class="line"><span class="n">3</span><span class="what">We screen them and put them on your calendar</span><span class="tag">Included</span></div>
-                    <div class="line"><span class="n">4</span><span class="what">You interview</span><span class="tag">Your call</span></div>
-                    <div class="line pay"><span class="n">5</span><span class="what">They sign with your agency<small>$450 each when the roster is ten or more.</small></span><span class="amt"><b>$500</b><span>per signed producer</span></span></div>
-                </div>
-                <figcaption class="bill-foot">Measured in producers signed to your agency. Not resumes sent. Not interviews booked.</figcaption>
+                <div class="roster-cols" aria-hidden="true"><span>Seat</span><span>Producer</span><span>Status</span></div>
+                <div class="seat s4"><span class="id">01</span><span class="who">Signed to your agency<small>Licensed FL &middot; GA &middot; verified &middot; interviewed</small></span><span class="st">Signed</span></div>
+                <div class="seat s4"><span class="id">02</span><span class="who">Signed to your agency<small>Licensed TX &middot; verified &middot; interviewed</small></span><span class="st">Signed</span></div>
+                <div class="seat s3"><span class="id">03</span><span class="who">Interview on your calendar<small>Licensed FL &middot; profile sent in writing</small></span><span class="st">Interview</span></div>
+                <div class="seat s2"><span class="id">04</span><span class="who">License, NPN and credentials checked<small>Screening against your standard</small></span><span class="st">Verified</span></div>
+                <div class="seat s0"><span class="id">05</span><span class="who">Outreach running<small>Producers already selling in your states</small></span><span class="st">Sourcing</span></div>
+                <figcaption class="roster-foot"><span>Recruiting runs until <b>5 of 5</b> are signed.</span><span class="r">Then it's done</span></figcaption>
             </figure>
         </div>
     </div>
 </section>
 
-<!-- Rates at a glance -->
-<div class="rates" aria-label="Pricing">
-    <ul class="wrap">
-        <li><span class="num">$500</span><span class="lbl">Per signed producer<small>five to nine producers</small></span></li>
-        <li><span class="num">$450</span><span class="lbl">Each at ten or more<small>the lower rate applies to the whole roster</small></span></li>
-        <li><span class="num">30</span><span class="lbl">Days of replacement<small>they leave, we recruit again at no charge</small></span></li>
-        <li class="zero">Campaigns start at five producers &nbsp;&middot;&nbsp; No other fees</li>
-    </ul>
-</div>
-
-<!-- 2. The lines -->
-<section class="lines on-dark" id="lines" aria-labelledby="lines-title">
+<!-- 01 The offer -->
+<section class="sec" id="offer" aria-labelledby="offer-title">
     <div class="wrap">
-        <div class="sec-head split reveal">
-            <div>
-                <p class="eyebrow">Three lines, one recruiting engine</p>
-                <h2 id="lines-title" class="h2" style="margin-top:14px">The selling season doesn't wait for your roster to fill.</h2>
-            </div>
-            <p class="status"><b>The calendar</b><span id="season" role="status">Open Enrollment begins November 1. Fund now, recruit before it starts.</span></p>
-        </div>
-        <div class="line-grid">
-            <div class="line-card reveal">
+        <div class="sec-bar reveal"><span class="idx">01</span><h2 id="offer-title">The offer.</h2><span class="aside">Three numbers</span></div>
+        <ul class="figures reveal">
+            <li><span class="num">$500</span><span class="k">Per signed producer</span><p>Five to nine producers. Sourcing, verification, screening and scheduling are all inside the number.</p></li>
+            <li><span class="num">$450</span><span class="k">Each at ten or more</span><p>The lower rate applies to the whole roster, not just the tenth producer.</p></li>
+            <li><span class="num">30<small>days</small></span><span class="k">Replacement</span><p>A signed producer who doesn't last 30 days comes off your count. We recruit again at no charge.</p></li>
+        </ul>
+        <div class="offer-line"><span><b>Campaigns start at five producers.</b> No other fees. No override, no split: the business they write is yours.</span><a class="btn btn-line btn-sm" href="#inquiry" data-track="cta_click" data-loc="offer" data-label="Price my roster">Price my roster</a></div>
+    </div>
+</section>
+
+<!-- 02 Three lines -->
+<section class="sec" id="lines" aria-labelledby="lines-title" style="padding-top:0">
+    <div class="wrap">
+        <div class="sec-bar reveal"><span class="idx">02</span><h2 id="lines-title">Three lines.</h2><span class="aside">Same process. Different checks.</span></div>
+        <div class="lines-grid reveal">
+            <div class="line-col">
                 <h3>Medicare</h3>
-                <div class="when"><small>Annual Enrollment</small><b>October 15 &ndash; December 7</b></div>
-                <p>Producers writing Medicare Advantage and Supplement plans, recruited before the AEP phones start ringing.</p>
-                <ul>
-                    <li>Active health license, resident and non-resident</li>
-                    <li>Carrier certifications, where the line requires them</li>
-                    <li>Existing carrier appointments</li>
-                </ul>
+                <p class="when">Annual Enrollment<b>October 15 &ndash; December 7</b></p>
+                <p>Producers writing Medicare Advantage and Supplement plans, in place before the AEP phones start.</p>
+                <ul><li>Active health license, resident and non-resident</li><li>Carrier certifications, where the line requires them</li><li>Existing carrier appointments</li></ul>
             </div>
-            <div class="line-card reveal">
+            <div class="line-col">
                 <h3>Final Expense</h3>
-                <div class="when"><small>Selling season</small><b>Year-round</b></div>
+                <p class="when">Selling season<b>Year-round</b></p>
                 <p>Producers who close final expense life over the phone, recruited whenever your desks need filling.</p>
-                <ul>
-                    <li>Active life license, resident and non-resident</li>
-                    <li>NPN matched to the license record</li>
-                    <li>Existing carrier appointments</li>
-                </ul>
+                <ul><li>Active life license, resident and non-resident</li><li>NPN matched to the license record</li><li>Existing carrier appointments</li></ul>
             </div>
-            <div class="line-card reveal">
+            <div class="line-col">
                 <h3>ACA Health</h3>
-                <div class="when"><small>Open Enrollment</small><b>November 1 &ndash; January 15</b></div>
-                <p>Marketplace-registered producers in place before Open Enrollment, and special-enrollment producers the rest of the year.</p>
-                <ul>
-                    <li>Active health license, resident and non-resident</li>
-                    <li>Marketplace registration for the plan year</li>
-                    <li>Existing carrier appointments</li>
-                </ul>
+                <p class="when">Open Enrollment<b>November 1 &ndash; January 15</b></p>
+                <p>Marketplace-registered producers before Open Enrollment, and special-enrollment producers the rest of the year.</p>
+                <ul><li>Active health license, resident and non-resident</li><li>Marketplace registration for the plan year</li><li>Existing carrier appointments</li></ul>
             </div>
         </div>
-        <p class="lines-close reveal">Same process for every line. <em>The checks change. The price doesn't.</em></p>
+        <p class="season reveal"><span class="mono">The calendar</span><span id="season" role="status">Open Enrollment begins November 1. Fund now, recruit before it starts.</span></p>
     </div>
 </section>
 
-<!-- 3. The offer -->
-<section class="offer" id="offer" aria-labelledby="offer-title">
-    <div class="wrap offer-grid">
-        <div class="offer-lead reveal">
-            <p class="eyebrow">The offer</p>
-            <h2 id="offer-title" class="h2">You need producers. We find them.</h2>
-            <p class="lede">The business the producer writes is yours. NetEnroll takes no override and no split. The per-producer rate is the only charge.</p>
-            <div class="hero-actions">
-                <a class="btn btn-primary" href="#inquiry" data-track="cta_click" data-loc="offer" data-label="See if it's a fit">See If It's a Fit</a>
-            </div>
-        </div>
-        <ol class="steps-list reveal">
-            <li><div><h3><span class="who">We</span>Find licensed producers who are already selling.</h3><p>Medicare, Final Expense or ACA Health, in the states you name, reached through our own outbound messaging platform.</p></div></li>
-            <li><div><h3><span class="who">We</span>Verify the license, the NPN and the line credentials.</h3><p>Marketplace registration for ACA, carrier certifications for Medicare where required, and the appointments they already hold.</p></div></li>
-            <li><div><h3><span class="who you">You</span>Interview them. They're already on your calendar.</h3><p>You get each producer's profile in writing before the call, so the conversation is about fit, not paperwork.</p></div></li>
-            <li><div><h3><span class="who you">They</span>Sign with your agency, on your contract.</h3><p>Your carriers, your comp plan, your systems. Nothing routes through us afterwards.</p></div></li>
-            <li class="outcome"><div><h3><span class="who">We</span>Replace anyone who doesn't make it 30 days.</h3><p>The producer comes off your count and the campaign keeps running until the count is filled.</p></div></li>
+<!-- 03 How it works -->
+<section class="sec" id="how" aria-labelledby="how-title" style="padding-top:0">
+    <div class="wrap">
+        <div class="sec-bar reveal"><span class="idx">03</span><h2 id="how-title">How it works.</h2><span class="aside">Five steps. You own two.</span></div>
+        <ol class="timeline reveal">
+            <li><span class="who">We</span><span class="n">01</span><h3>Find them</h3><p>Producers already selling your lines, in your states, reached through our own outbound messaging platform.</p></li>
+            <li><span class="who">We</span><span class="n">02</span><h3>Verify them</h3><p>License, NPN, the line's credentials and the appointments they already hold. In writing, before the call.</p></li>
+            <li><span class="who you">You</span><span class="n">03</span><h3>Interview</h3><p>They're already on your calendar. The conversation is about fit, not paperwork.</p></li>
+            <li><span class="who you">You</span><span class="n">04</span><h3>Sign them</h3><p>Your contract, your carriers, your comp plan. Nothing routes through us afterwards.</p></li>
+            <li class="last"><span class="who">We</span><span class="n">05</span><h3>Replace anyone who leaves</h3><p>Not with you at day 30? Off your count, and the campaign keeps running.</p></li>
         </ol>
-    </div>
-</section>
-
-<!-- 4. Verification -->
-<section class="verify" id="verification" aria-labelledby="verify-title">
-    <div class="wrap">
-        <div class="sticky reveal">
-            <p class="eyebrow">Verification</p>
-            <h2 id="verify-title" class="h2" style="margin-top:14px">Before a producer reaches your calendar, we check the basics.</h2>
-            <p class="lede">You get each producer's profile in writing before the interview. The conversation is about fit, not paperwork.</p>
-        </div>
-        <div class="reveal">
-            <ul class="checks">
-                <li>Active resident license with the right line of authority<small>Every line</small></li>
-                <li>Required non-resident licenses for your states<small>Every line</small></li>
-                <li>NPN matched to the license record<small>Every line</small></li>
-                <li>Marketplace registration for the plan year<small>ACA</small></li>
-                <li>Carrier certifications, where the line requires them<small>Medicare</small></li>
-                <li>Existing carrier appointments<small>Every line</small></li>
-                <li>Candidate screening against your standard<small>Every line</small></li>
-            </ul>
-            <p class="verify-close">You decide who joins your agency. <em>We just make sure they're real.</em></p>
+        <div class="how-foot reveal">
+            <p>Recruiting runs until your count is signed. Then the campaign is done.</p>
+            <a class="btn" href="#inquiry" data-track="cta_click" data-loc="how" data-label="Get the price for my roster">Get the price for my roster</a>
         </div>
     </div>
 </section>
 
-<!-- 5. Sourcing -->
-<section class="sourcing" id="sourcing" aria-labelledby="sourcing-title">
+<!-- 04 Verified -->
+<section class="sec" id="verification" aria-labelledby="verify-title" style="padding-top:0">
     <div class="wrap">
-        <div class="sec-head split reveal">
-            <div>
-                <p class="eyebrow">Sourcing</p>
-                <h2 id="sourcing-title" class="h2" style="margin-top:14px">This isn't a resume database. We actively recruit licensed producers.</h2>
-            </div>
-            <p class="lede">NetEnroll runs its own outbound messaging platform. The campaign reaches producers directly, instead of waiting for whoever answers a job board.</p>
-        </div>
+        <div class="sec-bar reveal"><span class="idx">04</span><h2 id="verify-title">Verified.</h2><span class="aside">Before they reach your calendar</span></div>
+        <ul class="checks reveal">
+            <li>Active resident license, right line of authority<small>Every line</small></li>
+            <li>Non-resident licenses for your states<small>Every line</small></li>
+            <li>NPN matched to the license record<small>Every line</small></li>
+            <li>Existing carrier appointments<small>Every line</small></li>
+            <li>Marketplace registration for the plan year<small class="line">ACA</small></li>
+            <li>Carrier certifications, where required<small class="line">Medicare</small></li>
+            <li>Screening against your standard<small>Every line</small></li>
+            <li>Profile sent to you in writing<small>Every line</small></li>
+        </ul>
+        <p class="verify-close reveal">You decide who joins your agency. <em>We make sure they're real.</em></p>
+    </div>
+</section>
+
+<!-- 05 Sourced -->
+<section class="sec" id="sourcing" aria-labelledby="sourcing-title" style="padding-top:0">
+    <div class="wrap">
+        <div class="sec-bar reveal"><span class="idx">05</span><h2 id="sourcing-title">Not a job board.</h2><span class="aside">Who we reach</span></div>
         <ul class="sources reveal">
-            <li><h3>Already selling</h3><p>Producers writing Medicare, Final Expense or ACA business today, not people deciding whether to get licensed.</p></li>
-            <li><h3>Changing agencies</h3><p>Between agencies, or ready to be. They want somewhere to write this season.</p></li>
-            <li><h3>Looking for better economics</h3><p>Unhappy with their split, their lead flow or their support, and open to a better offer.</p></li>
-            <li><h3>Adding a line</h3><p>Licensed producers writing one line who want to add Medicare, Final Expense or ACA business.</p></li>
+            <li><span class="idx">A</span><h3>Already selling</h3><p>Producers writing Medicare, Final Expense or ACA business today. Not people deciding whether to get licensed.</p></li>
+            <li><span class="idx">B</span><h3>Changing agencies</h3><p>Between agencies, or ready to be. They want somewhere to write this season.</p></li>
+            <li><span class="idx">C</span><h3>Wanting better economics</h3><p>Unhappy with their split, their lead flow or their support, and open to a better offer.</p></li>
+            <li><span class="idx">D</span><h3>Adding a line</h3><p>Licensed producers writing one line who want to add Medicare, Final Expense or ACA.</p></li>
         </ul>
     </div>
 </section>
 
-<!-- 6. Responsibilities -->
-<section class="duty" id="responsibilities" aria-labelledby="duty-title">
+<!-- 06 Who does what -->
+<section class="sec" id="responsibilities" aria-labelledby="duty-title" style="padding-top:0">
     <div class="wrap">
-        <div class="sec-head reveal">
-            <p class="eyebrow">Responsibilities</p>
-            <h2 id="duty-title" class="h2">We recruit them. You build the team.</h2>
-            <p class="lede">Producers stay where the machine already exists. The replacement guarantee works because your agency runs the part that keeps them.</p>
-        </div>
-        <div class="duty-grid">
-            <div class="duty-col us reveal">
-                <p class="k">NetEnroll <span class="pill">Finds and verifies</span></p>
-                <h3>Finds and verifies them.</h3>
-                <ol>
-                    <li>Sourcing</li>
-                    <li>Verification</li>
-                    <li>Screening</li>
-                    <li>Interview scheduling</li>
-                    <li>30-day replacement</li>
-                </ol>
+        <div class="sec-bar reveal"><span class="idx">06</span><h2 id="duty-title">Who does what.</h2><span class="aside">Producers stay where the machine is</span></div>
+        <div class="split reveal">
+            <div>
+                <p class="k"><span>NetEnroll</span><span>Finds and verifies</span></p>
+                <h3>We recruit them.</h3>
+                <ol><li>Sourcing</li><li>Verification</li><li>Screening</li><li>Interview scheduling</li><li>30-day replacement</li></ol>
                 <p class="foot">Recruiting runs until your count is signed. Then the campaign is done.</p>
             </div>
-            <div class="duty-col you reveal">
-                <p class="k">Your agency <span class="pill">Signs and keeps</span></p>
-                <h3>Signs and keeps them.</h3>
-                <ol>
-                    <li>Interview</li>
-                    <li>Contract</li>
-                    <li>Technology</li>
-                    <li>Training</li>
-                    <li>Lead flow</li>
-                    <li>Management</li>
-                </ol>
+            <div>
+                <p class="k"><span>Your agency</span><span>Signs and keeps</span></p>
+                <h3>You build the team.</h3>
+                <ol><li>Interview</li><li>Contract</li><li>Technology</li><li>Training</li><li>Lead flow</li><li>Management</li></ol>
                 <p class="foot">Interviews inside two business days and something to write in the first week. A verified producer who waits takes another offer.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 7. 30-day replacement -->
-<section class="guarantee on-dark" id="replacement" aria-labelledby="guarantee-title">
+<!-- 07 Thirty days -->
+<section class="sec thirty on-night" id="replacement" aria-labelledby="thirty-title">
     <div class="wrap">
+        <div class="big reveal" aria-hidden="true">30<small>Days</small></div>
         <div class="reveal">
-            <p class="eyebrow">30-day replacement</p>
-            <h2 id="guarantee-title" class="h2">The hire doesn't work out? We replace them.</h2>
+            <h2 id="thirty-title">Doesn't work out? We replace them.</h2>
             <p class="lede">If a signed producer is no longer with your agency after 30 days, NetEnroll recruits a replacement at no additional charge. That producer comes off your count; the campaign keeps running until the count is filled.</p>
-            <div class="hero-actions">
-                <a class="btn btn-white" href="#inquiry" data-track="cta_click" data-loc="replacement" data-label="See if it's a fit">See If It's a Fit</a>
-            </div>
-        </div>
-        <div class="gv reveal" aria-label="Day one to day thirty">
-            <div class="gv-head"><span>One signed producer</span><span>Day 1 to day 30</span></div>
-            <div class="gv-days"><span>Day 1</span><span class="bar" aria-hidden="true"></span><span>Day 30</span></div>
-            <ol class="gv-steps">
-                <li>Signed to your agency</li>
-                <li>Working under your contract</li>
-                <li class="q">Still with you at day 30?</li>
+            <ol>
+                <li><span class="d">Day 1</span><span>Signed to your agency, working under your contract.</span></li>
+                <li><span class="d">Day 30</span><span>Still with you? Keep building.</span></li>
+                <li class="out"><span class="d">Not?</span><span>Tell us. Off your count. We recruit again. $0.</span></li>
             </ol>
-            <div class="gv-branch">
-                <div class="yes"><span class="tag">Yes</span><span class="t">Keep building.</span></div>
-                <div class="no"><span class="tag">No</span><span class="t">We replace them. $0.</span></div>
+            <div class="hero-actions">
+                <a class="btn btn-bright" href="#inquiry" data-track="cta_click" data-loc="replacement" data-label="Get the price for my roster">Get the price for my roster</a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 8. Questions -->
-<section class="qa" id="faq" aria-labelledby="qa-title">
+<!-- 08 Questions -->
+<section class="sec qa" id="faq" aria-labelledby="qa-title">
     <div class="wrap">
-        <div class="sec-head reveal">
-            <p class="eyebrow">Questions</p>
-            <h2 id="qa-title" class="h2">What agency owners ask before they fund a campaign.</h2>
-        </div>
+        <div class="sec-bar reveal"><span class="idx">08</span><h2 id="qa-title">Questions.</h2><span class="aside">Before you fund a campaign</span></div>
         <dl class="qa-grid reveal">
-            <div class="q">
-                <dt>Which lines do you recruit for?</dt>
-                <dd><span class="yes">Medicare, Final Expense and ACA Health.</span><p>The process is the same for each; the license, certification and appointment checks change with the line.</p></dd>
-            </div>
-            <div class="q">
-                <dt>Are these producers actually licensed?</dt>
-                <dd><span class="yes">Yes, and you get it in writing.</span><p>Every producer is checked before they reach you: an active resident license with the right line of authority, the non-resident licenses in the states you need, the National Producer Number matched to the license record, the line-specific credentials, and the carrier appointments they already hold.</p></dd>
-            </div>
-            <div class="q">
-                <dt>Where do these producers come from?</dt>
-                <dd><p>They are already selling. Most are between agencies, unhappy with their split, or writing one line and want to add another. We reach them directly through our own outbound messaging platform, not job boards.</p></dd>
-            </div>
-            <div class="q">
-                <dt>Can you recruit in specific states only?</dt>
-                <dd><span class="yes">Yes.</span><p>You set the states, including the non-resident licenses you need covered, and we recruit to that list.</p></dd>
-            </div>
-            <div class="q">
-                <dt>What if you can't find my producers?</dt>
-                <dd><p>We keep recruiting until your count is filled. The campaign is measured in producers signed to your agency, so it isn't finished until they are.</p></dd>
-            </div>
-            <div class="q">
-                <dt>What if a producer quits in the first month?</dt>
-                <dd><span class="yes">We replace them.</span><p>If they are not still with you thirty days after signing, tell us. That producer comes off your count and we recruit a replacement at no charge.</p></dd>
-            </div>
-            <div class="q">
-                <dt>Why do I pay before you deliver?</dt>
-                <dd><p>Recruiting starts the day the campaign is funded. The outreach, the license checks and the screening all happen before the first producer reaches your phone. The thirty-day replacement is what protects you after they do.</p></dd>
-            </div>
-            <div class="q">
-                <dt>Is there a minimum?</dt>
-                <dd><span class="yes">Five producers.</span><p>$500 each from five to nine, $450 each at ten or more. There are no other fees.</p></dd>
-            </div>
-            <div class="q">
-                <dt>Do you keep any piece of what the producer writes?</dt>
-                <dd><span class="yes">No.</span><p>The producer signs under your agency, on your contract. The business is yours. The per-producer rate is the only charge.</p></dd>
-            </div>
-            <div class="q">
-                <dt>What happens after I send the form?</dt>
-                <dd><p>We reply within one business day with the schedule and the price for the count you asked for. If it is a fit, we agree the standard in writing and the campaign starts when it is funded. If it isn't, we will say so.</p></dd>
-            </div>
+            <div class="q"><dt>Which lines do you recruit for?</dt><dd><span class="yes">Medicare, Final Expense and ACA Health.</span>The process is the same for each; the license, certification and appointment checks change with the line.</dd></div>
+            <div class="q"><dt>Are these producers actually licensed?</dt><dd><span class="yes">Yes, and you get it in writing.</span>Active resident license with the right line of authority, the non-resident licenses you need, the NPN matched to the license record, the line's credentials, and the appointments they already hold.</dd></div>
+            <div class="q"><dt>Where do they come from?</dt><dd>They are already selling. Most are between agencies, unhappy with their split, or writing one line and want to add another. We reach them through our own outbound messaging platform, not job boards.</dd></div>
+            <div class="q"><dt>Can you recruit in specific states only?</dt><dd><span class="yes">Yes.</span>You set the states, including the non-resident licenses you need covered, and we recruit to that list.</dd></div>
+            <div class="q"><dt>What if you can't find my producers?</dt><dd>We keep recruiting until your count is filled. The campaign is measured in producers signed to your agency, so it isn't finished until they are.</dd></div>
+            <div class="q"><dt>What if one quits in the first month?</dt><dd><span class="yes">We replace them.</span>Not still with you thirty days after signing? Tell us. That producer comes off your count and we recruit a replacement at no charge.</dd></div>
+            <div class="q"><dt>Why do I pay before you deliver?</dt><dd>Recruiting starts the day the campaign is funded. The outreach, the license checks and the screening all happen before the first producer reaches your phone. The thirty-day replacement protects you after they do.</dd></div>
+            <div class="q"><dt>Is there a minimum?</dt><dd><span class="yes">Five producers.</span>$500 each from five to nine, $450 each at ten or more. There are no other fees.</dd></div>
+            <div class="q"><dt>Do you keep any of what they write?</dt><dd><span class="yes">No.</span>The producer signs under your agency, on your contract. The business is yours. The per-producer rate is the only charge.</dd></div>
+            <div class="q"><dt>What happens after I send the form?</dt><dd>We reply within one business day with the schedule and the price for the count you asked for. If it's a fit, we agree the standard in writing and the campaign starts when it's funded. If it isn't, we'll say so.</dd></div>
         </dl>
     </div>
 </section>
 
-<!-- 9. Closing + inquiry -->
-<section class="closing on-dark" id="inquiry" aria-labelledby="inquiry-title">
+<!-- 09 Start -->
+<section class="sec start" id="inquiry" aria-labelledby="start-title">
     <div class="wrap">
-        <div class="sticky reveal">
-            <p class="eyebrow">Next step</p>
-            <h2 id="inquiry-title" class="h2">Your next producer is probably already selling. Let's find them.</h2>
-            <p class="lede">Tell us the lines, the states, the count and the offer. We reply within one business day with the schedule and the price for the roster you asked for.</p>
-            <ul class="tiles" aria-label="Pricing">
-                <li><b>$500</b><span>per signed producer</span></li>
-                <li><b>$450</b><span>each at 10+</span></li>
-                <li><b>30 days</b><span>replacement</span></li>
-            </ul>
-            <p class="contact">Rather talk? <a href="tel:+19045128487" data-track="cta_click" data-loc="form-aside" data-label="Call recruiting">904-512-8487</a></p>
-        </div>
+        <div class="sec-bar reveal"><span class="idx">09</span><h2 id="start-title">Start.</h2><span class="aside">One business day to a price</span></div>
+        <div class="start-grid">
+            <div class="sticky reveal">
+                <h2>Your next producer is already selling. Let's find them.</h2>
+                <p class="lede">Tell us the lines, the states, the count and the offer. We reply within one business day with the schedule and the price for the roster you asked for.</p>
+                <ul class="start-figs">
+                    <li><span class="num">$500</span><span>per signed producer, five to nine</span></li>
+                    <li><span class="num">$450</span><span>each at ten or more</span></li>
+                    <li><span class="num">30</span><span>days of replacement, included</span></li>
+                </ul>
+                <p class="contact">Rather talk? <a href="tel:+19045128487" data-track="cta_click" data-loc="form-aside" data-label="Call recruiting">904-512-8487</a></p>
+            </div>
 
-        <div class="form-card reveal">
-            <form id="inquiry-form" action="/api/recruiting-inquiry" method="post" novalidate data-source="aca-agent-recruiting">
-                <div class="progress" role="progressbar" aria-label="Inquiry progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
-                    <span class="is-done"></span><span></span><span></span>
-                </div>
-                <div class="progress-label" aria-hidden="true">
-                    <span class="cur" data-step-label="1">1 Agency</span>
-                    <span data-step-label="2">2 Opportunity</span>
-                    <span data-step-label="3">3 Contact</span>
-                </div>
+            <div class="form-card reveal">
+                <form id="inquiry-form" action="/api/recruiting-inquiry" method="post" novalidate data-source="aca-agent-recruiting">
+                    <div class="progress" role="progressbar" aria-label="Inquiry progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
+                        <span class="is-done"></span><span></span><span></span>
+                    </div>
+                    <div class="progress-label" aria-hidden="true">
+                        <span class="cur" data-step-label="1">1 Agency</span>
+                        <span data-step-label="2">2 Opportunity</span>
+                        <span data-step-label="3">3 Contact</span>
+                    </div>
 
-                <fieldset class="fs" data-step="1">
-                    <legend>About your agency</legend>
-                    <div class="field">
-                        <label for="f-agency_name">Agency name</label>
-                        <input class="input" id="f-agency_name" name="agency_name" type="text" required maxlength="200" autocomplete="organization">
-                        <p class="err" id="f-agency_name-err"></p>
-                    </div>
-                    <div class="field">
-                        <label for="f-states">States you need covered <small>&mdash; include non-resident licenses</small></label>
-                        <input class="input" id="f-states" name="states" type="text" required maxlength="500" placeholder="FL, GA, TX">
-                        <p class="err" id="f-states-err"></p>
-                    </div>
-                    <div class="field">
-                        <label for="f-agent_count">Producers you want signed</label>
-                        <select class="input" id="f-agent_count" name="agent_count" required>
-                            <option value="" selected disabled>Choose one</option>
-                            <option>5 to 9</option>
-                            <option>10</option>
-                            <option>11 to 25</option>
-                            <option>More than 25</option>
-                        </select>
-                        <p class="err" id="f-agent_count-err"></p>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-primary" type="button" data-next>Continue</button>
-                    </div>
-                </fieldset>
-
-                <fieldset class="fs" data-step="2" hidden>
-                    <legend>About the opportunity</legend>
-                    <p class="hint">What a producer is walking into. This is what we recruit against.</p>
-                    <div class="field">
-                        <label for="f-offer">Compensation you're offering</label>
-                        <select class="input" id="f-offer" name="offer" required>
-                            <option value="" selected disabled>Choose one</option>
-                            <option>Commission only</option>
-                            <option>Salary plus commission</option>
-                            <option>Draw against commission</option>
-                            <option>A combination</option>
-                            <option>Still deciding</option>
-                        </select>
-                        <p class="err" id="f-offer-err"></p>
-                    </div>
-                    <div class="field">
-                        <label for="f-timing">When you need them selling</label>
-                        <select class="input" id="f-timing" name="timing" required>
-                            <option value="" selected disabled>Choose one</option>
-                            <option>Immediately</option>
-                            <option>Before November 1</option>
-                            <option>During open enrollment</option>
-                            <option>After January</option>
-                        </select>
-                        <p class="err" id="f-timing-err"></p>
-                    </div>
-                    <div class="field">
-                        <label for="f-notes">Lines and anything else we should know <small>(optional)</small></label>
-                        <textarea class="input" id="f-notes" name="notes" rows="3" maxlength="4000" placeholder="Medicare, Final Expense or ACA; lead flow, carriers, languages, the kind of producer who does well with you"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-outline" type="button" data-back>Back</button>
-                        <button class="btn btn-primary" type="button" data-next>Continue</button>
-                    </div>
-                </fieldset>
-
-                <fieldset class="fs" data-step="3" hidden>
-                    <legend>How to reach you</legend>
-                    <div class="field">
-                        <label for="f-contact_name">Your name</label>
-                        <input class="input" id="f-contact_name" name="contact_name" type="text" required maxlength="200" autocomplete="name">
-                        <p class="err" id="f-contact_name-err"></p>
-                    </div>
-                    <div class="two">
+                    <fieldset class="fs" data-step="1">
+                        <legend>About your agency</legend>
                         <div class="field">
-                            <label for="f-email">Email</label>
-                            <input class="input" id="f-email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email">
-                            <p class="err" id="f-email-err"></p>
+                            <label for="f-agency_name">Agency name</label>
+                            <input class="input" id="f-agency_name" name="agency_name" type="text" required maxlength="200" autocomplete="organization">
+                            <p class="err" id="f-agency_name-err"></p>
                         </div>
                         <div class="field">
-                            <label for="f-phone">Direct phone</label>
-                            <input class="input" id="f-phone" name="phone" type="tel" required maxlength="40" autocomplete="tel" inputmode="tel">
-                            <p class="err" id="f-phone-err"></p>
+                            <label for="f-states">States you need covered <small>&mdash; include non-resident licenses</small></label>
+                            <input class="input" id="f-states" name="states" type="text" required maxlength="500" placeholder="FL, GA, TX">
+                            <p class="err" id="f-states-err"></p>
                         </div>
-                    </div>
-                    <p class="form-error" id="form-error" role="alert"></p>
-                    <div class="form-actions">
-                        <button class="btn btn-outline" type="button" data-back>Back</button>
-                        <button class="btn btn-primary" type="submit" data-submit>See if we're a fit</button>
-                    </div>
-                    <p class="form-note">We reply within one business day. Your answers stay between us, and nothing runs until the standard is agreed and the campaign is funded.</p>
-                </fieldset>
-            </form>
+                        <div class="field">
+                            <label for="f-agent_count">Producers you want signed</label>
+                            <select class="input" id="f-agent_count" name="agent_count" required>
+                                <option value="" selected disabled>Choose one</option>
+                                <option>5 to 9</option>
+                                <option>10</option>
+                                <option>11 to 25</option>
+                                <option>More than 25</option>
+                            </select>
+                            <p class="err" id="f-agent_count-err"></p>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn" type="button" data-next>Continue</button>
+                        </div>
+                    </fieldset>
 
-            <div class="form-success" id="form-success" hidden role="status">
-                <div class="mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <h3 class="h3">We have it.</h3>
-                <p>We'll come back within one business day with the schedule and the price for the count you asked for. If you'd rather not wait, call <a href="tel:+19045128487">904-512-8487</a>.</p>
+                    <fieldset class="fs" data-step="2" hidden>
+                        <legend>About the opportunity</legend>
+                        <p class="hint">What a producer is walking into. This is what we recruit against.</p>
+                        <div class="field">
+                            <label for="f-offer">Compensation you're offering</label>
+                            <select class="input" id="f-offer" name="offer" required>
+                                <option value="" selected disabled>Choose one</option>
+                                <option>Commission only</option>
+                                <option>Salary plus commission</option>
+                                <option>Draw against commission</option>
+                                <option>A combination</option>
+                                <option>Still deciding</option>
+                            </select>
+                            <p class="err" id="f-offer-err"></p>
+                        </div>
+                        <div class="field">
+                            <label for="f-timing">When you need them selling</label>
+                            <select class="input" id="f-timing" name="timing" required>
+                                <option value="" selected disabled>Choose one</option>
+                                <option>Immediately</option>
+                                <option>Before November 1</option>
+                                <option>During open enrollment</option>
+                                <option>After January</option>
+                            </select>
+                            <p class="err" id="f-timing-err"></p>
+                        </div>
+                        <div class="field">
+                            <label for="f-notes">Lines and anything else we should know <small>(optional)</small></label>
+                            <textarea class="input" id="f-notes" name="notes" rows="3" maxlength="4000" placeholder="Medicare, Final Expense or ACA; lead flow, carriers, languages, the kind of producer who does well with you"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-line" type="button" data-back>Back</button>
+                            <button class="btn" type="button" data-next>Continue</button>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="fs" data-step="3" hidden>
+                        <legend>How to reach you</legend>
+                        <div class="field">
+                            <label for="f-contact_name">Your name</label>
+                            <input class="input" id="f-contact_name" name="contact_name" type="text" required maxlength="200" autocomplete="name">
+                            <p class="err" id="f-contact_name-err"></p>
+                        </div>
+                        <div class="two">
+                            <div class="field">
+                                <label for="f-email">Email</label>
+                                <input class="input" id="f-email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email">
+                                <p class="err" id="f-email-err"></p>
+                            </div>
+                            <div class="field">
+                                <label for="f-phone">Direct phone</label>
+                                <input class="input" id="f-phone" name="phone" type="tel" required maxlength="40" autocomplete="tel" inputmode="tel">
+                                <p class="err" id="f-phone-err"></p>
+                            </div>
+                        </div>
+                        <p class="form-error" id="form-error" role="alert"></p>
+                        <div class="form-actions">
+                            <button class="btn btn-line" type="button" data-back>Back</button>
+                            <button class="btn" type="submit" data-submit>See if we're a fit</button>
+                        </div>
+                        <p class="form-note">We reply within one business day. Your answers stay between us, and nothing runs until the standard is agreed and the campaign is funded.</p>
+                    </fieldset>
+                </form>
+
+                <div class="form-success" id="form-success" hidden role="status">
+                    <div class="mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.4l3.3 3.3 7.7-7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <h3 class="h3">We have it.</h3>
+                    <p>We'll come back within one business day with the schedule and the price for the count you asked for. If you'd rather not wait, call <a href="tel:+19045128487">904-512-8487</a>.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -906,9 +784,9 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
                 <h3>Recruiting</h3>
                 <ul>
                     <li><a href="#offer">The offer</a></li>
-                    <li><a href="#verification">Verification</a></li>
+                    <li><a href="#verification">Verified</a></li>
                     <li><a href="#faq">Questions</a></li>
-                    <li><a href="#inquiry">Start an inquiry</a></li>
+                    <li><a href="#inquiry">Start</a></li>
                 </ul>
             </div>
             <div>
@@ -929,7 +807,7 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 
 <div class="sticky-cta" data-sticky-after="#top" data-sticky-until="#inquiry" aria-hidden="true">
     <span class="lbl">$500 per signed producer<small>30-day replacement included</small></span>
-    <a class="btn btn-primary btn-sm" href="#inquiry" data-track="cta_click" data-loc="sticky" data-label="See if it's a fit" tabindex="-1">See If It's a Fit</a>
+    <a class="btn btn-sm" href="#inquiry" data-track="cta_click" data-loc="sticky" data-label="Price my roster" tabindex="-1">Price my roster</a>
 </div>
 
 <script src="/site.js" defer></script>
