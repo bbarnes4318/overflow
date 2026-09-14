@@ -198,7 +198,7 @@ install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 # served at /<name> (or /<name> minus .html) through nginx's try_files rule.
 for asset in aca-agent-recruiting.html licensing-value.html site.css site.js \
              favicon.svg favicon.png apple-touch-icon.png \
-             og-final-expense.png og-recruiting.png \
+             og-home.png og-final-expense.png og-recruiting.png \
              netenroll-logo.png netenroll-logo-dark.png robots.txt sitemap.xml; do
   install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
 done
