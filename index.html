@@ -633,7 +633,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         { "@type": "Question", "name": "What if the consumer says no?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. That's the point." } },
         { "@type": "Question", "name": "What if the consumer isn't qualified?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. A conversation that doesn't produce a qualifying submitted application does not become a call charge." } },
         { "@type": "Question", "name": "Is there a monthly fee?", "acceptedAnswer": { "@type": "Answer", "text": "No. There is no monthly subscription or per-producer seat fee." } },
-        { "@type": "Question", "name": "What are the rates?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense: $199 per submitted application. Medicare: $159 per submitted application. ACA Health: $100 per submitted application." } },
+        { "@type": "Question", "name": "What are the rates?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense: $199 per submitted application. Medicare: $159 per submitted application. ACA Health: $100 per submitted application. These are starting rates at an assumed 10% conversion; after the testing period the rate is reassessed against actual conversion, per the published rate-by-conversion table." } },
         { "@type": "Question", "name": "Where do the consumers come from?", "acceptedAnswer": { "@type": "Answer", "text": "Consumers call looking for insurance coverage. NetEnroll routes those live conversations to available producers based on the programs and states you've enabled." } },
         { "@type": "Question", "name": "Can I choose my states?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You control the programs and states your account is set up to receive." } },
         { "@type": "Question", "name": "Can I use NetEnroll for my entire agency?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Agency accounts can have multiple producers operating under the account, subject to the applicable program requirements." } },
@@ -869,7 +869,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <p>The rate shown for your program at checkout is the rate that applies to your account.</p>
             <a class="textlink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="programs" data-label="Open My Producer Account">Open my producer account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
-        <div class="scale reveal">
+        <div class="scale reveal" id="rates-by-conversion">
             <div class="scale-head">
                 <h3>Your rate follows your conversion</h3>
                 <p>Every account starts at an assumed 10% conversion. After the agreed testing period we reassess against what your producers actually wrote, and the rate moves with it.</p>
@@ -1018,7 +1018,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             </div>
             <div class="q">
                 <dt>What are the rates?</dt>
-                <dd><p>Final Expense: <b>$199 per submitted application</b></p><p>Medicare: <b>$159 per submitted application</b></p><p>ACA Health: <b>$100 per submitted application</b></p></dd>
+                <dd><p>Final Expense: <b>$199 per submitted application</b></p><p>Medicare: <b>$159 per submitted application</b></p><p>ACA Health: <b>$100 per submitted application</b></p><p>Those are the starting rates at an assumed 10% conversion. After the testing period your rate is reassessed against your actual conversion. <a href="#rates-by-conversion">See the full rate-by-conversion table</a>.</p></dd>
             </div>
             <div class="q">
                 <dt>Where do the consumers come from?</dt>
