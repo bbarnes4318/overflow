@@ -71,7 +71,7 @@ h2[id], h3[id] { scroll-margin-top: 88px; }
 }
 
 .masthead a.brand { display: inline-flex; align-items: center; }
-.masthead img { height: 26px; width: auto; display: block; }
+.masthead img { height: 40px; width: auto; display: block; }
 
 .masthead nav {
     display: flex;
@@ -110,7 +110,7 @@ h2[id], h3[id] { scroll-margin-top: 88px; }
 @media (max-width: 620px) {
     .masthead-inner { padding: 0 16px; gap: 12px; }
     .masthead nav { gap: 15px; font-size: 13.5px; }
-    .masthead img { height: 22px; }
+    .masthead img { height: 34px; }
 }
 
 @media (max-width: 470px) {
@@ -418,7 +418,7 @@ tbody tr:last-child td { border-bottom: 0; }
     color: var(--muted);
 }
 
-.footer-logo { height: 24px; width: auto; display: block; margin-bottom: 16px; }
+.footer-logo { height: 40px; width: auto; display: block; margin-bottom: 16px; }
 
 /* Keyboard users get the same affordance mouse users do. */
 a:focus-visible, button:focus-visible {
