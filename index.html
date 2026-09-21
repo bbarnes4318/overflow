@@ -328,21 +328,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .row .price span { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 .sheet-note { padding: 22px 32px; background: var(--mint); font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.4rem); font-weight: 600; letter-spacing: -.02em; color: var(--green); }
 .sheet-foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 20px; font-size: 14.5px; color: var(--muted); }
-.scale { margin-top: clamp(40px, 5vw, 64px); background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
-.scale-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; padding: 22px 32px 18px; border-bottom: 1px solid var(--line); }
-.scale-head h3 { font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.4rem); font-weight: 600; letter-spacing: -.02em; }
-.scale-head h3 span { color: var(--muted); font-weight: 500; }
-.scale-head p { font-size: 14.5px; color: var(--muted); max-width: 34rem; text-wrap: pretty; }
-.scale-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.scale table { width: 100%; min-width: 960px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.scale th, .scale td { padding: 14px 8px; text-align: center; border-bottom: 1px solid var(--line); }
-.scale th:first-child, .scale td:first-child { text-align: left; padding-left: 32px; font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.scale thead th { font-family: var(--text); font-size: 14px; font-weight: 600; color: var(--ink-2); background: var(--bg-2); }
-.scale tbody td { font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: -.02em; color: var(--ink); }
-.scale tbody tr:last-child td, .scale tbody tr:last-child th { border-bottom: 0; }
-.scale .start { background: var(--mint); color: var(--green); }
-.scale thead .start small { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green); margin-top: 2px; }
-.scale-note { padding: 16px 32px; font-size: 14.5px; color: var(--muted); background: var(--bg-2); border-top: 1px solid var(--line); }
 
 /* ---- The real economics: the ledger ---------------------------------------- */
 .econ { background: var(--ink); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
@@ -633,7 +618,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         { "@type": "Question", "name": "What if the consumer says no?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. That's the point." } },
         { "@type": "Question", "name": "What if the consumer isn't qualified?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. A conversation that doesn't produce a qualifying submitted application does not become a call charge." } },
         { "@type": "Question", "name": "Is there a monthly fee?", "acceptedAnswer": { "@type": "Answer", "text": "No. There is no monthly subscription or per-producer seat fee." } },
-        { "@type": "Question", "name": "What are the rates?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense: $199 per submitted application. Medicare: $159 per submitted application. ACA Health: $100 per submitted application. These are starting rates at an assumed 10% conversion; after the testing period the rate is reassessed against actual conversion, per the published rate-by-conversion table." } },
+        { "@type": "Question", "name": "What are the rates?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense: $199 per submitted application. Medicare: $159 per submitted application. ACA Health: $100 per submitted application. Flat rates; the call itself is $0." } },
         { "@type": "Question", "name": "Where do the consumers come from?", "acceptedAnswer": { "@type": "Answer", "text": "Consumers call looking for insurance coverage. NetEnroll routes those live conversations to available producers based on the programs and states you've enabled." } },
         { "@type": "Question", "name": "Can I choose my states?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You control the programs and states your account is set up to receive." } },
         { "@type": "Question", "name": "Can I use NetEnroll for my entire agency?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Agency accounts can have multiple producers operating under the account, subject to the applicable program requirements." } },
@@ -851,12 +836,12 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <div class="row">
                 <h3 class="name">Final Expense</h3>
                 <p class="desc">Consumers shopping for final expense life coverage.</p>
-                <p class="price"><b>$199</b><span>per submitted application at 10% conversion</span></p>
+                <p class="price"><b>$199</b><span>per submitted application</span></p>
             </div>
             <div class="row">
                 <h3 class="name">Medicare</h3>
                 <p class="desc">Consumers shopping for Medicare Advantage and Supplement plans.</p>
-                <p class="price"><b>$159</b><span>per submitted application at 10% conversion</span></p>
+                <p class="price"><b>$159</b><span>per submitted application</span></p>
             </div>
             <div class="row">
                 <h3 class="name">ACA Health</h3>
@@ -868,19 +853,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         <div class="sheet-foot reveal">
             <p>The rate shown for your program at checkout is the rate that applies to your account.</p>
             <a class="textlink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="programs" data-label="Open My Producer Account">Open my producer account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-        <div class="scale reveal" id="rates-by-conversion">
-            <div class="scale-head">
-                <h3>Your rate follows your conversion</h3>
-                <p>Every account starts at an assumed 10% conversion. After the agreed testing period we reassess against what your producers actually wrote, and the rate moves with it.</p>
-            </div>
-            <div class="scale-scroll">
-                <table aria-label="Cost per submitted application by program and conversion rate">
-                    <thead><tr><th scope="row">Conversion</th><th scope="col">5%</th><th scope="col">6%</th><th scope="col">7%</th><th scope="col">8%</th><th scope="col">9%</th><th scope="col" class="start">10%<small>Start</small></th><th scope="col">11%</th><th scope="col">12%</th><th scope="col">13%</th><th scope="col">14%</th><th scope="col">15%</th><th scope="col">16%</th><th scope="col">17%</th><th scope="col">18%</th><th scope="col">19%</th><th scope="col">20%</th></tr></thead>
-                    <tbody><tr><th scope="row">Final Expense</th><td>$269</td><td>$249</td><td>$229</td><td>$219</td><td>$209</td><td class="start">$199</td><td>$199</td><td>$194</td><td>$189</td><td>$184</td><td>$179</td><td>$174</td><td>$169</td><td>$164</td><td>$159</td><td>$154</td></tr><tr><th scope="row">Medicare</th><td>$209</td><td>$199</td><td>$189</td><td>$179</td><td>$169</td><td class="start">$159</td><td>$159</td><td>$159</td><td>$159</td><td>$159</td><td>$149</td><td>$149</td><td>$149</td><td>$149</td><td>$149</td><td>$149</td></tr></tbody>
-                </table>
-            </div>
-            <p class="scale-note">Conversion is submitted applications divided by calls taken. The ACA Health schedule is coming soon.</p>
         </div>
     </div>
 </section>
@@ -1018,7 +990,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             </div>
             <div class="q">
                 <dt>What are the rates?</dt>
-                <dd><p>Final Expense: <b>$199 per submitted application</b></p><p>Medicare: <b>$159 per submitted application</b></p><p>ACA Health: <b>$100 per submitted application</b></p><p>Those are the starting rates at an assumed 10% conversion. After the testing period your rate is reassessed against your actual conversion. <a href="#rates-by-conversion">See the full rate-by-conversion table</a>.</p></dd>
+                <dd><p>Final Expense: <b>$199 per submitted application</b></p><p>Medicare: <b>$159 per submitted application</b></p><p>ACA Health: <b>$100 per submitted application</b></p><p>Flat rates. The call itself is $0.</p></dd>
             </div>
             <div class="q">
                 <dt>Where do the consumers come from?</dt>
