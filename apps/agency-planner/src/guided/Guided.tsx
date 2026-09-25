@@ -127,7 +127,7 @@ function Ticker({ r, className }: { r: Results; className: string }) {
   return (
     <div className={`z-20 border-line bg-white/95 backdrop-blur ${className}`}>
       <div className="mx-auto flex h-14 max-w-[560px] items-center justify-between px-4">
-        <span className="text-[13px] text-muted">Your agency, Year 2 net profit</span>
+        <span className="text-[13px] text-muted">Year 2 profit</span>
         <Num v={r.out.years[1].totalNet} f={compact} className={`font-display text-[22px] font-semibold ${r.out.years[1].totalNet < 0 ? 'text-cost' : 'text-net'}`} />
       </div>
     </div>
@@ -244,9 +244,9 @@ function PlanReport({ a, r, agency }: { a: Answers; r: Results; agency: string }
     ['Agents today', int(a.a0)],
     ...(a.sells === 'both' ? [['Of them, selling Medicare', int(a.m0)] as [string, string]] : []),
     ['Agents a year from now', int(a.a1)],
-    ['Close rate (calls to applications)', pct(a.conv)],
-    ['Agency pays an agent per placed policy', money(a.pay)],
-    ['Monthly take-home goal', money(a.goal)],
+    ['Calls that become applications', pct(a.conv)],
+    ['Agent pay per policy', money(a.pay)],
+    ['Monthly income goal', money(a.goal)],
     ['Owners', a.partners === 1 ? 'Just me' : `${a.partners} partners`],
   ];
   return (
@@ -385,7 +385,7 @@ export function Guided() {
       </div>
     ));
   } else if (step === 2) {
-    screen = question(2, 'How many agents do you have today?', (
+    screen = question(2, 'How many agents do you have?', (
       <div className="space-y-8">
         <Count label="Agents today" value={a.a0} min={1} max={1000} sliderMax={200} unit="agents" onChange={setA0} />
         {a.sells === 'both' && (
@@ -398,13 +398,13 @@ export function Guided() {
     ));
   } else if (step === 3) {
     const hi = Math.min(2000, Math.max(500, a.a0 * 5));
-    screen = question(3, 'How many agents do you want a year from now?', (
+    screen = question(3, 'How many agents do you want in a year?', (
       <Count label="Agents a year from now" value={a.a1} min={a.a0} max={2000} sliderMax={hi} unit="agents" onChange={(a1) => setA({ a1 }, { a1: true })} />
     ));
   } else if (step === 4) {
-    const opts: [string, number][] = [['Under 8%', 0.06], ['About 10%', 0.10], ['12% or better', 0.13], ['Not sure', 0.10]];
+    const opts: [string, number][] = [['Under 8%', 0.06], ['About 10%', 0.10], ['12% or more', 0.13], ['Not sure', 0.10]];
     const picked = saved.convPick ?? opts.find(([, v]) => v === a.conv)?.[0];
-    screen = question(4, 'How often do your agents close a call into a submitted application?', (
+    screen = question(4, 'What percent of calls turn into an application?', (
       <div className="grid gap-3 sm:grid-cols-2">
         {opts.map(([l, v]) => (
           <Choice key={l} label={l} on={picked === l} onClick={() => { setSaved((s) => ({ ...s, convPick: l, answers: { ...s.answers, conv: v } })); later(() => go(5)); }} />
@@ -412,15 +412,15 @@ export function Guided() {
       </div>
     ));
   } else if (step === 5) {
-    screen = question(5, 'What does your agency pay an agent per placed policy?', (
+    screen = question(5, 'What do you pay an agent per policy?', (
       <PayPicker value={a.pay} presets={[80, 120, 160, 200]} onPick={(pay, advance) => { setA({ pay }); if (advance) later(() => go(6)); }} />
     ));
   } else if (step === 6) {
-    screen = question(6, 'What do you want to take home each month?', (
+    screen = question(6, 'How much do you want to make a month?', (
       <div>
         <AmountPicker value={a.goal} presets={[10000, 25000, 50000, 100000]} label="Monthly take-home goal" max={100000000}
           format={(v) => compact(v).replace('.0K', 'K')} onPick={(goal) => setA({ goal })} />
-        <p className="mb-3 mt-8 text-[17px] font-semibold text-ink">Who owns the agency?</p>
+        <p className="mb-3 mt-8 text-[17px] font-semibold text-ink">How many owners?</p>
         <div className="flex flex-wrap gap-2">
           {([[1, 'Just me'], [2, '2 partners'], [3, '3 partners'], [4, '4 partners']] as [number, string][]).map(([n, l]) => (
             <button key={n} onClick={() => setA({ partners: n })} aria-pressed={a.partners === n}
@@ -459,7 +459,7 @@ function PayPicker({ value, presets, onPick }: { value: number; presets: number[
         <Choice label="Other" on={other} onClick={() => setOther(true)} />
       </div>
       {other && <OtherAmount label="Agent pay per placed policy" value={value} min={0} max={1000} onChange={(v) => onPick(v, false)} />}
-      <p className="mt-4 text-[14px] text-muted">Your agency pays your agents. Carriers pay your agency.</p>
+      <p className="mt-4 text-[14px] text-muted">Paid when the policy places.</p>
     </div>
   );
 }
