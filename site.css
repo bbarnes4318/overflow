@@ -182,7 +182,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
 .brand { display: inline-flex; align-items: center; text-decoration: none; }
 .brand img { height: 24px; width: auto; }
 .nav { display: none; align-items: center; gap: 28px; }
-.nav a { font-size: 15px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .15s; }
+.nav a { font-size: 15px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .15s; white-space: nowrap; }
 .nav a:hover, .nav a[aria-current="page"] { color: var(--ink); }
 .nav a[aria-current="page"] { font-weight: 600; }
 .header-actions { display: none; align-items: center; gap: 8px; }

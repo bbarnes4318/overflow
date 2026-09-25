@@ -91,7 +91,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 36px; }
 .brand img { height: 42px; width: auto; }
 .nav { display: flex; gap: 28px; font-size: 15px; font-weight: 500; }
-.nav a { color: var(--ink-2); text-decoration: none; }
+.nav a { color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+@media (max-width: 1200px) { .nav { gap: 20px; } }
 .nav a:hover, .nav a[aria-current="page"] { color: var(--green); }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 22px; }
 .signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; }
@@ -350,7 +351,8 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     .timeline { grid-template-columns: repeat(3, 1fr); gap: 32px 24px; }
     .hero h1 { max-width: none; }
 }
-@media (max-width: 900px) {
+/* Six header links need about 1024px; below that the menu button takes over. */
+@media (max-width: 1024px) {
     .nav, .signin, .header-actions .btn { display: none; }
     .menu-btn { display: inline-flex; }
     .mobile-nav { display: block; position: absolute; top: var(--header); left: 0; right: 0; background: var(--paper); border-bottom: 1px solid var(--rule-2); padding: 8px var(--gutter) 24px; }
@@ -358,6 +360,8 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     .mobile-nav > a.signin { display: block; font-family: var(--text); font-size: 16px; font-weight: 700; color: var(--ink-2); }
     .mobile-nav .cta-row { padding-top: 20px; }
     .mobile-nav .cta-row .btn { width: 100%; }
+}
+@media (max-width: 900px) {
     .hero-grid, .lines-grid, .checks, .split, .qa-grid, .start-grid, .thirty-grid { grid-template-columns: 1fr; }
     .hero-grid { gap: 40px; }
     .line-col { padding: 24px 0 0; border-left: 0; border-top: 1px solid var(--rule-2); }
@@ -444,6 +448,7 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
         <nav class="nav" aria-label="Primary">
             <a href="/">Insurance calls</a>
             <a href="/aca-agent-recruiting" aria-current="page">Agent Recruiting</a>
+            <a href="/agency-planner">Agency Planner</a>
             <a href="#offer">The offer</a>
             <a href="#faq">Questions</a>
             <a href="/licensing-value">State License Tool</a>
@@ -460,6 +465,7 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
     <div class="mobile-nav" id="mobile-nav" hidden>
         <a href="/">Insurance calls</a>
         <a href="/aca-agent-recruiting" aria-current="page">Agent Recruiting</a>
+        <a href="/agency-planner">Agency Planner</a>
         <a href="#offer">The offer</a>
         <a href="#faq">Questions</a>
         <a href="/licensing-value">State License Tool</a>
@@ -824,6 +830,7 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
                     <li><a href="/#pricing">Insurance calls</a></li>
                     <li><a href="/aca-agent-recruiting">Agent recruiting</a></li>
                     <li><a href="/licensing-value">State license value tool</a></li>
+                    <li><a href="https://netenroll.com/agency-planner">Agency planner</a></li>
                 </ul>
             </div>
             <div>

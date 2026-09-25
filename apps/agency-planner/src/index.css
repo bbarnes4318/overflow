@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+/* NetEnroll light theme. Neutrals, brand green and fonts come from netenroll.com's own tokens (index.html :root);
+   surface2 and the chart roles follow the Agency Planner spec. Checked for WCAG AA against white and --color-surface. */
+@theme {
+  --color-bg: #ffffff;
+  --color-canvas: #ffffff;
+  --color-surface: #f4f6f4;
+  --color-surface2: #eef1f5;
+  --color-line: #e1e6e2;
+  --color-ink: #0e1512;
+  --color-sub: #2b342f;
+  --color-muted: #5a6660;
+  --color-fe: #0c5c43;
+  --color-md: #d95926;
+  --color-net: #16865f;
+  --color-netink: #0f6e4e; /* net green for small text on tinted backgrounds */
+  --color-gold: #8f6a00;
+  --color-cost: #b42318;
+  --font-sans: Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-display: "General Sans", Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+html, body, #root { height: 100%; margin: 0; overflow: hidden; }
+body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+.tnum, table, input { font-variant-numeric: tabular-nums; }
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; height: 18px; }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--accent) var(--fill), #e1e6e2 var(--fill)); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--accent) var(--fill), #e1e6e2 var(--fill)); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.5px var(--accent), 0 1px 3px rgba(15,23,42,.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; background: #fff; }
+.recharts-wrapper *:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-fe); outline-offset: 2px; }
+
+/* Income goal view */
+.goal-grad { background: linear-gradient(90deg, #0c5c43, #16865f); -webkit-background-clip: text; background-clip: text; color: transparent; caret-color: #0c5c43; }
+.goal-input:focus-within { box-shadow: 0 0 0 2px #0c5c43; }
+.goal-tab { background: linear-gradient(90deg, #0c5c43, #16865f); }
+.goal-dot { animation: goal-pop .35s ease-out both; }
+@keyframes goal-pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.goal-me { background-image: linear-gradient(110deg, transparent 30%, #ffffff40 50%, transparent 70%) !important; background-size: 200% 100%; animation: goal-shine 2.8s linear infinite; }
+@keyframes goal-shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+.goal-steps { counter-reset: s; }
+.goal-steps li { counter-increment: s; position: relative; padding-left: 34px; }
+.goal-steps li::before { content: counter(s); position: absolute; left: 0; top: -1px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #0c5c43, #16865f); }
+/* Exit value view */
+.exit-grad { background: linear-gradient(90deg, #0c5c43, #16865f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.exit-tab { background: linear-gradient(90deg, #0c5c43, #16865f); }
+.scroll-y { scrollbar-width: thin; scrollbar-color: #cbd1cc transparent; }
+.scroll-y::-webkit-scrollbar { display: block; width: 6px; }
+.scroll-y::-webkit-scrollbar-thumb { background: #cbd1cc; border-radius: 3px; }

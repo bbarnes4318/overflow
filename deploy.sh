@@ -221,6 +221,24 @@ install -m 0644 "${REMOTE_DIR}/src/data/licensing-fees.json" "${WEB_ROOT}/licens
 echo "--> Published \$(wc -c < "${WEB_ROOT}/${INDEX_NAME}") bytes to ${WEB_ROOT}/${INDEX_NAME}"
 echo "--> Published legal documents: terms.html privacy.html tcpa-compliance.html legal.css"
 
+# /agency-planner: a Vite + React sub-app in apps/agency-planner. The one part
+# of the site with a build step; built here with the Node the messaging service
+# already needs, then swapped into place whole so a failed build leaves the
+# previous version serving.
+(
+  cd "${REMOTE_DIR}/apps/agency-planner"
+  npm ci --no-audit --no-fund
+  npm run build
+)
+rm -rf "${WEB_ROOT}/agency-planner.new"
+cp -a "${REMOTE_DIR}/apps/agency-planner/dist" "${WEB_ROOT}/agency-planner.new"
+chmod -R a+rX "${WEB_ROOT}/agency-planner.new"
+rm -rf "${WEB_ROOT}/agency-planner.old"
+[ -d "${WEB_ROOT}/agency-planner" ] && mv "${WEB_ROOT}/agency-planner" "${WEB_ROOT}/agency-planner.old"
+mv "${WEB_ROOT}/agency-planner.new" "${WEB_ROOT}/agency-planner"
+rm -rf "${WEB_ROOT}/agency-planner.old"
+echo "--> Published /agency-planner"
+
 # Password-gated pages. Each is one static file served at /<name> through the
 # same \$uri.html rule as the legal documents; the gate is inside the file
 # (AES-encrypted body, unlocked in the browser), so nginx needs nothing extra.
@@ -271,6 +289,9 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
   splice_location 'location = /api/recruiting-inquiry'
   splice_location 'location = /licensing-fees.json'
   splice_location 'location ~ ^/(aca-agent-recruiting|licensing-value|site'
+  splice_location 'location = /agency-planner {'
+  splice_location 'location ^~ /agency-planner/ {'
+  splice_location 'location = /agency-planner/index.html {'
   # Ubuntu's stock catch-all would otherwise answer for these names.
   rm -f /etc/nginx/sites-enabled/default
 fi

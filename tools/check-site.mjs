@@ -9,7 +9,8 @@ import assert from 'node:assert/strict';
 const read = (p) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 const server = read('messaging/server.js');
 const aca = read('aca-agent-recruiting.html');
-const pages = { 'index.html': read('index.html'), 'aca-agent-recruiting.html': aca, 'licensing-value.html': read('licensing-value.html') };
+const pages = { 'index.html': read('index.html'), 'aca-agent-recruiting.html': aca, 'licensing-value.html': read('licensing-value.html'),
+                'apps/agency-planner/index.html': read('apps/agency-planner/index.html') };
 
 // 1. Every field the server requires is a named control in the form, and
 //    every <select> offers exactly the server's allowed values.
@@ -34,6 +35,14 @@ for (const [file, html] of Object.entries(pages)) {
         assert.match(html, re, `${file}: missing ${re}`);
     }
 }
+// 2b. Every page with the shared header links the Agency Planner.
+for (const file of ['index.html', 'aca-agent-recruiting.html', 'licensing-value.html']) {
+    assert.match(pages[file], /<a href="\/agency-planner">Agency Planner<\/a>/, `${file}: header is missing the Agency Planner link`);
+}
+for (const file of ['index.html', 'aca-agent-recruiting.html']) {
+    assert.match(pages[file], /<li><a href="https:\/\/netenroll\.com\/agency-planner">Agency planner<\/a><\/li>/, `${file}: footer is missing the Agency planner link`);
+}
+
 // 3. Nothing from the deleted prototype leaks through: no fake portal, no
 //    mock data, no in-browser JSX on the two marketing pages.
 for (const file of ['index.html', 'aca-agent-recruiting.html']) {

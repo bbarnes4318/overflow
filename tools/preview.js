@@ -23,11 +23,19 @@ const ALIAS = {
   '/tcpa-compliance': 'legal/tcpa-compliance.html',
   '/legal.css': 'legal/legal.css'
 };
+// The /agency-planner sub-app is served from its build output, like nginx serves
+// the copy deploy.sh builds. Run `npm run build` in apps/agency-planner first.
+const PLANNER = 'apps/agency-planner/dist';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.xml': 'application/xml; charset=utf-8', '.txt': 'text/plain; charset=utf-8' };
 
 function resolve(url) {
   if (ALIAS[url]) return ALIAS[url];
+  if (url === '/agency-planner' || url.startsWith('/agency-planner/')) {
+    const rel = path.join(PLANNER, url.slice('/agency-planner'.length));
+    const abs = path.join(ROOT, rel);
+    return fs.existsSync(abs) && fs.statSync(abs).isFile() ? rel : path.join(PLANNER, 'index.html');
+  }
   const rel = url === '/' ? 'index.html' : url.slice(1);
   for (const cand of [rel, rel + '.html']) {
     const abs = path.join(ROOT, cand);

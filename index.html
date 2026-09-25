@@ -157,7 +157,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
 .brand img { height: 44px; width: auto; }
 .nav { display: flex; gap: 30px; font-size: 15px; font-weight: 500; }
-.nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; }
+.nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; white-space: nowrap; }
+@media (max-width: 1200px) { .nav { gap: 20px; } }
 .nav a:hover { color: var(--green); }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 24px; }
 .signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; }
@@ -503,7 +504,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .steps li:nth-child(2)::before { right: 0; }
     .proof-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 900px) {
+/* Six header links need about 1024px; below that the menu button takes over. */
+@media (max-width: 1024px) {
     .nav, .signin, .header-actions .btn { display: none; }
     .menu-btn { display: inline-flex; }
     .mobile-nav {
@@ -515,7 +517,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .mobile-nav > a.signin { display: block; font-family: var(--text); font-size: 16px; font-weight: 700; color: var(--ink-2); }
     .mobile-nav .cta-row { padding-top: 20px; }
     .mobile-nav .cta-row .btn { width: 100%; }
-
+}
+@media (max-width: 900px) {
     .hero-grid { grid-template-columns: 1fr; gap: 36px; }
     .rates .wrap { grid-template-columns: repeat(3, 1fr); }
     .rates .zero { grid-column: 1 / -1; justify-self: start; text-align: left; padding-bottom: 18px; margin-top: -8px; }
@@ -646,6 +649,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <a href="#agencies">For agencies</a>
             <a href="#faq">Questions</a>
             <a href="/aca-agent-recruiting">Agent Recruiting</a>
+            <a href="/agency-planner">Agency Planner</a>
         </nav>
         <div class="header-actions">
             <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
@@ -662,6 +666,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         <a href="#agencies">For agencies</a>
         <a href="#faq">Questions</a>
         <a href="/aca-agent-recruiting">Agent Recruiting</a>
+        <a href="/agency-planner">Agency Planner</a>
         <a href="/licensing-value">State License Tool</a>
         <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in to the agent portal</a>
         <div class="cta-row">
@@ -1054,6 +1059,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
                     <li><a href="/#pricing">Insurance calls</a></li>
                     <li><a href="/aca-agent-recruiting">ACA agent recruiting</a></li>
                     <li><a href="/licensing-value">State license value tool</a></li>
+                    <li><a href="https://netenroll.com/agency-planner">Agency planner</a></li>
                 </ul>
             </div>
             <div>
