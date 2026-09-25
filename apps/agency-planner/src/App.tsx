@@ -6,6 +6,8 @@ import { Goal, GOAL_DEFAULT, type GoalState } from './Goal';
 import { Exit } from './Exit';
 import { exitValue, type YearExit } from './engine/valuation';
 import { compact, count, FE_ROWS, fmt, int, MD_ROWS, money, num1, pct, SUMMARY_ROWS } from './format';
+import { Intro } from './intro/Intro';
+import { buildInputs, type Answers } from './intro/answers';
 
 // ---------- controls ----------
 type Unit = '$' | '%' | 'calls' | 'agents' | 'days' | 'x';
@@ -80,6 +82,23 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 
 // ---------- persistence: URL params → localStorage → defaults ----------
 const LS_KEY = 'netenroll-agency-planner-v1';
+
+// Quick Start intro: { answers, done }. Saved answers come back from storage, so keep only a sane set.
+const INTRO_KEY = 'netenroll-agency-planner-intro-v1';
+type IntroSaved = { answers?: Answers; done: boolean };
+function readIntro(): IntroSaved {
+  try {
+    const s = JSON.parse(localStorage.getItem(INTRO_KEY) ?? 'null');
+    if (!s || typeof s !== 'object') return { done: false };
+    const a = s.answers;
+    const ok = a && ['fe', 'md', 'both'].includes(a.sells) && ['a0', 'a1', 'm0', 'conv', 'pay', 'goal', 'partners'].every((k) => Number.isFinite(a[k]))
+      && a.a0 >= 1 && a.a1 >= a.a0 && a.m0 >= 0 && a.m0 <= a.a0 && a.partners >= 1 && a.partners <= 4;
+    return { answers: ok ? a : undefined, done: s.done === true };
+  } catch { return { done: false }; }
+}
+function saveIntro(v: IntroSaved) {
+  try { localStorage.setItem(INTRO_KEY, JSON.stringify(v)); } catch { /* storage unavailable */ }
+}
 type Page = 'Planner' | 'Income goal' | 'Exit value';
 const PAGE_PARAM: Partial<Record<Page, string>> = { 'Income goal': 'goal', 'Exit value': 'exit' };
 type State = { inputs: Inputs; names: string[]; goal: GoalState; page: Page };
@@ -402,6 +421,25 @@ export default function App() {
   const [box, setBox] = useState({ s: 1, w: 1440, h: 840 });
   const [narrow, setNarrow] = useState(() => innerWidth < 1024);
   const [openAnyway, setOpenAnyway] = useState(false);
+  // First visit only (no share link, no saved plan, intro not finished): open Quick Start over the planner.
+  const [intro, setIntro] = useState<{ open: boolean; answers?: Answers }>(() => {
+    const saved = readIntro();
+    let hasPlan = true;
+    try { hasPlan = localStorage.getItem(LS_KEY) != null; } catch { /* storage unavailable */ }
+    return { open: !location.search && !hasPlan && !saved.done, answers: saved.answers };
+  });
+  const applyIntro = (a: Answers) => {
+    const { inputs, feMix } = buildInputs(a);
+    setState((s) => ({ ...s, inputs, goal: { amount: a.goal, partner: 0, feMix }, page: 'Planner' }));
+    saveIntro({ answers: a, done: true });
+    setIntro({ open: true, answers: a });
+  };
+  const closeIntro = () => {
+    setIntro((i) => ({ ...i, open: false }));
+    saveIntro({ answers: intro.answers, done: true });
+  };
+  const openIntro = () => setIntro((i) => ({ ...i, open: true }));
+  const introEl = intro.open && <Intro initial={intro.answers} onApply={applyIntro} onClose={closeIntro} />;
 
   useEffect(() => {
     // Design is at least 1440×840; scale to fit, then let the canvas fill the window exactly (no letterboxing).
@@ -441,22 +479,28 @@ export default function App() {
   const p = out.periods[period];
   const partnerCol = (i: number) => (period < 3 ? out.partners[i].yearly[period] : out.partners[i].total);
 
+  // On narrow screens the intro comes first; the card appears once it closes, so nothing sits behind the intro text.
   if (narrow && !openAnyway) return (
-    <div className="flex h-full w-full items-center justify-center overflow-y-auto bg-surface p-4">
+    <>
+    {!intro.open && <div className="flex h-full w-full items-center justify-center overflow-y-auto bg-surface p-4">
       <div className="w-full max-w-[420px] rounded-2xl bg-white p-6 ring-1 ring-line">
         <Logo className="h-7" />
         <h1 className="mt-5 font-display text-[26px] font-semibold tracking-tight">Agency Planner</h1>
         <p className="mt-1.5 text-[15px] leading-[22px] text-sub">Plan agents, applications, profit and what your agency would sell for.</p>
         <p className="mt-3 text-[13px] text-muted">Built for a laptop or desktop screen.</p>
         <div className="mt-5 flex flex-col gap-2.5">
-          <button onClick={() => setOpenAnyway(true)} className="h-11 rounded-md bg-brand text-[15px] font-semibold text-white hover:bg-[#094a36]">Open anyway</button>
+          <button onClick={openIntro} className="h-11 rounded-md bg-brand text-[15px] font-semibold text-white hover:bg-[#094a36]">Quick start</button>
+          <button onClick={() => setOpenAnyway(true)} className="h-11 rounded-md bg-white text-[15px] font-semibold text-ink ring-1 ring-line hover:bg-surface2">Open anyway</button>
           <a href={SIGNUP} className="flex h-11 items-center justify-center rounded-md bg-white text-[15px] font-semibold text-ink ring-1 ring-line hover:bg-surface2">Open my producer account</a>
         </div>
       </div>
-    </div>
+    </div>}
+    {introEl}
+    </>
   );
 
   return (
+    <>
     <div className="h-full w-full bg-canvas">
       <div className="relative flex flex-col overflow-hidden bg-canvas text-ink" style={{ width: box.w, height: box.h, transform: `scale(${box.s})`, transformOrigin: 'top left' }}>
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line px-6">
@@ -475,6 +519,7 @@ export default function App() {
             ))}
           </div>
           <div className="ml-auto flex items-center gap-1">
+            <Btn onClick={openIntro}>Quick start</Btn>
             <Btn onClick={() => setModal('notes')}>Model notes</Btn>
             <Btn onClick={() => setState((s) => ({ ...s, inputs: { ...DEFAULTS }, names: [...DEFAULT_NAMES], goal: GOAL_DEFAULT }))}>Reset</Btn>
             <Btn onClick={() => navigator.clipboard.writeText(location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); })}>
@@ -710,5 +755,7 @@ export default function App() {
         )}
       </div>
     </div>
+    {introEl}
+    </>
   );
 }
