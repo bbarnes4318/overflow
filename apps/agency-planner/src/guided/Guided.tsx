@@ -369,11 +369,11 @@ export function Guided() {
   if (step === 0) {
     screen = (
       <div className="mx-auto max-w-[560px] px-4 pb-16 pt-12 sm:pt-20">
-        <h1 className="font-display text-[34px] font-semibold leading-[1.1] tracking-tight sm:text-[44px]">What will your agency pay you, and what is it worth?</h1>
-        <p className="mt-4 text-[18px] leading-relaxed text-sub">Six quick questions. See your monthly take-home, what it takes to hit your goal, and what your agency would sell for.</p>
-        <p className="mt-3 text-[14px] text-muted">Built for LOA agencies: carriers pay your agency, your agency pays your agents and the calls.</p>
-        <Primary className="mt-8 w-full sm:w-auto" onClick={() => go(1)}>Start. It takes 60 seconds.</Primary>
-        <a href={ADVANCED} className="mt-4 flex min-h-12 items-center text-[15px] font-medium text-brand underline underline-offset-4">I know my numbers. Open the advanced planner</a>
+        <h1 className="font-display text-[34px] font-semibold leading-[1.1] tracking-tight sm:text-[44px]">How much can your agency make you?</h1>
+        <p className="mt-4 text-[18px] leading-relaxed text-sub">Answer six questions about your agents and your income goal. You'll see what you'd take home each month, how many agents it takes to get there, and what your agency could sell for.</p>
+        <p className="mt-3 text-[14px] text-muted">For LOA agencies, where your agents write under your contracts and commissions come to you.</p>
+        <Primary className="mt-8 w-full sm:w-auto" onClick={() => go(1)}>Get my numbers</Primary>
+        <a href={ADVANCED} className="mt-4 flex min-h-12 items-center text-[15px] font-medium text-brand underline underline-offset-4">Already know your numbers? Use the advanced planner</a>
       </div>
     );
   } else if (step === 1) {
