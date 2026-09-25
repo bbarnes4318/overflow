@@ -287,7 +287,6 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
     rm -f "\$BLOCK_FILE"
   }
   splice_location 'location = /api/recruiting-inquiry'
-  splice_location 'location = /api/planner-lead'
   splice_location 'location = /licensing-fees.json'
   splice_location 'location ~ ^/(aca-agent-recruiting|licensing-value|site'
   splice_location 'location = /agency-planner {'

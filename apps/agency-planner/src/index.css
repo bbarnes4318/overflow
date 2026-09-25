@@ -56,15 +56,3 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border: 1.5px
 .scroll-y { scrollbar-width: thin; scrollbar-color: #cbd1cc transparent; }
 .scroll-y::-webkit-scrollbar { display: block; width: 6px; }
 .scroll-y::-webkit-scrollbar-thumb { background: #cbd1cc; border-radius: 3px; }
-
-/* Guided planner */
-.rise { animation: rise .45s ease-out both; }
-@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
-
-/* "Download my plan (PDF)": print only #plan-report (the screens are print:hidden), letter, 0.5in margins. */
-@media print {
-  @page { size: letter; margin: 0.5in; }
-  html, body, #root { height: auto !important; overflow: visible !important; background: #fff; }
-  #plan-report { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}

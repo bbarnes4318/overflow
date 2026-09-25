@@ -251,8 +251,7 @@ const PUBLIC_PATHS = [
   '/api/auth/status',
   '/api/auth/signup',
   '/api/auth/login',
-  '/api/recruiting-inquiry',
-  '/api/planner-lead'
+  '/api/recruiting-inquiry'
 ];
 
 /* ------------------------------------------------------------------
@@ -331,131 +330,6 @@ app.post('/api/recruiting-inquiry', (req, res) => {
   mail.sendMail({ to, subject: `Recruiting inquiry from ${r.agency_name}`, text })
     .then(() => console.log(`[inquiry] #${id} emailed to ${to}`))
     .catch(err => console.error(`[inquiry] #${id} stored but the email failed:`, err.message));
-});
-
-/* ------------------------------------------------------------------
- * Agency Planner lead — "Email me my plan" on netenroll.com/agency-planner.
- *
- * Same shape as the recruiting inquiry: public, rate limited per IP, stored
- * before any email so a mail outage never loses a lead. The consent wording is
- * a server-side constant: what is recorded is what the page showed, never
- * text a client could submit.
- * ------------------------------------------------------------------ */
-const PLANNER_CONSENT_V1 = "Yes, NetEnroll may call and text me at this number about my plan and NetEnroll's services, including with automated technology. Consent isn't required to get my plan. Msg & data rates may apply. Reply STOP to opt out.";
-const PLANNER_RESULT_KEYS = ['take_home_y1', 'take_home_y2', 'take_home_y3', 'agents_needed', 'fe_apps_day', 'md_apps_day',
-  'fe_spend_day', 'md_spend_day', 'exit_y3_low', 'exit_y3_base', 'exit_y3_high'];
-const plannerTimes = new Map();
-
-function validatePlannerLead(body) {
-  const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-  const num = (v) => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN);
-  const intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
-  const inRange = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;
-  const row = {
-    source: str(body.source, 60) || 'agency-planner',
-    contact_name: str(body.contact_name, 200),
-    agency_name: str(body.agency_name, 200),
-    email: str(body.email, 254),
-    phone: str(body.phone, 40),
-    states: str(body.states, 500),
-    sells: str(body.sells, 10),
-    agents_today: num(body.agents_today),
-    agents_next_year: num(body.agents_next_year),
-    medicare_agents: num(body.medicare_agents),
-    close_rate: num(body.close_rate),
-    agent_pay: num(body.agent_pay),
-    goal: num(body.goal),
-    partners: num(body.partners),
-    plan_url: str(body.plan_url, 4000)
-  };
-  for (const [key, label] of [['contact_name', 'Your name'], ['agency_name', 'Agency name'], ['email', 'Email'], ['phone', 'Mobile'], ['states', 'States you write in']]) {
-    if (!row[key]) return { ok: false, error: `${label} is required` };
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) return { ok: false, error: 'A valid email address is required' };
-  if (row.phone.replace(/\D/g, '').length < 10) return { ok: false, error: 'A valid phone number is required' };
-  if (!['fe', 'md', 'both'].includes(row.sells)) return { ok: false, error: 'sells must be fe, md or both' };
-  if (!intIn(row.agents_today, 1, 1000)) return { ok: false, error: 'agents today must be a whole number from 1 to 1000' };
-  if (!intIn(row.agents_next_year, row.agents_today, 2000)) return { ok: false, error: 'agents next year must be a whole number from agents today to 2000' };
-  if (!intIn(row.medicare_agents, 0, row.agents_today)) return { ok: false, error: 'Medicare agents must be a whole number from 0 to agents today' };
-  if (!inRange(row.close_rate, 0.01, 0.5)) return { ok: false, error: 'close rate must be between 0.01 and 0.5' };
-  if (!inRange(row.agent_pay, 0, 1000)) return { ok: false, error: 'agent pay must be between 0 and 1000' };
-  if (!inRange(row.goal, 0, 100000000)) return { ok: false, error: 'goal must be between 0 and 100000000' };
-  if (!intIn(row.partners, 1, 6)) return { ok: false, error: 'partners must be a whole number from 1 to 6' };
-  const src = body.results && typeof body.results === 'object' ? body.results : {};
-  const results = {};
-  for (const key of PLANNER_RESULT_KEYS) {
-    const v = num(src[key]);
-    if (!Number.isFinite(v) || Math.abs(v) > 1e11) return { ok: false, error: `results.${key} must be a number` };
-    results[key] = v;
-  }
-  if (!row.plan_url.startsWith('https://netenroll.com/agency-planner/') || row.plan_url.length > 2000) {
-    return { ok: false, error: 'plan_url must be a netenroll.com/agency-planner link' };
-  }
-  const consent = body.sms_consent === true;
-  return {
-    ok: true,
-    results,
-    row: { ...row, results_json: JSON.stringify(results), sms_consent: consent ? 1 : 0, consent_text: consent ? PLANNER_CONSENT_V1 : null }
-  };
-}
-
-app.post('/api/planner-lead', (req, res) => {
-  const ip = clientIp(req);
-  const now = Date.now();
-  const recent = (plannerTimes.get(ip) || []).filter(t => now - t < INQUIRY_WINDOW_MS);
-  if (recent.length >= INQUIRY_MAX_PER_IP) {
-    return res.status(429).json({ error: 'Too many requests from this connection. Please call 904-512-8487.' });
-  }
-  const checked = validatePlannerLead(req.body || {});
-  if (!checked.ok) return res.status(400).json({ error: checked.error });
-
-  let id;
-  try {
-    id = db.insertPlannerLead({ ...checked.row, client_ip: ip, user_agent: String(req.headers['user-agent'] || '').slice(0, 300) || null });
-  } catch (err) {
-    return fail(res, 500, 'The request could not be saved', err);
-  }
-  plannerTimes.set(ip, [...recent, now]);
-  res.json({ ok: true, id });
-
-  const r = checked.row;
-  const x = checked.results;
-  const usd = (v) => `$${Math.round(v).toLocaleString('en-US')}`;
-  const sellsLabel = { fe: 'Final Expense', md: 'Medicare', both: 'Final Expense and Medicare' }[r.sells];
-  const send = (to, subject, text, who) => mail.sendMail({ to, subject, text })
-    .then(() => console.log(`[planner] lead #${id} ${who} email sent`))
-    .catch(err => console.error(`[planner] lead #${id} stored but the ${who} email failed:`, err.message));
-
-  const operator = process.env.PLANNER_LEAD_EMAIL || process.env.RECRUITING_INQUIRY_EMAIL;
-  if (!operator) {
-    console.warn(`[planner] lead #${id} stored; PLANNER_LEAD_EMAIL and RECRUITING_INQUIRY_EMAIL are not set so no operator email was sent`);
-  } else {
-    send(operator, `Agency Planner lead: ${r.agency_name} (${r.agents_today} agents)`, [
-      `Name: ${r.contact_name}`, `Agency: ${r.agency_name}`, `Email: ${r.email}`, `Phone: ${r.phone}`, `States: ${r.states}`,
-      `Sells: ${sellsLabel}`, `Agents today: ${r.agents_today}`, `Agents in a year: ${r.agents_next_year}`, `Medicare agents: ${r.medicare_agents}`,
-      `Close rate: ${Math.round(r.close_rate * 1000) / 10}%`, `Agent pay per placed policy: ${usd(r.agent_pay)}`, `Goal: ${usd(r.goal)}/month`,
-      `Partners: ${r.partners}`, '',
-      `Take-home per month: Year 1 ${usd(x.take_home_y1)}, Year 2 ${usd(x.take_home_y2)}, Year 3 ${usd(x.take_home_y3)}`,
-      `Agents needed for the goal: ${Math.round(x.agents_needed)}`,
-      `FE applications a day: ${Math.round(x.fe_apps_day * 10) / 10}`, `Medicare applications a day: ${Math.round(x.md_apps_day * 10) / 10}`,
-      `Application spend a day: FE ${usd(x.fe_spend_day)}, Medicare ${usd(x.md_spend_day)}`,
-      `Exit value end of Year 3: ${usd(x.exit_y3_low)} low, ${usd(x.exit_y3_base)} base, ${usd(x.exit_y3_high)} high`,
-      `Text/call consent: ${r.sms_consent ? 'yes' : 'no'}`, '',
-      `Plan: ${r.plan_url}`, `Lead #${id}`
-    ].join('\n'), 'operator');
-  }
-
-  const first = r.contact_name.split(/\s+/)[0];
-  send(r.email, 'Your agency plan from NetEnroll', [
-    `Hi ${first},`, '',
-    `You'd take home about ${usd(x.take_home_y2)} a month in Year 2.`,
-    `To hit ${usd(r.goal)} a month, your plan takes ${Math.round(x.agents_needed)} agents and about ${Math.round((x.fe_apps_day + x.md_apps_day) * 10) / 10} submitted applications a day.`,
-    `At the end of Year 3 your agency would sell for about ${usd(x.exit_y3_base)} (range ${usd(x.exit_y3_low)} to ${usd(x.exit_y3_high)}).`, '',
-    `Reopen your plan: ${r.plan_url}`,
-    'Open your producer account: https://agents.netenroll.com/login?mode=create',
-    'Questions? Call 904-512-8487.', '',
-    'NetEnroll'
-  ].join('\n'), 'user');
 });
 
 app.use((req, res, next) => {
