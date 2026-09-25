@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { MD_MONTHS, recipe, type Inputs, type LineRecipe } from './engine/model';
+import { MD_MONTHS, partnerCountOf, recipe, SPLIT_KEYS, type Inputs, type LineRecipe } from './engine/model';
 import { C } from './Charts';
 import { compact, int, money, num1, pct } from './format';
 import { Card, Num } from './ui';
@@ -8,7 +8,6 @@ export type GoalState = { amount: number; partner: number; feMix: number };
 export const GOAL_DEFAULT: GoalState = { amount: 25000, partner: 0, feMix: 0.8 };
 
 const PRESETS = [10000, 25000, 50000, 100000, 250000];
-const SPLITS = ['split1', 'split2', 'split3', 'split4'] as const;
 
 const B = ({ children }: { children: ReactNode }) => <b className="font-semibold text-ink">{children}</b>;
 
@@ -119,12 +118,15 @@ function LineCard({ name, when, color, l, conv, place, perAgent, off }: {
 }
 
 export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: string[]; goal: GoalState; setGoal: (g: GoalState) => void }) {
-  const share = inputs[SPLITS[goal.partner]];
+  const count = partnerCountOf(inputs);
+  const partners = names.slice(0, count);
+  const me = Math.min(goal.partner, count - 1);
+  const share = inputs[SPLIT_KEYS[me]];
   const r = useMemo(() => recipe(inputs, goal.amount, share, goal.feMix), [inputs, goal, share]);
   const [draft, setDraft] = useState(int(goal.amount));
   useEffect(() => setDraft(int(goal.amount)), [goal.amount]);
   const set = (p: Partial<GoalState>) => setGoal({ ...goal, ...p });
-  const you = names[goal.partner];
+  const you = names[me];
   const { fe, md } = r;
   const mdAvg = MD_MONTHS.length / 12; // Medicare per-selling-month → monthly average
   const revenueMo = fe.revenue + md.revenue * mdAvg;
@@ -134,15 +136,15 @@ export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: 
   const planCallsAt36 = inputs.feCallsStart + inputs.feCallsQtrInc * 11;
 
   // Revenue → costs → every partner's cut (monthly average).
-  const payoutOf = (k: number) => r.companyNet * inputs[SPLITS[k]] * (1 - inputs.holdback);
-  const partnersTotal = [0, 1, 2, 3].reduce((a, k) => a + payoutOf(k), 0);
+  const payoutOf = (k: number) => r.companyNet * inputs[SPLIT_KEYS[k]] * (1 - inputs.holdback);
+  const partnersTotal = partners.reduce((a, _, k) => a + payoutOf(k), 0);
   const flow: [string, number, string, boolean?][] = [
     ['Agent payouts', fe.payouts + md.payouts * mdAvg, '#3f3f46'],
     ['Applications', fe.callCost + md.callCost * mdAvg, '#52525b'],
     ['Chargebacks', fe.chargebacks + md.chargebacks * mdAvg, '#5f5f69'],
     ['Retention', fe.retention + md.retention * mdAvg, '#6b6b75'],
     ...(inputs.holdback > 0 ? [['Holdback', r.companyNet * inputs.holdback, '#71717a'] as [string, number, string]] : []),
-    ...names.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === goal.partner ? C.brand : '#3d7a66', k === goal.partner]),
+    ...partners.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === me ? C.brand : '#3d7a66', k === me]),
     ...(Math.abs(partnersTotal + r.companyNet * inputs.holdback - r.companyNet) > 1 ? [['Unallocated', Math.max(0, r.companyNet - partnersTotal - r.companyNet * inputs.holdback), '#cbd1cc'] as [string, number, string]] : []),
   ];
   const flowTotal = flow.reduce((a, [, v]) => a + v, 0) || 1;
@@ -176,12 +178,12 @@ export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: 
           <div className="mt-2 text-[12px] text-muted">That's <span className="text-sub">{money(goal.amount * 12)}</span> a year{inputs.holdback > 0 ? ` after a ${pct(inputs.holdback)} holdback` : ', pre-tax'}.</div>
 
           <div className="mt-4 text-[12px] font-medium text-muted">Whose paycheck?</div>
-          <div className="mt-1.5 grid grid-cols-4 gap-1.5">
-            {names.map((n, k) => (
-              <button key={k} onClick={() => set({ partner: k })}
-                className={`truncate rounded-md px-2 py-1.5 text-left text-[12px] ring-1 transition-colors ${k === goal.partner ? 'bg-surface2 text-ink ring-ink/60' : 'text-muted ring-line hover:text-ink'}`}>
+          <div className="mt-1.5 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}>
+            {partners.map((n, k) => (
+              <button key={k} title={n} onClick={() => set({ partner: k })}
+                className={`truncate rounded-md px-2 py-1.5 text-left text-[12px] ring-1 transition-colors ${k === me ? 'bg-surface2 text-ink ring-ink/60' : 'text-muted ring-line hover:text-ink'}`}>
                 <div className="truncate font-medium">{n}</div>
-                <div className="text-[11px] opacity-80">{pct(inputs[SPLITS[k]])} split</div>
+                <div className="text-[11px] opacity-80">{pct(inputs[SPLIT_KEYS[k]])}{count > 4 ? '' : ' split'}</div>
               </button>
             ))}
           </div>

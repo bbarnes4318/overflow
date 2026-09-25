@@ -1,11 +1,10 @@
 import { useMemo, type ReactNode } from 'react';
-import type { Inputs, Outputs } from './engine/model';
+import { SPLIT_KEYS, type Inputs, type Outputs } from './engine/model';
 import { levers, type YearExit } from './engine/valuation';
 import { C, GOLD, SellOrHoldChart } from './Charts';
 import { compact, money, num1, pct } from './format';
 import { Card, Num } from './ui';
 
-const SPLITS = ['split1', 'split2', 'split3', 'split4'] as const;
 const mult = (v: number) => `${+v.toFixed(2)}x`;
 const B = ({ children }: { children: ReactNode }) => <b className="font-semibold text-ink">{children}</b>;
 const Badge = ({ lens }: { lens: YearExit['lens'] }) => (
@@ -118,7 +117,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
               {e.partners.map((pt, k) => (
                 <tr key={k} className="h-[26px] border-t border-line/70">
                   <td className="truncate font-medium text-ink">{names[k]}</td>
-                  <td className="text-right text-sub">{pct(inputs[SPLITS[k]])}</td>
+                  <td className="text-right text-sub">{pct(inputs[SPLIT_KEYS[k]])}</td>
                   {splitsOk ? (
                     <>
                       <td title={money(pt.share)} className="text-right font-semibold text-ink">{compact(pt.share)}</td>

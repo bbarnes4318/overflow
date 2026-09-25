@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { DEFAULTS, feCommOf, MD_MONTHS, runModel, type Chain, type InputKey, type Inputs, type Outputs } from './engine/model';
+import { DEFAULTS, feCommOf, MAX_PARTNERS, MD_MONTHS, partnerCountOf, runModel, SPLIT_KEYS, type Chain, type InputKey, type Inputs, type Outputs } from './engine/model';
 import { CashFlowChart, MedicareChart, OverviewChart, TeamChart, C } from './Charts';
 import { Card, useCountUp } from './ui';
 import { Goal, GOAL_DEFAULT, type GoalState } from './Goal';
@@ -71,9 +71,8 @@ const LINES: { name: Line; color: string; groups: Group[] }[] = [
     ]],
   ] },
 ];
-const SPLIT_KEYS: InputKey[] = ['split1', 'split2', 'split3', 'split4'];
 const ALL_KEYS = Object.keys(DEFAULTS) as InputKey[];
-const DEFAULT_NAMES = ['Partner 1', 'Partner 2', 'Partner 3', 'Partner 4'];
+const DEFAULT_NAMES = Array.from({ length: MAX_PARTNERS }, (_, i) => `Partner ${i + 1}`);
 
 const toDisplay = (unit: Unit, v: number) => (unit === '%' ? +(v * 100).toFixed(4) : v);
 const fromDisplay = (unit: Unit, v: number) => (unit === '%' ? v / 100 : v);
@@ -91,7 +90,7 @@ function readGoal(src: Record<string, unknown> | undefined): GoalState {
   const n = (v: unknown) => (v == null || v === '' ? NaN : Number(v));
   const a = n(src?.amount), p = n(src?.partner), m = n(src?.feMix);
   if (a >= 0 && a <= 1e8) g.amount = a;
-  if ([0, 1, 2, 3].includes(p)) g.partner = p;
+  if (Number.isInteger(p) && p >= 0 && p < MAX_PARTNERS) g.partner = p;
   if (m >= 0 && m <= 1) g.feMix = m;
   return g;
 }
@@ -113,7 +112,7 @@ function loadState(): State {
       const s = JSON.parse(localStorage.getItem(LS_KEY) ?? 'null');
       if (s) {
         src = s.inputs;
-        if (Array.isArray(s.names) && s.names.length === 4) s.names.forEach((n: unknown, i: number) => typeof n === 'string' && (names[i] = n));
+        if (Array.isArray(s.names)) s.names.slice(0, MAX_PARTNERS).forEach((n: unknown, i: number) => typeof n === 'string' && (names[i] = n));
         goal = readGoal(s.goal);
         if (s.page === 'Income goal' || s.page === 'Exit value') page = s.page;
       }
@@ -416,6 +415,13 @@ export default function App() {
   const setPage = (page: Page) => setState((s) => ({ ...s, page }));
   const openExit = (y: 1 | 2 | 3) => { setExitYear(y); setPage('Exit value'); };
   const bestExit = ex.reduce((a, b) => (b.walkAway > a.walkAway ? b : a)).y as 1 | 2 | 3;
+  // Changing the number of partners splits the company evenly among them; edit the splits after.
+  const setPartners = (n: number) => setState((s) => {
+    const count = Math.min(MAX_PARTNERS, Math.max(1, n));
+    const inputs = { ...s.inputs, partnerCount: count };
+    SPLIT_KEYS.forEach((k, j) => (inputs[k] = j < count ? 1 / count : 0));
+    return { ...s, inputs, goal: { ...s.goal, partner: Math.min(s.goal.partner, count - 1) } };
+  });
   const setName = (i: number, n: string) => setState((s) => ({ ...s, names: s.names.map((x, j) => (j === i ? n : x)) }));
   const splitsOk = Math.abs(out.splitTotal - 1) < 1e-6;
   const line = LINES.find((l) => l.name === tab)!;
@@ -564,11 +570,20 @@ export default function App() {
 
             {/* right: partners + vs paying per call */}
             <div className="flex w-[360px] shrink-0 flex-col gap-3">
-            <Card className="px-4 py-3">
-              <div className="mb-1 flex items-baseline justify-between">
+            <Card className="flex min-h-0 flex-col px-4 py-3">
+              <div className="mb-1 flex items-center gap-2">
                 <h2 className="text-[14px] font-semibold">Partner payouts</h2>
                 <span className="text-[12px] text-muted">{inputs.holdback === 0 ? 'pre-tax' : `after ${pct(inputs.holdback)} holdback`}</span>
+                <div className="ml-auto flex items-center gap-1 text-[12px] text-muted" role="group" aria-label="Number of partners">
+                  <span className="mr-1">Partners</span>
+                  <button onClick={() => setPartners(partnerCountOf(inputs) - 1)} disabled={partnerCountOf(inputs) <= 1} aria-label="Remove a partner"
+                    className="grid h-6 w-6 place-items-center rounded-md bg-white text-[14px] leading-none text-ink ring-1 ring-line hover:bg-surface2 disabled:opacity-40">−</button>
+                  <span className="tnum w-4 text-center text-[13px] font-semibold text-ink" aria-live="polite">{partnerCountOf(inputs)}</span>
+                  <button onClick={() => setPartners(partnerCountOf(inputs) + 1)} disabled={partnerCountOf(inputs) >= MAX_PARTNERS} aria-label="Add a partner"
+                    className="grid h-6 w-6 place-items-center rounded-md bg-white text-[14px] leading-none text-ink ring-1 ring-line hover:bg-surface2 disabled:opacity-40">+</button>
+                </div>
               </div>
+              <div className="scroll-y min-h-0 overflow-y-auto">
               <table className="w-full text-[13px]">
                 <thead>
                   <tr className="h-6 text-[12px] text-muted">
@@ -603,8 +618,9 @@ export default function App() {
                   ))}
                 </tbody>
               </table>
+              </div>
               {!splitsOk && (
-                <div className="mt-2 rounded-md bg-cost/10 px-3 py-2 text-[12px] text-cost">
+                <div className="mt-2 shrink-0 rounded-md bg-cost/10 px-3 py-2 text-[12px] text-cost">
                   Splits add up to {num1(out.splitTotal * 100)}%. Make them total 100% to see payouts.
                 </div>
               )}

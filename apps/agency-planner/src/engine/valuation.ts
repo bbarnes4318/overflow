@@ -1,5 +1,5 @@
 // Exit value: what the agency would sell for at the end of Year 1, 2 and 3. Pure; the UI never does math.
-import { runModel, type InputKey, type Inputs, type Outputs } from './model';
+import { runModel, splitsOf, type InputKey, type Inputs, type Outputs } from './model';
 
 export interface Tier { floor: number; low: number; base: number; high: number; buyer: string }
 
@@ -45,7 +45,7 @@ const range = (v: number, [l, b, h]: number[]): Range => ({ low: v * l, base: v 
 export function exitValue(i: Inputs, out: Outputs): YearExit[] {
   const mdKeep = 1 - i.mdLapse;
   const feKeep = 1 - i.feLapse;
-  const splits = [i.split1, i.split2, i.split3, i.split4];
+  const splits = splitsOf(i);
   let cumProfit = 0;
   return [1, 2, 3].map((y) => {
     const Y = out.years[y - 1];

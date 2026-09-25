@@ -34,6 +34,9 @@ export const DEFAULTS = {
   split2: 0.25,
   split3: 0.25,
   split4: 0.25,
+  split5: 0,
+  split6: 0,
+  partnerCount: 4, // 1–MAX_PARTNERS; only the first partnerCount splits are used
   comparePerCall: 30, // display only: the per-call price in the "vs paying per call" card
   // Exit valuation
   exitMdBookMult: 2.0, // Medicare renewal book multiple (× next-12-month renewals)
@@ -45,6 +48,11 @@ export const DEFAULTS = {
 
 export type Inputs = typeof DEFAULTS;
 export type InputKey = keyof Inputs;
+
+export const MAX_PARTNERS = 6;
+export const SPLIT_KEYS = ['split1', 'split2', 'split3', 'split4', 'split5', 'split6'] as const;
+export const partnerCountOf = (i: Inputs) => Math.min(MAX_PARTNERS, Math.max(1, Math.round(i.partnerCount) || 1));
+export const splitsOf = (i: Inputs) => SPLIT_KEYS.slice(0, partnerCountOf(i)).map((k) => i[k]);
 
 // LOA model: carriers pay the FE first-year commission to the agency.
 export const feCommOf = (i: Inputs) => i.feMonthlyPremium * 12 * i.feCommRate;
@@ -141,7 +149,7 @@ export interface Outputs {
   years: YearSummary[]; // 3
   periods: Period[]; // Year 1, Year 2, Year 3, All 3 years
   cumulative: { totalRev: number; totalNet: number; margin: number };
-  partners: { yearly: number[]; total: number }[]; // 4
+  partners: { yearly: number[]; total: number }[]; // one per partner (partnerCount)
   splitTotal: number;
   compare: {
     feSavedYear: number[];
@@ -379,7 +387,7 @@ export function runModel(i: Inputs): Outputs {
 
   const cumRev = sum(years.map((y) => y.totalRev));
   const cumNet = sum(years.map((y) => y.totalNet));
-  const splits = [i.split1, i.split2, i.split3, i.split4];
+  const splits = splitsOf(i);
   const partners = splits.map((s) => {
     const yearly = years.map((y) => y.totalNet * s * (1 - i.holdback));
     return { yearly, total: sum(yearly) };

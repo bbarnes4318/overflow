@@ -85,6 +85,12 @@ describe('exit edge cases', () => {
       expect(y.lens).toBe('book');
     });
   });
+  it('sale proceeds follow the partner count', () => {
+    const i = { ...DEFAULTS, partnerCount: 2, split1: 0.5, split2: 0.5 };
+    const e = exitValue(i, runModel(i));
+    expect(e[2].partners.length).toBe(2);
+    near(e[2].partners[0].share, e[2].afterTax / 2);
+  });
   it('all splits 0 gives partners 0, no NaN', () => {
     const i = { ...DEFAULTS, split1: 0, split2: 0, split3: 0, split4: 0 };
     exitValue(i, runModel(i)).forEach((y) =>

@@ -91,6 +91,19 @@ describe('Partners', () => {
     near(runModel({ ...DEFAULTS, split1: 0.4, split2: 0.3, split3: 0.2, split4: 0.1 }).partners[0].yearly[0], 600164.73));
   it('holdback 30%', () =>
     runModel({ ...DEFAULTS, holdback: 0.3 }).partners.forEach((p) => near(p.yearly[0], 262572.07)));
+  it('partner count sets how many partners share the profit', () => {
+    const two = runModel({ ...DEFAULTS, partnerCount: 2, split1: 0.6, split2: 0.4 });
+    expect(two.partners.length).toBe(2);
+    near(two.splitTotal, 1);
+    near(two.partners[0].yearly[0], out.years[0].totalNet * 0.6);
+    const six = runModel({ ...DEFAULTS, partnerCount: 6, split1: 0.5, split2: 0.1, split3: 0.1, split4: 0.1, split5: 0.1, split6: 0.1 });
+    expect(six.partners.length).toBe(6);
+    near(six.partners[5].total, out.cumulative.totalNet * 0.1);
+    // splits beyond the count are ignored; the count is clamped to 1..6
+    expect(runModel({ ...DEFAULTS, partnerCount: 3 }).splitTotal).toBeCloseTo(0.75);
+    expect(runModel({ ...DEFAULTS, partnerCount: 0 }).partners.length).toBe(1);
+    expect(runModel({ ...DEFAULTS, partnerCount: 99 }).partners.length).toBe(6);
+  });
 });
 
 describe('vs paying per call', () => {
