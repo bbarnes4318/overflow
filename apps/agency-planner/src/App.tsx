@@ -332,6 +332,18 @@ function Modal({ title, onClose, children, width }: { title: string; onClose: ()
 }
 const LOA_NOTE = "Your agents write under your agency's contracts. Carriers pay commissions to your agency. Your agency pays your agents per placed policy and pays for the calls. Your agents pay nothing for leads.";
 
+function PartnerStepper({ n, onChange, label, className = '' }: { n: number; onChange: (n: number) => void; label?: string; className?: string }) {
+  const btn = 'grid h-6 w-6 place-items-center rounded-md bg-white text-[14px] leading-none text-ink ring-1 ring-line hover:bg-surface2 disabled:opacity-40';
+  return (
+    <div className={`flex items-center gap-1 text-[12px] text-muted ${className}`} role="group" aria-label="Number of partners">
+      {label && <span className="mr-1">{label}</span>}
+      <button onClick={() => onChange(n - 1)} disabled={n <= 1} aria-label="Remove a partner" className={btn}>−</button>
+      <span className="tnum w-4 text-center text-[13px] font-semibold text-ink" aria-live="polite">{n}</span>
+      <button onClick={() => onChange(n + 1)} disabled={n >= MAX_PARTNERS} aria-label="Add a partner" className={btn}>+</button>
+    </div>
+  );
+}
+
 function LoaPill() {
   return (
     <span tabIndex={0} aria-describedby="loa-note"
@@ -490,6 +502,18 @@ export default function App() {
               </div>
             </div>
             <div className="scroll-y min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-3.5">
+              {tab === 'Company' && (
+                <section>
+                  <h3 className="px-1 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">Partners</h3>
+                  <div className="divide-y divide-line rounded-lg bg-white ring-1 ring-line">
+                    <div className="flex h-[52px] items-center px-3.5">
+                      <span className="text-[13px] text-sub">Number of partners</span>
+                      <PartnerStepper n={partnerCountOf(inputs)} onChange={setPartners} className="ml-auto" />
+                    </div>
+                    <p className="px-3.5 py-2.5 text-[12px] leading-[16px] text-muted">Profit is split evenly when you change this. Set names and each partner's split under Partner payouts.</p>
+                  </div>
+                </section>
+              )}
               {line.groups.map(([title, ctls, note]) => (
                 <section key={title}>
                   <h3 className="px-1 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">{title}</h3>
@@ -574,14 +598,7 @@ export default function App() {
               <div className="mb-1 flex items-center gap-2">
                 <h2 className="text-[14px] font-semibold">Partner payouts</h2>
                 <span className="text-[12px] text-muted">{inputs.holdback === 0 ? 'pre-tax' : `after ${pct(inputs.holdback)} holdback`}</span>
-                <div className="ml-auto flex items-center gap-1 text-[12px] text-muted" role="group" aria-label="Number of partners">
-                  <span className="mr-1">Partners</span>
-                  <button onClick={() => setPartners(partnerCountOf(inputs) - 1)} disabled={partnerCountOf(inputs) <= 1} aria-label="Remove a partner"
-                    className="grid h-6 w-6 place-items-center rounded-md bg-white text-[14px] leading-none text-ink ring-1 ring-line hover:bg-surface2 disabled:opacity-40">−</button>
-                  <span className="tnum w-4 text-center text-[13px] font-semibold text-ink" aria-live="polite">{partnerCountOf(inputs)}</span>
-                  <button onClick={() => setPartners(partnerCountOf(inputs) + 1)} disabled={partnerCountOf(inputs) >= MAX_PARTNERS} aria-label="Add a partner"
-                    className="grid h-6 w-6 place-items-center rounded-md bg-white text-[14px] leading-none text-ink ring-1 ring-line hover:bg-surface2 disabled:opacity-40">+</button>
-                </div>
+                <PartnerStepper n={partnerCountOf(inputs)} onChange={setPartners} className="ml-auto" label="Partners" />
               </div>
               <div className="scroll-y min-h-0 overflow-y-auto">
               <table className="w-full text-[13px]">
