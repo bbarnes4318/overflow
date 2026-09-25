@@ -6,15 +6,14 @@ import type { Outputs } from './engine/model';
 import type { YearExit } from './engine/valuation';
 import { compact, fmt, FE_ROWS, MD_ROWS, type Kind } from './format';
 
-// NetEnroll light theme. brand = the site's green (UI and profit taken), net = success green, fe = blue so the
-// Final Expense line never reads as a second green; every mark is >= 3:1 on white. Costs are neutral on purpose.
-// Keep in sync with the @theme block in index.css.
+// NetEnroll light theme. Green means money (profit, sale value); the product lines are cool blues, Final Expense
+// indigo and Medicare sky. Costs are neutral on purpose. Keep in sync with the @theme block in index.css.
 export const C = {
   brand: '#0c5c43',
-  fe: '#0c5c43', feLight: '#7fb5a1',
-  md: '#475569', mdLight: '#9aa7b8',
-  net: '#15a06a', cost: '#b3bcb8',
-  surface: '#ffffff', grid: '#e3e7ed', muted: '#5a6660', ink: '#0e1512', neg: '#b42318',
+  fe: '#4f46e5', feLight: '#a5b4fc',
+  md: '#0ea5e9', mdLight: '#7dd3fc',
+  net: '#059669', cost: '#cbd5e1',
+  surface: '#ffffff', grid: '#e8ebf1', muted: '#5b6475', ink: '#0b1220', neg: '#b42318',
 };
 const cursor = { fill: '#0f172a', fillOpacity: 0.04 };
 
@@ -99,16 +98,16 @@ export function CashFlowChart({ out }: { out: Outputs }) {
           if (!active || !payload?.length) return null;
           const r = payload[0].payload as (typeof data)[number];
           return <Tip title={`Month ${r.month} · Year ${Math.ceil(r.month / 12)}`} rows={[
-            ['Advanced commissions', '$', r.advRev, C.feLight], ['Months 10–12 payments', '$', r.tailCash, '#c6dfd5'],
+            ['Advanced commissions', '$', r.advRev, '#818cf8'], ['Months 10–12 payments', '$', r.tailCash, '#c7d2fe'],
             ['Cash in', '$', r.cashIn], ['Agent payouts', '$', r.agentPayout, C.cost], ['Application costs', '$', r.callCost, C.cost],
             ['Chargebacks', '$', r.lapseCost, C.cost], ['Cash out', '$', r.totalCost], ['Net cash flow', '$', r.cashNet, C.net],
           ]} />;
         }} />
         <Legend {...legend} />
-        <Bar dataKey="advRev" name="Advanced commissions" stackId="in" fill={C.feLight} isAnimationActive={false} />
-        <Bar dataKey="tailCash" name="Months 10–12 payments" stackId="in" fill="#c6dfd5" isAnimationActive={false} radius={[2, 2, 0, 0]} />
-        <Line dataKey="totalCost" name="Cash out (costs)" stroke={C.md} strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} />
-        <Line dataKey="cashNet" name="Net cash flow" stroke={C.fe} strokeWidth={3} dot={false} isAnimationActive={false} />
+        <Bar dataKey="advRev" name="Advanced commissions" stackId="in" fill="#818cf8" isAnimationActive={false} />
+        <Bar dataKey="tailCash" name="Months 10–12 payments" stackId="in" fill="#c7d2fe" isAnimationActive={false} radius={[2, 2, 0, 0]} />
+        <Line dataKey="totalCost" name="Cash out (costs)" stroke="#334155" strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} />
+        <Line dataKey="cashNet" name="Net cash flow" stroke={C.net} strokeWidth={3} dot={false} isAnimationActive={false} />
       </ComposedChart>
     )}</Fit>
   );
@@ -172,7 +171,7 @@ export function MedicareChart({ out }: { out: Outputs }) {
   );
 }
 
-export const GOLD = '#15a06a'; // sale price: the money green
+export const GOLD = '#10b981'; // sale price: money green
 
 // Total wealth if you sell at each year-end: profit already taken + sale price + FE money still owed.
 export function SellOrHoldChart({ ex }: { ex: YearExit[] }) {

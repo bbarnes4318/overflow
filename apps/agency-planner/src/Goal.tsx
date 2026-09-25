@@ -144,7 +144,7 @@ export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: 
     ['Chargebacks', fe.chargebacks + md.chargebacks * mdAvg, '#64748b'],
     ['Retention', fe.retention + md.retention * mdAvg, '#94a3b8'],
     ...(inputs.holdback > 0 ? [['Holdback', r.companyNet * inputs.holdback, '#64748b'] as [string, number, string]] : []),
-    ...partners.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === me ? C.brand : '#15a06a', k === me]),
+    ...partners.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === me ? C.brand : '#10b981', k === me]),
     ...(Math.abs(partnersTotal + r.companyNet * inputs.holdback - r.companyNet) > 1 ? [['Unallocated', Math.max(0, r.companyNet - partnersTotal - r.companyNet * inputs.holdback), '#cbd1cc'] as [string, number, string]] : []),
   ];
   const flowTotal = flow.reduce((a, [, v]) => a + v, 0) || 1;

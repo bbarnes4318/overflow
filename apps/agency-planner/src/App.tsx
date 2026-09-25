@@ -97,8 +97,9 @@ function readIntro(): IntroSaved {
   } catch { return { done: false }; }
 }
 function saveIntro(v: IntroSaved) {
-  try { localStorage.setItem(INTRO_KEY, JSON.stringify(v)); } catch { /* storage unavailable */ }
+  try { localStorage.setItem(INTRO_KEY, JSON.stringify(v)); sessionStorage.setItem(INTRO_KEY, '1'); } catch { /* storage unavailable */ }
 }
+const introSeenThisVisit = () => { try { return sessionStorage.getItem(INTRO_KEY) === '1'; } catch { return false; } };
 type Page = 'Planner' | 'Income goal' | 'Exit value';
 const PAGE_PARAM: Partial<Record<Page, string>> = { 'Income goal': 'goal', 'Exit value': 'exit' };
 type State = { inputs: Inputs; names: string[]; goal: GoalState; page: Page };
@@ -421,16 +422,16 @@ export default function App() {
   const [box, setBox] = useState({ s: 1, w: 1440, h: 840 });
   const [narrow, setNarrow] = useState(() => innerWidth < 1024);
   const [openAnyway, setOpenAnyway] = useState(false);
-  // Open Quick Start for anyone who hasn't finished or skipped it, unless they arrived by a share link.
+  // The intro is the front door: it opens once per visit, never over a share link.
   const [intro, setIntro] = useState<{ open: boolean; answers?: Answers }>(() => {
     const saved = readIntro();
-    return { open: !location.search && !saved.done, answers: saved.answers };
+    return { open: !location.search && !introSeenThisVisit(), answers: saved.answers };
   });
   const applyIntro = (a: Answers) => {
     const { inputs, feMix } = buildInputs(a);
     setState((s) => ({ ...s, inputs, goal: { amount: a.goal, partner: 0, feMix }, page: 'Planner' }));
     saveIntro({ answers: a, done: true });
-    setIntro({ open: true, answers: a });
+    setIntro({ open: false, answers: a });
   };
   const closeIntro = () => {
     setIntro((i) => ({ ...i, open: false }));

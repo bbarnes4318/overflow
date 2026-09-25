@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
-/* NetEnroll light theme: white cards on a pale page, one green family plus slate. Brand green and fonts come from
-   netenroll.com. fe = brand green, md = slate, net = the lighter "money" green. Keep in sync with C in Charts.tsx. */
+/* NetEnroll light theme. Green means money: profit and sale value are emerald, buttons are NetEnroll green.
+   The two product lines are cool blues: Final Expense indigo, Medicare sky. Keep in sync with C in Charts.tsx. */
 @theme {
   --color-bg: #ffffff;
-  --color-canvas: #f5f7f6;
+  --color-canvas: #f6f7fb;
   --color-surface: #ffffff;
-  --color-surface2: #f1f4f2;
-  --color-line: #e3e8e5;
-  --color-ink: #0e1512;
-  --color-sub: #2b342f;
-  --color-muted: #5a6660;
+  --color-surface2: #f1f3f8;
+  --color-line: #e4e7ee;
+  --color-ink: #0b1220;
+  --color-sub: #334155;
+  --color-muted: #5b6475;
   --color-brand: #0c5c43; /* NetEnroll green: buttons, sliders, focus, profit */
-  --color-fe: #0c5c43;
-  --color-md: #475569;
-  --color-net: #15a06a;
-  --color-netink: #0f6e4e; /* net green for small text on tinted backgrounds */
-  --color-gold: #15a06a;
+  --color-fe: #4f46e5;
+  --color-md: #0ea5e9;
+  --color-net: #059669;
+  --color-netink: #047857; /* net green for small text on tinted backgrounds */
+  --color-gold: #10b981;
   --color-cost: #b42318;
   --font-sans: Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-display: "General Sans", Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -56,7 +56,12 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border: 1.5px
 .scroll-y { scrollbar-width: thin; scrollbar-color: #cbd1cc transparent; }
 .scroll-y::-webkit-scrollbar { display: block; width: 6px; }
 .scroll-y::-webkit-scrollbar-thumb { background: #cbd1cc; border-radius: 3px; }
-/* Quick Start reveal cards */
+/* Intro slider on the dark hero */
+.intro-range::-webkit-slider-runnable-track { background: linear-gradient(to right, #34d399 var(--fill), rgba(255,255,255,.15) var(--fill)) !important; height: 6px !important; border-radius: 3px; }
+.intro-range::-moz-range-track { background: linear-gradient(to right, #34d399 var(--fill), rgba(255,255,255,.15) var(--fill)) !important; height: 6px !important; border-radius: 3px; }
+.intro-range::-webkit-slider-thumb { width: 24px !important; height: 24px !important; margin-top: -9px !important; box-shadow: 0 0 0 4px rgba(52,211,153,.35) !important; }
+.intro-range::-moz-range-thumb { width: 22px !important; height: 22px !important; border: 0 !important; box-shadow: 0 0 0 4px rgba(52,211,153,.35); }
+/* Intro cards */
 .intro-rise { animation: intro-rise .4s ease-out both; }
 @keyframes intro-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .intro-rise { animation: none; } }
