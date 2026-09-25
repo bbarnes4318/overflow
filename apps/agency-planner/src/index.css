@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
-/* NetEnroll light theme. Neutrals, brand green and fonts come from netenroll.com's own tokens (index.html :root);
-   surface2 and the chart roles follow the Agency Planner spec. Checked for WCAG AA against white and --color-surface. */
+/* NetEnroll light theme: white cards on a pale page, one green family plus slate. Brand green and fonts come from
+   netenroll.com. fe = brand green, md = slate, net = the lighter "money" green. Keep in sync with C in Charts.tsx. */
 @theme {
   --color-bg: #ffffff;
-  --color-canvas: #ffffff;
-  --color-surface: #f4f6f4;
-  --color-surface2: #eef1f5;
-  --color-line: #e1e6e2;
+  --color-canvas: #f5f7f6;
+  --color-surface: #ffffff;
+  --color-surface2: #f1f4f2;
+  --color-line: #e3e8e5;
   --color-ink: #0e1512;
   --color-sub: #2b342f;
   --color-muted: #5a6660;
   --color-brand: #0c5c43; /* NetEnroll green: buttons, sliders, focus, profit */
-  --color-fe: #2563eb; /* Final Expense line in charts, kept apart from the greens */
-  --color-md: #d95926;
-  --color-net: #16865f;
+  --color-fe: #0c5c43;
+  --color-md: #475569;
+  --color-net: #15a06a;
   --color-netink: #0f6e4e; /* net green for small text on tinted backgrounds */
-  --color-gold: #8f6a00;
+  --color-gold: #15a06a;
   --color-cost: #b42318;
   --font-sans: Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-display: "General Sans", Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;

@@ -238,7 +238,7 @@ const Btn = ({ onClick, children, outline }: { onClick: () => void; children: Re
 
 const SIGNUP = 'https://agents.netenroll.com/login?mode=create';
 const SignupBtn = ({ className = '' }: { className?: string }) => (
-  <a href={SIGNUP} className={`inline-flex items-center justify-center rounded-md bg-brand px-3.5 font-semibold text-white transition-colors hover:bg-[#094a36] ${className}`}>
+  <a href={SIGNUP} className={`inline-flex items-center justify-center whitespace-nowrap rounded-md bg-brand px-3.5 font-semibold text-white transition-colors hover:bg-[#094a36] ${className}`}>
     Open my producer account
   </a>
 );
@@ -421,12 +421,10 @@ export default function App() {
   const [box, setBox] = useState({ s: 1, w: 1440, h: 840 });
   const [narrow, setNarrow] = useState(() => innerWidth < 1024);
   const [openAnyway, setOpenAnyway] = useState(false);
-  // First visit only (no share link, no saved plan, intro not finished): open Quick Start over the planner.
+  // Open Quick Start for anyone who hasn't finished or skipped it, unless they arrived by a share link.
   const [intro, setIntro] = useState<{ open: boolean; answers?: Answers }>(() => {
     const saved = readIntro();
-    let hasPlan = true;
-    try { hasPlan = localStorage.getItem(LS_KEY) != null; } catch { /* storage unavailable */ }
-    return { open: !location.search && !hasPlan && !saved.done, answers: saved.answers };
+    return { open: !location.search && !saved.done, answers: saved.answers };
   });
   const applyIntro = (a: Answers) => {
     const { inputs, feMix } = buildInputs(a);
@@ -503,7 +501,7 @@ export default function App() {
     <>
     <div className="h-full w-full bg-canvas">
       <div className="relative flex flex-col overflow-hidden bg-canvas text-ink" style={{ width: box.w, height: box.h, transform: `scale(${box.s})`, transformOrigin: 'top left' }}>
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line px-6">
+        <header className="flex h-14 shrink-0 items-center gap-3 whitespace-nowrap border-b border-line bg-white px-6">
           <Logo className="h-6" />
           <span className="h-7 w-px bg-line" aria-hidden />
           <div className="leading-tight">
@@ -523,7 +521,7 @@ export default function App() {
             <Btn onClick={() => setModal('notes')}>Model notes</Btn>
             <Btn onClick={() => setState((s) => ({ ...s, inputs: { ...DEFAULTS }, names: [...DEFAULT_NAMES], goal: GOAL_DEFAULT }))}>Reset</Btn>
             <Btn onClick={() => navigator.clipboard.writeText(location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); })}>
-              {copied ? 'Link copied ✓' : 'Copy share link'}
+              {copied ? 'Link copied ✓' : 'Share link'}
             </Btn>
             <Btn outline onClick={() => exportCsv(out, ex)}>Export CSV</Btn>
             <SignupBtn className="ml-1.5 h-8 text-[13px]" />

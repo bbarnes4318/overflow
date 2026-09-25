@@ -64,8 +64,8 @@ function Team({ n, color }: { n: number; color: string }) {
 function PerPolicy({ l, color }: { l: LineRecipe; color: string }) {
   const p = l.perPolicy;
   const parts: [string, number, string][] = [
-    ['Agent', p.payout, '#3f3f46'], ['Applications', p.calls, '#5f5f69'], ['Chargebacks', p.chargeback, '#8b8b94'],
-    ['Retention', p.retention, '#b4b4bc'], ['Net', Math.max(0, p.net), C.net],
+    ['Agent', p.payout, '#334155'], ['Applications', p.calls, '#64748b'], ['Chargebacks', p.chargeback, '#94a3b8'],
+    ['Retention', p.retention, '#cbd5e1'], ['Net', Math.max(0, p.net), C.net],
   ];
   const total = parts.reduce((a, [, v]) => a + v, 0) || 1;
   return (
@@ -139,12 +139,12 @@ export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: 
   const payoutOf = (k: number) => r.companyNet * inputs[SPLIT_KEYS[k]] * (1 - inputs.holdback);
   const partnersTotal = partners.reduce((a, _, k) => a + payoutOf(k), 0);
   const flow: [string, number, string, boolean?][] = [
-    ['Agent payouts', fe.payouts + md.payouts * mdAvg, '#3f3f46'],
-    ['Applications', fe.callCost + md.callCost * mdAvg, '#52525b'],
-    ['Chargebacks', fe.chargebacks + md.chargebacks * mdAvg, '#5f5f69'],
-    ['Retention', fe.retention + md.retention * mdAvg, '#6b6b75'],
-    ...(inputs.holdback > 0 ? [['Holdback', r.companyNet * inputs.holdback, '#71717a'] as [string, number, string]] : []),
-    ...partners.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === me ? C.brand : '#3d7a66', k === me]),
+    ['Agent payouts', fe.payouts + md.payouts * mdAvg, '#334155'],
+    ['Applications', fe.callCost + md.callCost * mdAvg, '#475569'],
+    ['Chargebacks', fe.chargebacks + md.chargebacks * mdAvg, '#64748b'],
+    ['Retention', fe.retention + md.retention * mdAvg, '#94a3b8'],
+    ...(inputs.holdback > 0 ? [['Holdback', r.companyNet * inputs.holdback, '#64748b'] as [string, number, string]] : []),
+    ...partners.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === me ? C.brand : '#15a06a', k === me]),
     ...(Math.abs(partnersTotal + r.companyNet * inputs.holdback - r.companyNet) > 1 ? [['Unallocated', Math.max(0, r.companyNet - partnersTotal - r.companyNet * inputs.holdback), '#cbd1cc'] as [string, number, string]] : []),
   ];
   const flowTotal = flow.reduce((a, [, v]) => a + v, 0) || 1;

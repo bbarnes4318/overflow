@@ -98,7 +98,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
             <div className="flex-1" style={{ background: `${GOLD}33` }} />
           </div>
           <div className="mt-1.5 flex justify-between text-[12px] text-muted">
-            <span><span className="font-semibold" style={{ color: GOLD }}>{compact(e.atClose)}</span> cash at close</span>
+            <span><span className="font-semibold text-netink">{compact(e.atClose)}</span> cash at close</span>
             <span>earnout over 24 months <span className="font-semibold text-ink">{compact(e.earnout)}</span></span>
           </div>
           <div className="mt-2 rounded-lg bg-net/10 px-3 py-1.5 text-[12px] text-sub ring-1 ring-net/25">
@@ -186,7 +186,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
           </div>
           {e.lockedIn > 0 && (
             <div className="flex-1 rounded-xl bg-gold/10 px-4 py-2.5 text-sub ring-1 ring-gold/25">
-              <div className="mb-0.5 text-[11px] font-semibold uppercase tracking-wide" style={{ color: GOLD }}>Locked-in renewals</div>
+              <div className="mb-0.5 text-[11px] font-semibold uppercase tracking-wide text-netink">Locked-in renewals</div>
               Next year's renewals already in force: <B>{compact(e.lockedIn)}</B> more than Year {year} paid. Trailing-earnings buyers get that free — push it into the earnout.
             </div>
           )}

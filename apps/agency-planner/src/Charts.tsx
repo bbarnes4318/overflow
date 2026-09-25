@@ -11,15 +11,17 @@ import { compact, fmt, FE_ROWS, MD_ROWS, type Kind } from './format';
 // Keep in sync with the @theme block in index.css.
 export const C = {
   brand: '#0c5c43',
-  fe: '#2563eb', feLight: '#5c8af0',
-  md: '#d95926', mdLight: '#e0774d',
-  net: '#16865f', cost: '#71717a',
-  surface: '#f4f6f4', grid: '#e3e7ed', muted: '#5a6660', ink: '#0e1512', neg: '#b42318',
+  fe: '#0c5c43', feLight: '#7fb5a1',
+  md: '#475569', mdLight: '#9aa7b8',
+  net: '#15a06a', cost: '#b3bcb8',
+  surface: '#ffffff', grid: '#e3e7ed', muted: '#5a6660', ink: '#0e1512', neg: '#b42318',
 };
 const cursor = { fill: '#0f172a', fillOpacity: 0.04 };
 
 const axis = { stroke: C.muted, fontSize: 12, tickLine: false, axisLine: false } as const;
-const legend = { verticalAlign: 'top' as const, align: 'right' as const, iconType: 'circle' as const, iconSize: 8, itemSorter: null, wrapperStyle: { fontSize: 12, color: C.muted, paddingBottom: 12 } };
+const legend = { verticalAlign: 'top' as const, align: 'right' as const, iconType: 'circle' as const, iconSize: 8, itemSorter: null, wrapperStyle: { fontSize: 12, color: C.muted, paddingBottom: 12 },
+  // Recharts colors legend text by series; keep the label readable and let the dot carry the color.
+  formatter: (v: unknown) => <span style={{ color: C.muted }}>{String(v)}</span> };
 const bar = { isAnimationActive: false, stroke: C.surface, strokeWidth: 2 } as const;
 const topLabel = { position: 'top' as const, formatter: (v: unknown) => compact(Number(v)), fill: C.ink, fontSize: 12, fontWeight: 600 };
 
@@ -97,16 +99,16 @@ export function CashFlowChart({ out }: { out: Outputs }) {
           if (!active || !payload?.length) return null;
           const r = payload[0].payload as (typeof data)[number];
           return <Tip title={`Month ${r.month} · Year ${Math.ceil(r.month / 12)}`} rows={[
-            ['Advanced commissions', '$', r.advRev, C.fe], ['Months 10–12 payments', '$', r.tailCash, C.feLight],
+            ['Advanced commissions', '$', r.advRev, C.feLight], ['Months 10–12 payments', '$', r.tailCash, '#c6dfd5'],
             ['Cash in', '$', r.cashIn], ['Agent payouts', '$', r.agentPayout, C.cost], ['Application costs', '$', r.callCost, C.cost],
             ['Chargebacks', '$', r.lapseCost, C.cost], ['Cash out', '$', r.totalCost], ['Net cash flow', '$', r.cashNet, C.net],
           ]} />;
         }} />
         <Legend {...legend} />
-        <Bar dataKey="advRev" name="Advanced commissions" stackId="in" fill={C.fe} isAnimationActive={false} />
-        <Bar dataKey="tailCash" name="Months 10–12 payments" stackId="in" fill={C.feLight} isAnimationActive={false} radius={[2, 2, 0, 0]} />
-        <Line dataKey="totalCost" name="Cash out (costs)" stroke={C.cost} strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} />
-        <Line dataKey="cashNet" name="Net cash flow" stroke={C.net} strokeWidth={2.5} dot={false} isAnimationActive={false} />
+        <Bar dataKey="advRev" name="Advanced commissions" stackId="in" fill={C.feLight} isAnimationActive={false} />
+        <Bar dataKey="tailCash" name="Months 10–12 payments" stackId="in" fill="#c6dfd5" isAnimationActive={false} radius={[2, 2, 0, 0]} />
+        <Line dataKey="totalCost" name="Cash out (costs)" stroke={C.md} strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} />
+        <Line dataKey="cashNet" name="Net cash flow" stroke={C.fe} strokeWidth={3} dot={false} isAnimationActive={false} />
       </ComposedChart>
     )}</Fit>
   );
@@ -170,7 +172,7 @@ export function MedicareChart({ out }: { out: Outputs }) {
   );
 }
 
-export const GOLD = '#8f6a00'; // sale price; 4.5:1 on white so it also works as text
+export const GOLD = '#15a06a'; // sale price: the money green
 
 // Total wealth if you sell at each year-end: profit already taken + sale price + FE money still owed.
 export function SellOrHoldChart({ ex }: { ex: YearExit[] }) {
