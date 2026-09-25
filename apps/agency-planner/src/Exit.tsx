@@ -31,7 +31,7 @@ function Row({ label, value, from = 0, to, scale, color, strong }: {
 
 function LensTile({ title, sub, win, lose, children }: { title: string; sub: string; win: boolean; lose: string; children: ReactNode }) {
   return (
-    <div className={`flex flex-col rounded-xl px-4 py-3 ring-1 transition-opacity ${win ? 'bg-white ring-fe/40' : 'bg-surface2/40 ring-line/70'}`}>
+    <div className={`flex flex-col rounded-xl px-4 py-3 ring-1 transition-opacity ${win ? 'bg-white ring-brand/40' : 'bg-surface2/40 ring-line/70'}`}>
       <div className="mb-2 flex items-center gap-2">
         <h3 className="text-[13px] font-semibold">{title}</h3>
         <span className="text-[12px] text-muted">{sub}</span>
@@ -63,7 +63,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
         <div className="flex flex-col gap-2">
           {ex.map((x) => (
             <button key={x.y} onClick={() => setYear(x.y as 1 | 2 | 3)} aria-pressed={x.y === year}
-              className={`flex h-[46px] items-center gap-3 rounded-xl px-4 text-left ring-1 transition-colors ${x.y === year ? 'bg-white ring-2 ring-fe/80' : 'bg-surface ring-line/70 hover:bg-surface2/60'}`}>
+              className={`flex h-[46px] items-center gap-3 rounded-xl px-4 text-left ring-1 transition-colors ${x.y === year ? 'bg-white ring-2 ring-brand/80' : 'bg-surface ring-line/70 hover:bg-surface2/60'}`}>
               <span className={`text-[13px] ${x.y === year ? 'font-semibold text-ink' : 'text-muted'}`}>End of Year {x.y}</span>
               <Badge lens={x.lens} />
               <Num v={x.price.base} f={compact} className="ml-auto text-[20px] font-semibold" />
@@ -74,7 +74,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
         <Card className="relative overflow-hidden px-5 pb-4 pt-4">
           <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-muted">If you sold at the end of Year {year}</div>
           <Num v={e.price.base} f={compact} className="exit-grad mt-1 block text-[52px] font-bold leading-[62px] tracking-tight" />
-          <div className="relative mt-2 h-2 rounded-full" style={{ background: `linear-gradient(90deg, ${C.fe}33, ${C.fe}, ${C.net})` }}>
+          <div className="relative mt-2 h-2 rounded-full" style={{ background: `linear-gradient(90deg, ${C.brand}33, ${C.brand}, ${C.net})` }}>
             <div className="absolute -top-1 h-4 w-1 -translate-x-1/2 rounded-full bg-ink ring-2 ring-white transition-all duration-500" style={{ left: `${at * 100}%` }} />
           </div>
           <div className="relative mt-1.5 h-4 text-[12px] text-muted">
@@ -146,7 +146,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <LensTile title="Earnings" sub={`${mult(e.tier.base)} · ${e.tier.buyer}`} win={e.lens === 'earnings'} lose={lose}>
-              <Row label={`Year ${year} net profit`} value={compact(e.ttmNet)} to={e.ttmNet} scale={eScale} color={C.fe} />
+              <Row label={`Year ${year} net profit`} value={compact(e.ttmNet)} to={e.ttmNet} scale={eScale} color={C.brand} />
               <Row label="Overhead buyers deduct" value={compact(-e.overhead)} from={e.adjEbitda} to={e.ttmNet} scale={eScale} color={C.cost} />
               <Row label="Adjusted EBITDA" value={compact(e.adjEbitda)} to={e.adjEbitda} scale={eScale} color={C.net} />
               <Row label="× multiple" value={mult(e.tier.base)} scale={eScale} />
@@ -194,7 +194,7 @@ export function Exit({ inputs, out, ex, names, year, setYear }: {
         </div>
         <div className="-mt-1 flex shrink-0 justify-between gap-4 text-[11px] text-muted">
           <span>Ranges reflect FE/Medicare agency deal multiples. Price is pre-tax unless tax on sale is set. Earnout paid over 24 months subject to retention.</span>
-          <a href="tel:+19045128487" className="shrink-0 font-semibold text-fe hover:underline">Questions? Call 904-512-8487</a>
+          <a href="tel:+19045128487" className="shrink-0 font-semibold text-brand hover:underline">Questions? Call 904-512-8487</a>
         </div>
       </div>
     </div>

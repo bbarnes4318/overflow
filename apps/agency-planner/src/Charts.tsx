@@ -6,10 +6,12 @@ import type { Outputs } from './engine/model';
 import type { YearExit } from './engine/valuation';
 import { compact, fmt, FE_ROWS, MD_ROWS, type Kind } from './format';
 
-// NetEnroll light theme. fe = the site's brand green, net = success green; every mark is >= 3:1 on white.
-// Costs are neutral on purpose. Keep in sync with the @theme block in index.css.
+// NetEnroll light theme. brand = the site's green (UI and profit taken), net = success green, fe = blue so the
+// Final Expense line never reads as a second green; every mark is >= 3:1 on white. Costs are neutral on purpose.
+// Keep in sync with the @theme block in index.css.
 export const C = {
-  fe: '#0c5c43', feLight: '#619585',
+  brand: '#0c5c43',
+  fe: '#2563eb', feLight: '#5c8af0',
   md: '#d95926', mdLight: '#e0774d',
   net: '#16865f', cost: '#71717a',
   surface: '#f4f6f4', grid: '#e3e7ed', muted: '#5a6660', ink: '#0e1512', neg: '#b42318',
@@ -186,12 +188,12 @@ export function SellOrHoldChart({ ex }: { ex: YearExit[] }) {
             if (!active || !payload?.length) return null;
             const d = payload[0].payload as (typeof data)[number];
             return <Tip title={`Sell at the end of ${d.name}`} rows={[
-              ['Profit already taken', '$', d.cumProfit, C.fe], ['Sale price', '$', d.sale, GOLD],
+              ['Profit already taken', '$', d.cumProfit, C.brand], ['Sale price', '$', d.sale, GOLD],
               ['FE commissions still owed', '$', d.receivable, C.feLight], ['Total if sold here', '$', d.walkAway],
             ]} />;
           }} />
           <Legend {...legend} />
-          <Bar dataKey="cumProfit" name="Profit already taken" stackId="w" fill={C.fe} {...bar} />
+          <Bar dataKey="cumProfit" name="Profit already taken" stackId="w" fill={C.brand} {...bar} />
           <Bar dataKey="sale" name="Sale price" stackId="w" fill={GOLD} {...bar} />
           <Bar dataKey="receivable" name="FE commissions still owed" stackId="w" fill={C.feLight} {...bar} radius={[4, 4, 0, 0]}>
             <LabelList dataKey="walkAway" {...topLabel} />

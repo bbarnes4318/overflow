@@ -178,7 +178,7 @@ function Control({ ctl, value, onChange, accent }: { ctl: Ctl; value: number; on
           <button title="Changed — click to reset" onClick={() => onChange(DEFAULTS[key])}
             className="h-1.5 w-1.5 shrink-0 rounded-full hover:scale-150" style={{ background: accent }} />
         )}
-        <div className="ml-auto flex h-7 w-[96px] shrink-0 items-center rounded-md bg-white px-2 text-[13px] ring-1 ring-line focus-within:ring-2 focus-within:ring-fe">
+        <div className="ml-auto flex h-7 w-[96px] shrink-0 items-center rounded-md bg-white px-2 text-[13px] ring-1 ring-line focus-within:ring-2 focus-within:ring-brand">
           {unit === '$' && <span className="text-muted">$</span>}
           <input type="number" aria-label={`${label} value`} min={min} max={max} step={step} value={draft}
             onChange={(e) => {
@@ -220,7 +220,7 @@ const Btn = ({ onClick, children, outline }: { onClick: () => void; children: Re
 
 const SIGNUP = 'https://agents.netenroll.com/login?mode=create';
 const SignupBtn = ({ className = '' }: { className?: string }) => (
-  <a href={SIGNUP} className={`inline-flex items-center justify-center rounded-md bg-fe px-3.5 font-semibold text-white transition-colors hover:bg-[#094a36] ${className}`}>
+  <a href={SIGNUP} className={`inline-flex items-center justify-center rounded-md bg-brand px-3.5 font-semibold text-white transition-colors hover:bg-[#094a36] ${className}`}>
     Open my producer account
   </a>
 );
@@ -236,7 +236,7 @@ function PeriodCard({ label, net, rev, active, onClick, pill, onPill }: {
   const n = useCountUp(net);
   return (
     <button onClick={onClick} aria-pressed={active}
-      className={`flex min-w-0 flex-1 flex-col justify-center rounded-xl px-5 text-left ring-1 transition-colors ${active ? 'bg-white ring-2 ring-fe' : 'bg-surface ring-line/70 hover:bg-surface2/60'}`}>
+      className={`flex min-w-0 flex-1 flex-col justify-center rounded-xl px-5 text-left ring-1 transition-colors ${active ? 'bg-white ring-2 ring-brand' : 'bg-surface ring-line/70 hover:bg-surface2/60'}`}>
       <div className="flex items-center justify-between text-[13px]">
         <span className={`truncate ${active ? 'font-semibold text-ink' : 'text-muted'}`}>{label}</span>
         {/* a span, not a button: buttons can't nest */}
@@ -307,7 +307,7 @@ function ChainRow({ name, color, c, agentsSub, revSub, rates, netPerPolicy }: {
         <Step label="Costs" value={compact(c.costs)} exact={money(c.costs)} sub="Hover for breakdown" tone="text-sub"
           breakdown={[['Agent pay (your agency pays)', c.payouts], ['Application costs (your agency pays)', c.callCosts], ['Chargebacks (lapses)', c.chargebacks], ['Retention cost', c.retention], ['Total costs', c.costs]]} />
         <Arrow />
-        <Step label="Net profit" value={compact(c.net)} exact={money(c.net)} sub={`${pct(c.margin)} margin · ${money(netPerPolicy)} a policy`} tone={c.net < 0 ? 'text-cost' : 'text-net'} bar={c.margin} grow={1.25} />
+        <Step label="Net profit" value={compact(c.net)} exact={money(c.net)} sub={`${pct(c.margin)} margin · ${money(netPerPolicy)}/policy`} tone={c.net < 0 ? 'text-cost' : 'text-net'} bar={c.margin} grow={1.25} />
       </div>
     </div>
   );
@@ -336,7 +336,7 @@ const LOA_NOTE = "Your agents write under your agency's contracts. Carriers pay 
 function LoaPill() {
   return (
     <span tabIndex={0} aria-describedby="loa-note"
-      className="group relative shrink-0 cursor-help rounded-full px-2 text-[11px] font-semibold leading-[18px] text-fe ring-1 ring-fe">
+      className="group relative shrink-0 cursor-help rounded-full px-2 text-[11px] font-semibold leading-[18px] text-brand ring-1 ring-brand">
       LOA model
       <span id="loa-note" role="tooltip"
         className="pointer-events-none absolute left-0 top-full z-40 mt-2 hidden w-[340px] rounded-lg bg-white px-3 py-2.5 text-[12px] font-normal leading-[18px] text-sub shadow-[0_8px_24px_-6px_rgba(15,23,42,0.18)] ring-1 ring-line group-hover:block group-focus:block">
@@ -431,7 +431,7 @@ export default function App() {
         <p className="mt-1.5 text-[15px] leading-[22px] text-sub">Plan agents, applications, profit and what your agency would sell for.</p>
         <p className="mt-3 text-[13px] text-muted">Built for a laptop or desktop screen.</p>
         <div className="mt-5 flex flex-col gap-2.5">
-          <button onClick={() => setOpenAnyway(true)} className="h-11 rounded-md bg-fe text-[15px] font-semibold text-white hover:bg-[#094a36]">Open anyway</button>
+          <button onClick={() => setOpenAnyway(true)} className="h-11 rounded-md bg-brand text-[15px] font-semibold text-white hover:bg-[#094a36]">Open anyway</button>
           <a href={SIGNUP} className="flex h-11 items-center justify-center rounded-md bg-white text-[15px] font-semibold text-ink ring-1 ring-line hover:bg-surface2">Open my producer account</a>
         </div>
       </div>
@@ -488,7 +488,7 @@ export default function App() {
                 <section key={title}>
                   <h3 className="px-1 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">{title}</h3>
                   <div className="divide-y divide-line rounded-lg bg-white ring-1 ring-line">
-                    {ctls.map((c) => <Control key={c[0]} ctl={c} value={inputs[c[0]]} onChange={(v) => setInput(c[0], v)} accent={C.fe} />)}
+                    {ctls.map((c) => <Control key={c[0]} ctl={c} value={inputs[c[0]]} onChange={(v) => setInput(c[0], v)} accent={C.brand} />)}
                     {note && <p className="px-3.5 py-2.5 text-[12px] leading-[16px] text-muted">{note(inputs)}</p>}
                   </div>
                 </section>

@@ -142,7 +142,7 @@ export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: 
     ['Chargebacks', fe.chargebacks + md.chargebacks * mdAvg, '#5f5f69'],
     ['Retention', fe.retention + md.retention * mdAvg, '#6b6b75'],
     ...(inputs.holdback > 0 ? [['Holdback', r.companyNet * inputs.holdback, '#71717a'] as [string, number, string]] : []),
-    ...names.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === goal.partner ? C.fe : '#3d7a66', k === goal.partner]),
+    ...names.map((n, k): [string, number, string, boolean] => [n, payoutOf(k), k === goal.partner ? C.brand : '#3d7a66', k === goal.partner]),
     ...(Math.abs(partnersTotal + r.companyNet * inputs.holdback - r.companyNet) > 1 ? [['Unallocated', Math.max(0, r.companyNet - partnersTotal - r.companyNet * inputs.holdback), '#cbd1cc'] as [string, number, string]] : []),
   ];
   const flowTotal = flow.reduce((a, [, v]) => a + v, 0) || 1;
@@ -168,7 +168,7 @@ export function Goal({ inputs, names, goal, setGoal }: { inputs: Inputs; names: 
           <div className="mt-3 flex gap-1.5">
             {PRESETS.map((v) => (
               <button key={v} onClick={() => set({ amount: v })}
-                className={`flex-1 rounded-md py-1.5 text-[13px] font-medium ring-1 transition-colors ${goal.amount === v ? 'bg-fe/10 text-ink ring-fe/70' : 'text-sub ring-line hover:bg-surface2'}`}>
+                className={`flex-1 rounded-md py-1.5 text-[13px] font-medium ring-1 transition-colors ${goal.amount === v ? 'bg-brand/10 text-ink ring-brand/70' : 'text-sub ring-line hover:bg-surface2'}`}>
                 {compact(v).replace('.0K', 'K')}
               </button>
             ))}

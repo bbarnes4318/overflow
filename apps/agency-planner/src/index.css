@@ -11,7 +11,8 @@
   --color-ink: #0e1512;
   --color-sub: #2b342f;
   --color-muted: #5a6660;
-  --color-fe: #0c5c43;
+  --color-brand: #0c5c43; /* NetEnroll green: buttons, sliders, focus, profit */
+  --color-fe: #2563eb; /* Final Expense line in charts, kept apart from the greens */
   --color-md: #d95926;
   --color-net: #16865f;
   --color-netink: #0f6e4e; /* net green for small text on tinted backgrounds */
@@ -36,7 +37,7 @@ input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; backgro
 input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.5px var(--accent), 0 1px 3px rgba(15,23,42,.2); }
 input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; background: #fff; }
 .recharts-wrapper *:focus { outline: none; }
-:focus-visible { outline: 2px solid var(--color-fe); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
 
 /* Income goal view */
 .goal-grad { background: linear-gradient(90deg, #0c5c43, #16865f); -webkit-background-clip: text; background-clip: text; color: transparent; caret-color: #0c5c43; }
