@@ -127,7 +127,7 @@ function Ticker({ r, className }: { r: Results; className: string }) {
   return (
     <div className={`z-20 border-line bg-white/95 backdrop-blur ${className}`}>
       <div className="mx-auto flex h-14 max-w-[560px] items-center justify-between px-4">
-        <span className="text-[13px] text-muted">Year 2 profit</span>
+        <span className="text-[13px] text-muted">Agency profit in Year 2</span>
         <Num v={r.out.years[1].totalNet} f={compact} className={`font-display text-[22px] font-semibold ${r.out.years[1].totalNet < 0 ? 'text-cost' : 'text-net'}`} />
       </div>
     </div>
@@ -205,15 +205,17 @@ function Capture({ a, r, onSent }: { a: Answers; r: Results; onSent: (f: Form) =
   };
 
   if (sent) return (
-    <div className="rounded-2xl bg-net/10 p-5 ring-1 ring-net/30">
-      <p className="text-[16px] font-semibold text-netink">Sent. Check {sent} for your plan.</p>
-      <Primary className="mt-4" onClick={() => window.print()}>Download my plan (PDF)</Primary>
+    <div className="rounded-2xl bg-white p-6 ring-1 ring-line sm:p-7">
+      <h2 className="font-display text-[24px] font-semibold tracking-tight">Your plan is on its way.</h2>
+      <p className="mt-2 text-[16px] text-sub">We sent it to <b className="font-semibold text-ink">{sent}</b>. You can also save a copy now.</p>
+      <Primary className="mt-5" onClick={() => window.print()}>Download my plan (PDF)</Primary>
     </div>
   );
 
   return (
-    <div className="rounded-2xl bg-white p-5 ring-1 ring-line sm:p-6">
-      <h2 className="font-display text-[22px] font-semibold tracking-tight">Get your plan and exit report</h2>
+    <div className="rounded-2xl bg-white p-6 ring-1 ring-line sm:p-7">
+      <h2 className="font-display text-[26px] font-semibold leading-tight tracking-tight">Get your full plan by email.</h2>
+      <p className="mt-2 text-[16px] leading-relaxed text-sub">Your profit, take-home and sale value for all three years, plus a PDF you can keep.</p>
       {serverErr && <p role="alert" className="mt-3 rounded-lg bg-cost/10 px-4 py-3 text-[14px] text-cost">{serverErr}</p>}
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {FIELDS.map(([k, label, type, auto]) => (
@@ -232,7 +234,7 @@ function Capture({ a, r, onSent }: { a: Answers; r: Results; onSent: (f: Form) =
           className="mt-0.5 h-5 w-5 shrink-0 accent-[#0c5c43]" />
         <span>{CONSENT} <a href="/tcpa-compliance" className="font-medium text-brand underline">TCPA</a> · <a href="/privacy" className="font-medium text-brand underline">Privacy</a></span>
       </label>
-      <Primary className="mt-5 w-full sm:w-auto" onClick={submit} disabled={sending}>{sending ? 'Sending…' : 'Send my plan'}</Primary>
+      <Primary className="mt-5 w-full sm:w-auto" onClick={submit} disabled={sending}>{sending ? 'Sending…' : 'Email my plan'}</Primary>
     </div>
   );
 }
@@ -298,10 +300,8 @@ export function Guided() {
     const q = new URLSearchParams(location.search);
     return q.get('v') === 'result' ? decode(q) : null;
   });
-  const [capture, setCapture] = useState(false);
   const [copied, setCopied] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
-  const captureRef = useRef<HTMLDivElement>(null);
 
   // A shared view never writes the visitor's own saved answers.
   useEffect(() => { try { localStorage.setItem(GLS, JSON.stringify(saved)); } catch { /* storage unavailable */ } }, [saved]);
@@ -319,7 +319,7 @@ export function Guided() {
     if (n === 3 && !s.touched.a1) return { ...s, step: n, answers: { ...x, a1: Math.min(2000, Math.max(x.a1, x.a0 * 2)) } };
     return { ...s, step: n, done: n === REVEAL ? true : s.done };
   });
-  const startOver = () => { setShared(null); setCapture(false); setSaved((s) => ({ ...FRESH, unlocked: s.unlocked })); history.replaceState(null, '', '/agency-planner/'); };
+  const startOver = () => { setShared(null); setSaved((s) => ({ ...FRESH, unlocked: s.unlocked })); history.replaceState(null, '', '/agency-planner/'); };
   const later = (fn: () => void) => setTimeout(fn, 250);
 
   const setA0 = (a0: number) => setSaved((s) => {
@@ -347,10 +347,9 @@ export function Guided() {
     try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* no clipboard */ }
   };
 
-  const openCapture = () => { setCapture(true); setTimeout(() => captureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); };
 
   // ---------- screens ----------
-  const question = (n: number, title: string, body: ReactNode, cta = 'Continue') => (
+  const question = (n: number, title: string, body: ReactNode, cta = 'Continue', help?: string) => (
     <div className="mx-auto max-w-[560px] px-4 pb-10 pt-6">
       <div className="flex items-center justify-between text-[14px]">
         <button onClick={() => go(n - 1)} className="flex h-12 items-center font-medium text-sub hover:text-ink">← Back</button>
@@ -360,6 +359,7 @@ export function Guided() {
         <div className="h-full rounded-full bg-brand transition-all duration-300" style={{ width: `${(n / 6) * 100}%` }} />
       </div>
       <h1 className="mt-8 font-display text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">{title}</h1>
+      {help && <p className="mt-2 text-[16px] text-sub">{help}</p>}
       <div className="mt-6">{body}</div>
       <Primary className="mt-8 w-full" onClick={next} disabled={!canContinue}>{cta}</Primary>
     </div>
@@ -373,14 +373,15 @@ export function Guided() {
         <p className="mt-4 text-[18px] leading-relaxed text-sub">Answer six questions about your agents and your income goal. You'll see what you'd take home each month, how many agents it takes to get there, and what your agency could sell for.</p>
         <p className="mt-3 text-[14px] text-muted">For LOA agencies, where your agents write under your contracts and commissions come to you.</p>
         <Primary className="mt-8 w-full sm:w-auto" onClick={() => go(1)}>Get my numbers</Primary>
+        <p className="mt-3 text-[14px] text-muted">Free. Takes about a minute. No sign-up to see your numbers.</p>
         <a href={ADVANCED} className="mt-4 flex min-h-12 items-center text-[15px] font-medium text-brand underline underline-offset-4">Already know your numbers? Use the advanced planner</a>
       </div>
     );
   } else if (step === 1) {
     screen = question(1, 'What do you sell?', (
       <div className="grid gap-3">
-        {([['fe', 'Final Expense'], ['md', 'Medicare'], ['both', 'Both']] as [Sells, string][]).map(([v, l]) => (
-          <Choice key={v} label={l} on={a.sells === v} onClick={() => { setA({ sells: v }); later(() => go(2)); }} />
+        {([['fe', 'Final Expense', 'Sold all year'], ['md', 'Medicare', 'Sold in season, October to March'], ['both', 'Both', 'Final Expense all year, Medicare in season']] as [Sells, string, string][]).map(([v, l, sub]) => (
+          <Choice key={v} label={l} sub={sub} on={a.sells === v} onClick={() => { setA({ sells: v }); later(() => go(2)); }} />
         ))}
       </div>
     ));
@@ -395,26 +396,26 @@ export function Guided() {
           </div>
         )}
       </div>
-    ));
+    ), 'Continue', 'Licensed agents writing for you right now.');
   } else if (step === 3) {
     const hi = Math.min(2000, Math.max(500, a.a0 * 5));
     screen = question(3, 'How many agents do you want in a year?', (
       <Count label="Agents a year from now" value={a.a1} min={a.a0} max={2000} sliderMax={hi} unit="agents" onChange={(a1) => setA({ a1 }, { a1: true })} />
-    ));
+    ), 'Continue', "We'll grow you there over the next 12 months.");
   } else if (step === 4) {
-    const opts: [string, number][] = [['Under 8%', 0.06], ['About 10%', 0.10], ['12% or more', 0.13], ['Not sure', 0.10]];
+    const opts: [string, number, string][] = [['Under 8%', 0.06, 'Newer team'], ['About 10%', 0.10, 'Typical'], ['12% or more', 0.13, 'Strong closers'], ['Not sure', 0.10, "We'll use 10%"]];
     const picked = saved.convPick ?? opts.find(([, v]) => v === a.conv)?.[0];
     screen = question(4, 'What percent of calls turn into an application?', (
       <div className="grid gap-3 sm:grid-cols-2">
-        {opts.map(([l, v]) => (
-          <Choice key={l} label={l} on={picked === l} onClick={() => { setSaved((s) => ({ ...s, convPick: l, answers: { ...s.answers, conv: v } })); later(() => go(5)); }} />
+        {opts.map(([l, v, sub]) => (
+          <Choice key={l} label={l} sub={sub} on={picked === l} onClick={() => { setSaved((s) => ({ ...s, convPick: l, answers: { ...s.answers, conv: v } })); later(() => go(5)); }} />
         ))}
       </div>
-    ));
+    ), 'Continue', 'Out of every 100 calls your agents take.');
   } else if (step === 5) {
     screen = question(5, 'What do you pay an agent per policy?', (
       <PayPicker value={a.pay} presets={[80, 120, 160, 200]} onPick={(pay, advance) => { setA({ pay }); if (advance) later(() => go(6)); }} />
-    ));
+    ), 'Continue', 'Paid to the agent when the policy places.');
   } else if (step === 6) {
     screen = question(6, 'How much do you want to make a month?', (
       <div>
@@ -428,10 +429,10 @@ export function Guided() {
           ))}
         </div>
       </div>
-    ), 'See my numbers');
+    ), 'See my numbers', 'Your own pay before taxes, not the whole agency profit.');
   } else {
-    screen = r && <Reveal a={a} r={r} shared={!!shared} onOwn={startOver} onStartOver={startOver} onChange={() => go(4)}
-      unlocked={saved.unlocked} capture={capture} openCapture={openCapture} captureRef={captureRef} share={share} copied={copied}
+    screen = r && <Reveal a={a} r={r} shared={!!shared} onOwn={startOver} onStartOver={startOver} onChange={() => go(4)} onEdit={() => go(1)}
+      unlocked={saved.unlocked} share={share} copied={copied}
       onSent={(f) => setSaved((s) => ({ ...s, unlocked: { name: f.contact_name.trim(), agency: f.agency_name.trim() } }))} />;
   }
 
@@ -459,7 +460,6 @@ function PayPicker({ value, presets, onPick }: { value: number; presets: number[
         <Choice label="Other" on={other} onClick={() => setOther(true)} />
       </div>
       {other && <OtherAmount label="Agent pay per placed policy" value={value} min={0} max={1000} onChange={(v) => onPick(v, false)} />}
-      <p className="mt-4 text-[14px] text-muted">Paid when the policy places.</p>
     </div>
   );
 }
@@ -479,71 +479,118 @@ function AmountPicker({ value, presets, label, max, format, onPick }: {
   );
 }
 
-function Reveal({ a, r, shared, onOwn, onStartOver, onChange, unlocked, capture, openCapture, captureRef, share, copied, onSent }: {
-  a: Answers; r: Results; shared: boolean; onOwn: () => void; onStartOver: () => void; onChange: () => void;
-  unlocked?: Saved['unlocked']; capture: boolean; openCapture: () => void; captureRef: React.RefObject<HTMLDivElement>;
-  share: () => void; copied: boolean; onSent: (f: Form) => void;
+function Reveal({ a, r, shared, onOwn, onStartOver, onChange, onEdit, unlocked, share, copied, onSent }: {
+  a: Answers; r: Results; shared: boolean; onOwn: () => void; onStartOver: () => void; onChange: () => void; onEdit: () => void;
+  unlocked?: Saved['unlocked']; share: () => void; copied: boolean; onSent: (f: Form) => void;
 }) {
   const adjust = '/agency-planner/advanced?' + shareQuery({ inputs: r.inputs, names: DEFAULT_NAMES, goal: { amount: a.goal, partner: 0, feMix: r.feMix }, page: 'Planner' });
-  const status = r.clearsInYear == null ? "Your plan doesn't get there in 3 years at these numbers."
-    : a.a0 >= r.agentsNeeded ? `You have ${int(a.a0)}. You're past it in Year ${r.clearsInYear}.`
-    : `Your plan gets there in Year ${r.clearsInYear}.`;
-  const card = 'rise rounded-2xl bg-white p-6 ring-1 ring-line';
-  const big = 'mt-2 block font-display text-[44px] font-semibold leading-none tracking-tight';
+  const y2 = r.takeHome[1];
+  const share0 = a.partners > 1 ? ` That's your ${Math.round(100 / a.partners)}% share.` : '';
+  const status = r.clearsInYear == null ? 'Not within 3 years at these numbers.'
+    : a.a0 >= r.agentsNeeded ? `You already have ${int(a.a0)}. You'd get there in Year ${r.clearsInYear}.`
+    : `Your hiring plan gets you there in Year ${r.clearsInYear}.`;
+  const card = 'rise flex flex-col rounded-2xl bg-white p-6 ring-1 ring-line';
+  const label = 'text-[13px] font-semibold uppercase tracking-[0.06em] text-muted';
+  const big = 'mt-3 block font-display text-[44px] font-semibold leading-none tracking-tight';
+  const link = 'inline-flex min-h-12 items-center text-[15px] font-medium text-brand underline-offset-4 hover:underline';
   return (
-    <div className="mx-auto max-w-[1100px] px-4 pb-16 pt-8">
+    <div className="mx-auto max-w-[1100px] px-4 pb-16 pt-8 sm:pt-12">
       {shared && (
-        <div className="mb-6 flex flex-col gap-3 rounded-2xl bg-brand/5 p-5 ring-1 ring-brand/30 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[16px] font-semibold text-ink">Someone shared their plan with you.</p>
+        <div className="mb-8 flex flex-col gap-3 rounded-2xl bg-brand/5 p-5 ring-1 ring-brand/30 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[16px] font-semibold text-ink">Someone shared their agency plan with you.</p>
           <Primary onClick={onOwn}>Plan your own agency</Primary>
         </div>
       )}
-      <div className="grid gap-4 min-[900px]:grid-cols-3">
-        <section className={card} style={{ animationDelay: '0ms' }}>
-          <h2 className="text-[15px] font-medium text-sub">You'd take home</h2>
-          <Num v={r.takeHome[1]} f={compact} className={`${big} ${r.takeHome[1] < 0 ? 'text-cost' : 'text-net'}`} />
-          <p className="mt-2 text-[15px] text-ink">a month in Year 2</p>
-          <p className="mt-3 text-[14px] text-muted">Year 1: {compact(r.takeHome[0])}/mo · Year 3: {compact(r.takeHome[2])}/mo{a.partners > 1 ? ` · your ${pct(1 / a.partners)} share` : ''}</p>
+
+      <header className="rise max-w-[760px]">
+        <h1 className="font-display text-[32px] font-semibold leading-[1.1] tracking-tight sm:text-[42px]">
+          {y2 > 0 ? <>You'd take home <span className="text-net">{compact(y2)}</span> a month by Year 2.</> : <>At these numbers, your agency loses money in Year 2.</>}
+        </h1>
+        <p className="mt-3 text-[17px] leading-relaxed text-sub">
+          {int(a.a0)} agents today, {int(a.a1)} a year from now, selling {SELLS_LABEL[a.sells!]}.{share0}
+        </p>
+      </header>
+
+      <div className="mt-8 grid gap-4 min-[900px]:grid-cols-3">
+        <section className={card} style={{ animationDelay: '100ms' }}>
+          <h2 className={label}>Your take-home, per month</h2>
+          <dl className="mt-3 divide-y divide-line">
+            {r.takeHome.map((v, j) => (
+              <div key={j} className="flex items-baseline justify-between py-2">
+                <dt className={`text-[15px] ${j === 1 ? 'font-semibold text-ink' : 'text-sub'}`}>Year {j + 1}</dt>
+                <dd><Num v={v} f={compact} className={`font-display font-semibold tracking-tight ${j === 1 ? 'text-[30px]' : 'text-[22px]'} ${v < 0 ? 'text-cost' : j === 1 ? 'text-net' : 'text-ink'}`} /></dd>
+              </div>
+            ))}
+          </dl>
         </section>
-        <section className={card} style={{ animationDelay: '150ms' }}>
-          <h2 className="text-[15px] font-medium text-sub">To hit {compact(a.goal)} a month</h2>
+        <section className={card} style={{ animationDelay: '250ms' }}>
+          <h2 className={label}>Agents to make {compact(a.goal).replace('.0K', 'K')} a month</h2>
           {r.feasible ? (
             <>
-              <Num v={r.agentsNeeded} f={(v) => `${int(v)} agents`} className={`${big} text-ink`} />
-              <p className="mt-2 text-[15px] text-ink">{num1(r.feAppsDay + r.mdAppsDay)} submitted applications a day</p>
-              <p className="mt-3 text-[14px] text-muted">{status}</p>
+              <Num v={r.agentsNeeded} f={int} className={`${big} text-ink`} />
+              <p className="mt-2 text-[15px] text-ink">writing {num1(r.feAppsDay + r.mdAppsDay)} applications a day</p>
+              <p className="mt-auto text-pretty pt-4 text-[14px] text-muted">{status}</p>
             </>
           ) : (
             <>
-              <p className="mt-3 text-[16px] leading-relaxed text-cost">At these numbers each policy loses money. Lower agent pay or raise the close rate.</p>
+              <p className="mt-3 text-[16px] leading-relaxed text-cost">Each policy loses money at these numbers. Lower agent pay or raise your close rate.</p>
               {!shared && <div className="mt-4"><Secondary onClick={onChange}>Change my answers</Secondary></div>}
             </>
           )}
         </section>
-        <section className={card} style={{ animationDelay: '300ms' }}>
-          <h2 className="text-[15px] font-medium text-sub">Your agency would sell for</h2>
+        <section className={card} style={{ animationDelay: '400ms' }}>
+          <h2 className={label}>What your agency could sell for</h2>
           <Num v={r.exit.price.base} f={compact} className={`${big} text-brand`} />
           <p className="mt-2 text-[15px] text-ink">at the end of Year 3</p>
-          <p className="mt-3 text-[14px] text-muted">Range {compact(r.exit.price.low)}–{compact(r.exit.price.high)} · {r.exit.buyer}</p>
+          <p className="mt-auto pt-4 text-[14px] text-muted">Buyer range {compact(r.exit.price.low)} to {compact(r.exit.price.high)}</p>
         </section>
       </div>
 
-      <p className="mx-auto mt-8 max-w-[760px] text-center text-[16px] leading-relaxed text-sub">{appsSentence(a, r)}</p>
-
-      <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-        <Primary onClick={openCapture}>Email me my plan</Primary>
-        {unlocked && <Secondary onClick={() => window.print()}>Download my plan (PDF)</Secondary>}
-        <Secondary href={adjust}>Adjust my numbers</Secondary>
-        <Secondary onClick={share}>{copied ? 'Link copied' : `Share: my agency is worth ${compact(r.exit.price.base)}`}</Secondary>
-        <Secondary href={SIGNUP}>Open my producer account</Secondary>
-      </div>
-      <div className="mt-4 text-center">
-        <button onClick={onStartOver} className="min-h-12 text-[15px] font-medium text-brand underline underline-offset-4">Start over</button>
+      <div className="mt-8 grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <Capture a={a} r={r} onSent={onSent} />
+        <Offer a={a} r={r} />
       </div>
 
-      {capture && <div ref={captureRef} className="mx-auto mt-8 max-w-[760px] scroll-mt-4"><Capture a={a} r={r} onSent={onSent} /></div>}
+      <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-1" aria-label="More options">
+        {unlocked && <button onClick={() => window.print()} className={link}>Download my plan (PDF)</button>}
+        {!shared && <button onClick={onEdit} className={link}>Change my answers</button>}
+        <a href={adjust} className={link}>Fine-tune every number</a>
+        <button onClick={share} className={link}>{copied ? 'Link copied' : 'Share my results'}</button>
+        <button onClick={onStartOver} className={link}>Start over</button>
+      </nav>
 
-      <p className="mx-auto mt-10 max-w-[760px] text-center text-[13px] text-muted">{FOOTNOTE}</p>
+      <p className="mx-auto mt-8 max-w-[760px] text-center text-[13px] text-muted">{FOOTNOTE}</p>
     </div>
+  );
+}
+
+// The NetEnroll offer, sized to this visitor's own plan.
+function Offer({ a, r }: { a: Answers; r: Results }) {
+  const fe = a.sells !== 'md';
+  const md = a.sells !== 'fe';
+  const need = !r.feasible ? null
+    : a.sells === 'fe' ? `about ${num1(r.feAppsDay)} Final Expense applications a day`
+    : a.sells === 'md' ? `about ${num1(r.mdAppsDay)} Medicare applications a day in season`
+    : `about ${num1(r.feAppsDay)} Final Expense and ${num1(r.mdAppsDay)} Medicare applications a day`;
+  const cost = a.sells === 'fe' ? `${money(r.feSpendDay)} a day`
+    : a.sells === 'md' ? `${money(r.mdSpendDay)} a day in season`
+    : `${money(r.feSpendDay)} a day, ${money(r.feSpendDay + r.mdSpendDay)} in Medicare season`;
+  const Tick = ({ children }: { children: ReactNode }) => (
+    <li className="flex gap-3"><span aria-hidden className="mt-[3px] grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/15 text-[12px]">✓</span><span>{children}</span></li>
+  );
+  return (
+    <aside className="rounded-2xl bg-brand p-6 text-white sm:p-7">
+      <h2 className="font-display text-[26px] font-semibold leading-tight tracking-tight">Get the applications this plan needs.</h2>
+      {need && <p className="mt-3 text-pretty text-[16px] leading-relaxed text-white/90">Your goal takes {need}. We send your agents live calls. You pay only when a call becomes an application.</p>}
+      <ul className="mt-5 space-y-2.5 text-[15px]">
+        <Tick>$0 per call. $0 per month.</Tick>
+        {fe && <Tick>{money(r.inputs.feAppCost)} per submitted Final Expense application</Tick>}
+        {md && <Tick>{money(r.inputs.mdAppCost)} per submitted Medicare application</Tick>}
+        <Tick>Your agents never pay for leads</Tick>
+      </ul>
+      {need && <p className="mt-5 rounded-lg bg-white/10 px-4 py-3 text-[14px] leading-snug">For this plan: about {cost}.</p>}
+      <a href={SIGNUP} className="mt-6 flex min-h-12 items-center justify-center rounded-lg bg-white px-6 text-[16px] font-semibold text-brand transition-colors hover:bg-[#e6f3ec]">Open my producer account</a>
+      <p className="mt-3 text-center text-[14px] text-white/85">Questions? <a href="tel:+19045128487" className="font-semibold text-white underline underline-offset-2">Call 904-512-8487</a></p>
+    </aside>
   );
 }
