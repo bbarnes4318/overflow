@@ -627,6 +627,35 @@ function initDatabase() {
     )
   `).run();
 
+  // Leads from the Agency Planner on netenroll.com/agency-planner. Same
+  // standing as recruiting_inquiries: anonymous, owned by the platform operator.
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS planner_leads (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source TEXT NOT NULL,
+      contact_name TEXT NOT NULL,
+      agency_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      states TEXT NOT NULL,
+      sells TEXT NOT NULL,
+      agents_today INTEGER NOT NULL,
+      agents_next_year INTEGER NOT NULL,
+      medicare_agents INTEGER NOT NULL,
+      close_rate REAL NOT NULL,
+      agent_pay REAL NOT NULL,
+      goal REAL NOT NULL,
+      partners INTEGER NOT NULL,
+      results_json TEXT NOT NULL,
+      plan_url TEXT NOT NULL,
+      sms_consent INTEGER NOT NULL DEFAULT 0,
+      consent_text TEXT,
+      client_ip TEXT,
+      user_agent TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `).run();
+
   // Bring a pre-tenancy database up to the multi-tenant shape.
   migrateToMultiTenant();
 
@@ -656,6 +685,17 @@ function insertRecruitingInquiry(row) {
       (source, agency_name, contact_name, email, phone, states, agent_count, offer, timing, notes, client_ip)
     VALUES
       (@source, @agency_name, @contact_name, @email, @phone, @states, @agent_count, @offer, @timing, @notes, @client_ip)
+  `).run(row).lastInsertRowid;
+}
+
+function insertPlannerLead(row) {
+  return db.prepare(`
+    INSERT INTO planner_leads
+      (source, contact_name, agency_name, email, phone, states, sells, agents_today, agents_next_year, medicare_agents,
+       close_rate, agent_pay, goal, partners, results_json, plan_url, sms_consent, consent_text, client_ip, user_agent)
+    VALUES
+      (@source, @contact_name, @agency_name, @email, @phone, @states, @sells, @agents_today, @agents_next_year, @medicare_agents,
+       @close_rate, @agent_pay, @goal, @partners, @results_json, @plan_url, @sms_consent, @consent_text, @client_ip, @user_agent)
   `).run(row).lastInsertRowid;
 }
 
@@ -2628,6 +2668,7 @@ module.exports = {
   initDatabase,
   requireTenant,
   insertRecruitingInquiry,
+  insertPlannerLead,
 
   // Tenancy
   createTenant,
