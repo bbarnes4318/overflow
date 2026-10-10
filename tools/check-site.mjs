@@ -53,4 +53,18 @@ for (const file of ['index.html', 'aca-agent-recruiting.html']) {
 // 4. The ACA page never routes a visitor into the Final Expense signup.
 assert.ok(!/href="https:\/\/agents\.netenroll\.com"[^>]*>(Get started|Start Receiving)/.test(aca), 'ACA page must not carry the Final Expense signup CTA');
 
+// 5. Homepage FAQ: the structured data Google reads asks exactly the questions
+//    the visitor sees, in the same order.
+const home = pages['index.html'];
+const visibleQs = [...home.matchAll(/<dt>([^<]+)<\/dt>/g)].map(m => m[1].replace(/&amp;/g, '&').trim());
+const ldQs = [...home.matchAll(/"@type": "Question", "name": "([^"]+)"/g)].map(m => m[1]);
+assert.deepEqual(ldQs, visibleQs, 'index.html: FAQPage JSON-LD questions differ from the visible FAQ');
+
+// 6. "What's included": a feature still being built (data-status="next") is
+//    never shown. To launch one, delete both its data-status and hidden.
+for (const li of home.matchAll(/<li data-status="next"[^>]*>/g)) {
+    assert.match(li[0], /\shidden[\s>]/, `index.html: unbuilt feature is visible: ${li[0]}`);
+}
+assert.match(home, /<section class="included" id="included"/, 'index.html: the What\'s included section is missing');
+
 console.log(`ok: ${required.length} required fields present, ${Object.keys(serverOptions).length} option lists match, ${Object.keys(pages).length} pages carry SEO head`);

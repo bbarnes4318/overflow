@@ -161,7 +161,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 @media (max-width: 1200px) { .nav { gap: 20px; } }
 .nav a:hover { color: var(--green); }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 24px; }
-.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; }
+.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
 .signin:hover { color: var(--green); }
 .menu-btn {
     display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center;
@@ -370,6 +370,50 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 .ledger-foot .ne { color: var(--green-bright); font-size: 30px; }
 .ledger-foot small { display: block; font-family: var(--text); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #8FAA9D; margin-top: 6px; }
 
+/* ---- Included: what comes with the account, billed as a $0 statement --------
+   Same receipt grammar as the hero bill. Lines marked data-status="next" are
+   features still being built; they ship hidden and go live by deleting their
+   hidden attribute. Nothing here is advertised before it exists. */
+.included { padding: clamp(64px, 8vw, 112px) 0; }
+.included-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(40px, 6vw, 88px); align-items: start; }
+.included-lead { position: sticky; top: calc(var(--header) + 32px); }
+.included-lead .h2 { margin-top: 14px; max-width: 18ch; }
+.included-lead .lede { margin-top: 22px; color: var(--muted); max-width: 30rem; }
+.included-lead .lede + .lede { margin-top: 12px; }
+.included-lead .lede b { color: var(--ink); }
+.included-why { margin-top: 28px; padding: 20px 22px; border-left: 3px solid var(--green); background: var(--mint); border-radius: 0 var(--r) var(--r) 0; }
+.included-why p { font-family: var(--display); font-size: clamp(1.1rem, 1.5vw, 1.3rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.3; color: var(--green-deep); text-wrap: balance; }
+.included-owner { margin-top: 24px; font-size: 15.5px; line-height: 1.55; color: var(--muted); max-width: 30rem; }
+.included-owner b { color: var(--ink); }
+.included-lead .hero-actions { margin-top: 28px; }
+.acct { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: 0 34px 70px -40px rgba(14, 21, 18, .4); overflow: hidden; }
+.acct-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 18px 24px; border-bottom: 1px solid var(--line); }
+.acct-head h3 { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.015em; }
+.acct-head span { font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.acct ol { padding: 0 24px; }
+.acct li { display: grid; grid-template-columns: 26px 1fr auto; gap: 14px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.acct li:last-child { border-bottom: 0; }
+.acct li::before { content: ""; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+.acct li b { display: block; font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
+.acct li small { display: block; margin-top: 3px; font-size: 14.5px; line-height: 1.45; color: var(--muted); text-wrap: pretty; }
+.acct li .tag { margin-top: -2px; }
+.acct li small a { color: var(--ink); text-underline-offset: 3px; }
+.acct-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 18px 24px; background: var(--green); color: #fff; }
+.acct-foot span { font-family: var(--display); font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; }
+.acct-foot b { font-family: var(--display); font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.acct-foot b small { font-size: 14px; font-weight: 600; letter-spacing: 0; color: #CDE5D9; margin-left: 4px; }
+/* The lines tick in one after another once the statement scrolls in. */
+.js .acct li { opacity: 0; transform: translateY(6px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.js .acct.is-in li { opacity: 1; transform: none; }
+.js .acct.is-in li:nth-child(2) { transition-delay: .08s; }
+.js .acct.is-in li:nth-child(3) { transition-delay: .16s; }
+.js .acct.is-in li:nth-child(4) { transition-delay: .24s; }
+.js .acct.is-in li:nth-child(5) { transition-delay: .32s; }
+.js .acct.is-in li:nth-child(6) { transition-delay: .40s; }
+.js .acct.is-in li:nth-child(7) { transition-delay: .48s; }
+.js .acct.is-in li:nth-child(n+8) { transition-delay: .56s; }
+.agency-more { margin-top: 18px; }
+
 /* ---- Agencies: the routing panel ------------------------------------------- */
 .agency { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
 .agency-top { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(40px, 6vw, 88px); align-items: center; }
@@ -494,6 +538,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .bill .line, .bill-foot { animation: none; opacity: 1; }
     .js .reveal { opacity: 1; transform: none; transition: none; }
     .js .stmt-ne li.pay { transform: none; transition: none; }
+    .js .acct li { opacity: 1; transform: none; transition: none; }
     .btn svg { transition: none; }
 }
 
@@ -529,7 +574,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .stmts, .why-grid, .econ .wrap, .agency-top { grid-template-columns: 1fr; }
     .callout { grid-template-columns: 1fr; gap: 16px; }
     .callout .big small { max-width: none; }
-    .why-lead, .ledger { position: static; }
+    .why-lead, .ledger, .included-lead { position: static; }
+    .included-grid { grid-template-columns: 1fr; }
     .agency-facts { grid-template-columns: 1fr 1fr; }
     .qa-grid { grid-template-columns: 1fr; }
     .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -580,6 +626,13 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     .panel-call .tag { display: none; }
     .ledger-head, .ledger-row, .ledger-foot { grid-template-columns: 1.3fr .8fr .8fr; gap: 8px; padding-left: 16px; padding-right: 16px; }
     .ledger-row { font-size: 14px; }
+    .acct ol { padding: 0 16px; }
+    .acct-head, .acct-foot { padding-left: 16px; padding-right: 16px; }
+    .acct li { grid-template-columns: 22px 1fr auto; gap: 12px; }
+    .acct li::before { width: 20px; height: 20px; background-size: 11px; }
+    .acct li b { font-size: 16px; }
+    .acct li small { font-size: 14px; }
+    .acct-foot { flex-direction: column; gap: 6px; }
     .ledger-row .old { font-size: 12.5px; }
     .foot-grid { grid-template-columns: 1fr; gap: 28px; }
     .sticky-cta { display: flex; }
@@ -622,6 +675,8 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
         { "@type": "Question", "name": "What if the consumer isn't qualified?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. A conversation that doesn't produce a qualifying submitted application does not become a call charge." } },
         { "@type": "Question", "name": "Is there a monthly fee?", "acceptedAnswer": { "@type": "Answer", "text": "No. There is no monthly subscription or per-producer seat fee." } },
         { "@type": "Question", "name": "What are the rates?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense: $199 per submitted application. Medicare: $159 per submitted application. ACA Health: $100 per submitted application. Flat rates; the call itself is $0." } },
+        { "@type": "Question", "name": "What comes with my account?", "acceptedAnswer": { "@type": "Answer", "text": "Calling in your browser, your own CRM, application tracking on every call, agency reporting, monthly statements and phone support. All included at no charge." } },
+        { "@type": "Question", "name": "Do I need my own dialer or CRM?", "acceptedAnswer": { "@type": "Answer", "text": "No. Producers take calls and keep their customer records inside the NetEnroll agent portal. If you already use a CRM, you can keep using it alongside." } },
         { "@type": "Question", "name": "Where do the consumers come from?", "acceptedAnswer": { "@type": "Answer", "text": "Consumers call looking for insurance coverage. NetEnroll routes those live conversations to available producers based on the programs and states you've enabled." } },
         { "@type": "Question", "name": "Can I choose my states?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You control the programs and states your account is set up to receive." } },
         { "@type": "Question", "name": "Can I use NetEnroll for my entire agency?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Agency accounts can have multiple producers operating under the account, subject to the applicable program requirements." } },
@@ -663,6 +718,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     <div class="mobile-nav" id="mobile-nav" hidden>
         <a href="#how-it-works">How it works</a>
         <a href="#pricing">Rates</a>
+        <a href="#included">What's included</a>
         <a href="#agencies">For agencies</a>
         <a href="#faq">Questions</a>
         <a href="/aca-agent-recruiting">Agent Recruiting</a>
@@ -904,6 +960,51 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     </div>
 </section>
 
+<!-- 6b. Included with the account -->
+<section class="included" id="included" aria-labelledby="included-title">
+    <div class="wrap included-grid">
+        <div class="included-lead reveal">
+            <p class="eyebrow">Included with every account</p>
+            <h2 id="included-title" class="h2">Everything around the call comes with the account.</h2>
+            <p class="lede">NetEnroll is paid when your producer submits an application.</p>
+            <p class="lede"><b>So the tools that help them get there are included, for every producer, at no charge.</b></p>
+            <div class="included-why">
+                <p>We only earn when your producers write business. Every line on this statement is there to help them write more of it.</p>
+            </div>
+            <p class="included-owner"><b>Agency owners:</b> every producer under your account gets the same tools, and you see all of their records and numbers in one place.</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="included" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </div>
+        </div>
+
+        <figure class="acct reveal" aria-labelledby="acct-title">
+            <div class="acct-head"><h3 id="acct-title">Your account</h3><span>Monthly statement</span></div>
+            <!-- Live features first. Lines with data-status="next" are still being
+                 built: keep them hidden until the feature is live for every account,
+                 then delete the hidden attribute. Keep them last so the reveal
+                 delays above stay in order. -->
+            <ol>
+                <li><span><b>Calls in your browser</b><small>Producers answer live calls inside the NetEnroll agent portal. No phone system to buy or set up.</small></span><span class="tag">$0</span></li>
+                <li><span><b>Your own CRM</b><small>Every producer keeps their own customer records. Agency owners see every producer's records.</small></span><span class="tag">$0</span></li>
+                <li><span><b>Applications logged on the call</b><small>Producers record the application and premium as the call ends, on any carrier.</small></span><span class="tag">$0</span></li>
+                <li><span><b>Agency reporting</b><small>Calls, submitted applications and closing percentage for each producer and for the whole agency.</small></span><span class="tag">$0</span></li>
+                <li><span><b>Monthly statements</b><small>Download a statement for any month for your books.</small></span><span class="tag">$0</span></li>
+                <li><span><b>Planning tools</b><small>The <a href="/agency-planner">Agency Planner</a> and the <a href="/licensing-value">state license value tool</a>.</small></span><span class="tag">$0</span></li>
+                <li><span><b>Support by phone</b><small>Real people at <a href="tel:+19045128487">904-512-8487</a>.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Caller answers on screen</b><small>The answers each caller gave to our qualifying questions are on screen as the call connects.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Quoting on the call</b><small>Quote carriers from the call screen, with the caller's medications checked against each carrier's rules.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Callbacks come back to you</b><small>A consumer who calls back later is routed to the producer they already spoke with.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Callback capture</b><small>Consumers who call back the numbers your producers dial from are answered, qualified and sent back to them live.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Scheduled follow-up calls</b><small>Consumers who ask for time are called back when they chose and connected to the same producer.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Call scoring</b><small>Every call scored, with the moment the sale slipped marked for review.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>First-draft reminders</b><small>Clients are reminded before their first premium draft, so fewer policies lapse before they start.</small></span><span class="tag">$0</span></li>
+                <li data-status="next" hidden><span><b>Cost per placed policy</b><small>Your spend against the policies that actually placed, by producer and by month.</small></span><span class="tag">$0</span></li>
+            </ol>
+            <figcaption class="acct-foot"><span>Included with every account</span><b>$0<small>a month</small></b></figcaption>
+        </figure>
+    </div>
+</section>
+
 <!-- 7. Agencies -->
 <section class="agency" id="agencies" aria-labelledby="agency-title">
     <div class="wrap">
@@ -944,6 +1045,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <li><h3>One account. Multiple producers.</h3><p>Build your team under an agency account and manage your programs and states from one place.</p></li>
         </ul>
         <p class="agency-close reveal">Your agents know how to sell insurance. <em>Give them more people to sell to.</em></p>
+        <p class="agency-more reveal"><a class="textlink" href="/aca-agent-recruiting" data-track="cta_click" data-loc="agency" data-label="Agent recruiting">We recruit licensed producers for you <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
     </div>
 </section>
 
@@ -996,6 +1098,14 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <div class="q">
                 <dt>What are the rates?</dt>
                 <dd><p>Final Expense: <b>$199 per submitted application</b></p><p>Medicare: <b>$159 per submitted application</b></p><p>ACA Health: <b>$100 per submitted application</b></p><p>Flat rates. The call itself is $0.</p></dd>
+            </div>
+            <div class="q">
+                <dt>What comes with my account?</dt>
+                <dd><p>Calling in your browser, your own CRM, application tracking on every call, agency reporting, monthly statements and phone support.</p><p><b>All included at no charge.</b> <a href="#included">See what's included</a></p></dd>
+            </div>
+            <div class="q">
+                <dt>Do I need my own dialer or CRM?</dt>
+                <dd><span class="yes">No.</span><p>Producers take calls and keep their customer records inside the NetEnroll agent portal. If you already use a CRM, you can keep using it alongside.</p></dd>
             </div>
             <div class="q">
                 <dt>Where do the consumers come from?</dt>
