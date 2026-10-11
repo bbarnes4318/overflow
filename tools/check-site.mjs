@@ -10,7 +10,7 @@ const read = (p) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 const server = read('messaging/server.js');
 const aca = read('aca-agent-recruiting.html');
 const pages = { 'index.html': read('index.html'), 'aca-agent-recruiting.html': aca, 'licensing-value.html': read('licensing-value.html'),
-                'apps/agency-planner/index.html': read('apps/agency-planner/index.html') };
+                'apps/agency-planner/index.html': read('apps/agency-planner/index.html'), 'producer-engine.html': read('producer-engine.html') };
 
 // 1. Every field the server requires is a named control in the form, and
 //    every <select> offers exactly the server's allowed values.
@@ -36,7 +36,7 @@ for (const [file, html] of Object.entries(pages)) {
     }
 }
 // 2b. Every page with the shared header links the Agency Planner.
-for (const file of ['index.html', 'aca-agent-recruiting.html', 'licensing-value.html']) {
+for (const file of ['index.html', 'aca-agent-recruiting.html', 'licensing-value.html', 'producer-engine.html']) {
     assert.match(pages[file], /<a href="\/agency-planner">Agency Planner<\/a>/, `${file}: header is missing the Agency Planner link`);
 }
 for (const file of ['index.html', 'aca-agent-recruiting.html']) {
@@ -52,5 +52,11 @@ for (const file of ['index.html', 'aca-agent-recruiting.html']) {
 }
 // 4. The ACA page never routes a visitor into the Final Expense signup.
 assert.ok(!/href="https:\/\/agents\.netenroll\.com"[^>]*>(Get started|Start Receiving)/.test(aca), 'ACA page must not carry the Final Expense signup CTA');
+
+// 5. The pay-per-call page states its price and never uses banned words.
+const pe = pages['producer-engine.html'];
+for (const s of ['$30', '$2,040', '$23.18', '45-second buffer']) assert.ok(pe.includes(s), `producer-engine.html is missing "${s}"`);
+for (const bad of [/\bbooked\b/i, /\bdesk\b/i, /lorem/i]) assert.ok(!bad.test(pe), `producer-engine.html contains ${bad}`);
+for (const f of ['index.html', 'aca-agent-recruiting.html', 'licensing-value.html']) assert.match(pages[f], /href="\/producer-engine"/, `${f}: missing link to /producer-engine`);
 
 console.log(`ok: ${required.length} required fields present, ${Object.keys(serverOptions).length} option lists match, ${Object.keys(pages).length} pages carry SEO head`);

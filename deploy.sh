@@ -196,9 +196,9 @@ install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 
 # The other public routes and everything the pages reference by path. Each is
 # served at /<name> (or /<name> minus .html) through nginx's try_files rule.
-for asset in aca-agent-recruiting.html licensing-value.html site.css site.js \
+for asset in aca-agent-recruiting.html licensing-value.html producer-engine.html site.css site.js \
              favicon.svg favicon.png apple-touch-icon.png \
-             og-home.png og-final-expense.png og-recruiting.png \
+             og-home.png og-final-expense.png og-recruiting.png og-producer-engine.png \
              netenroll-logo.png netenroll-logo-dark.png netenroll-logo-tagline.png robots.txt sitemap.xml; do
   install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
 done
@@ -289,6 +289,7 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
   splice_location 'location = /api/recruiting-inquiry'
   splice_location 'location = /licensing-fees.json'
   splice_location 'location ~ ^/(aca-agent-recruiting|licensing-value|site'
+  splice_location 'location = /producer-engine {'
   splice_location 'location = /agency-planner {'
   splice_location 'location ^~ /agency-planner/ {'
   splice_location 'location = /agency-planner/index.html {'
