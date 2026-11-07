@@ -9,6 +9,7 @@ const queueWorker = require('./queue');
 const variation = require('./variation');
 const contentLint = require('./content_lint');
 const mail = require('./mail');
+const a2p = require('./a2p');
 
 // Load environment variables from backend/.env if present
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -251,7 +252,8 @@ const PUBLIC_PATHS = [
   '/api/auth/status',
   '/api/auth/signup',
   '/api/auth/login',
-  '/api/recruiting-inquiry'
+  '/api/recruiting-inquiry',
+  '/api/a2p-registration'
 ];
 
 /* ------------------------------------------------------------------
@@ -330,6 +332,50 @@ app.post('/api/recruiting-inquiry', (req, res) => {
   mail.sendMail({ to, subject: `Recruiting inquiry from ${r.agency_name}`, text })
     .then(() => console.log(`[inquiry] #${id} emailed to ${to}`))
     .catch(err => console.error(`[inquiry] #${id} stored but the email failed:`, err.message));
+});
+
+/* ------------------------------------------------------------------
+ * A2P 10DLC registration — the form on netenroll.com/a2p-registration.
+ * Same shape as the inquiry above: anonymous, proxied by the marketing vhost,
+ * stored before the email is attempted.
+ * ------------------------------------------------------------------ */
+const a2pTimes = new Map();
+
+app.post('/api/a2p-registration', (req, res) => {
+  const ip = clientIp(req);
+  const now = Date.now();
+  const recent = (a2pTimes.get(ip) || []).filter(t => now - t < INQUIRY_WINDOW_MS);
+  if (recent.length >= INQUIRY_MAX_PER_IP) {
+    return res.status(429).json({ error: 'Too many requests from this connection. Please call 904-512-8487.' });
+  }
+  const checked = a2p.validateA2p(req.body || {});
+  if (!checked.ok) return res.status(400).json({ error: checked.error });
+
+  const { answers, shot } = checked;
+  let id;
+  try {
+    id = db.insertA2pRegistration({
+      legal_name: answers.legal_name,
+      email: answers.rep_email,
+      answers: JSON.stringify(answers),
+      screenshot: shot ? shot.data : null,
+      screenshot_type: shot ? shot.type : null,
+      client_ip: ip
+    });
+  } catch (err) {
+    return fail(res, 500, 'The registration could not be saved', err);
+  }
+  a2pTimes.set(ip, [...recent, now]);
+  res.json({ ok: true, id });
+
+  const to = process.env.A2P_REGISTRATION_EMAIL || process.env.RECRUITING_INQUIRY_EMAIL;
+  if (!to) {
+    console.warn(`[a2p] #${id} stored; no notification address is set so no email was sent`);
+    return;
+  }
+  mail.sendMail({ to, subject: `A2P registration from ${answers.legal_name}`, text: a2p.summaryText(answers, id) })
+    .then(() => console.log(`[a2p] #${id} emailed to ${to}`))
+    .catch(err => console.error(`[a2p] #${id} stored but the email failed:`, err.message));
 });
 
 app.use((req, res, next) => {
@@ -499,6 +545,33 @@ app.get('/api/me', (req, res) => {
   } catch (err) {
     fail(res, 500, 'Could not load session context', err);
   }
+});
+
+// Submitted A2P registrations. Platform-owned, like the inquiries, and they
+// hold EINs, so only the superadmin reads them.
+// ponytail: raw JSON behind the login; build a console screen if these get read daily.
+app.get('/api/a2p-registrations', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  res.json(db.listA2pRegistrations());
+});
+
+app.get('/api/a2p-registrations/:id', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const row = db.getA2pRegistration(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  const { screenshot, answers, ...rest } = row;
+  res.json({
+    ...rest,
+    answers: JSON.parse(answers),
+    screenshot_url: screenshot ? `/api/a2p-registrations/${row.id}/screenshot` : null
+  });
+});
+
+app.get('/api/a2p-registrations/:id/screenshot', (req, res) => {
+  if (!requireSuperadmin(req, res)) return;
+  const row = db.getA2pRegistration(req.params.id);
+  if (!row || !row.screenshot) return res.status(404).json({ error: 'Not found' });
+  res.set({ 'Content-Type': row.screenshot_type, 'X-Content-Type-Options': 'nosniff' }).send(row.screenshot);
 });
 
 app.get('/api/tenants', (req, res) => {

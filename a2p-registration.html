@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2P 10DLC Registration | NetEnroll</title>
+<meta name="description" content="Register your business to text customers. Answer a short guided form, watch your messages take shape on a live phone preview, and NetEnroll prepares your A2P 10DLC registration.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="canonical" href="https://netenroll.com/a2p-registration">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NetEnroll">
+<meta property="og:url" content="https://netenroll.com/a2p-registration">
+<meta property="og:title" content="A2P 10DLC Registration">
+<meta property="og:description" content="Register your business to text customers. One guided form, mostly one-tap answers.">
+<meta property="og:image" content="https://netenroll.com/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A2P 10DLC Registration">
+<meta name="twitter:description" content="Register your business to text customers. One guided form, mostly one-tap answers.">
+<meta name="twitter:image" content="https://netenroll.com/og-home.png">
+
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+
+<style>
+/* ---------------------------------------------------------------------------
+   A2P 10DLC registration. Self-contained like the other routes; /site.js is
+   reused for the menu. The form is eleven short screens in five sections, and
+   the phone beside it shows the client what they are registering, live.
+--------------------------------------------------------------------------- */
+:root {
+    --bg: #FFFFFF;
+    --bg-2: #F4F6F4;
+    --ink: #0E1512;
+    --ink-2: #2B342F;
+    --muted: #5A6660;
+    --line: #E1E6E2;
+    --line-2: #C9D1CC;
+    --green: #0C5C43;
+    --green-hover: #094A36;
+    --green-deep: #073B2C;
+    --green-bright: #2ED18E;
+    --mint: #E6F3EC;
+    --mint-2: #CBE7D8;
+    --amber: #8A5A00;
+    --amber-soft: #FFF6E0;
+    --red: #B42318;
+    --red-soft: #FEF3F2;
+
+    --display: 'General Sans', 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --text: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+    --wrap: 1200px;
+    --gutter: clamp(16px, 4vw, 40px);
+    --header: 72px;
+    --r: 10px;
+    --r-lg: 20px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+    margin: 0; font-family: var(--text); font-size: 17px; line-height: 1.55; color: var(--ink); background: var(--bg-2);
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3, p, ul, ol, dl, dd, fieldset, legend { margin: 0; padding: 0; border: 0; }
+ul, ol { list-style: none; }
+strong, b { font-weight: 700; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 3px; }
+::selection { background: var(--green); color: #fff; }
+
+.skip-link {
+    position: absolute; left: 16px; top: -60px; z-index: 100; padding: 10px 14px; background: var(--ink); color: #fff;
+    border-radius: var(--r); font-size: 14px; font-weight: 700; text-decoration: none;
+}
+.skip-link:focus { top: 12px; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
+
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px;
+    border-radius: var(--r); border: 1px solid transparent; font-size: 16px; font-weight: 700; line-height: 1;
+    text-decoration: none; white-space: nowrap; cursor: pointer;
+    transition: background-color .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease);
+}
+.btn svg { width: 16px; height: 16px; flex: none; transition: transform .25s var(--ease); }
+.btn:hover svg.fwd { transform: translateX(3px); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--green); color: #fff; }
+.btn-primary:hover { background: var(--green-hover); }
+.btn-primary[disabled] { opacity: .6; cursor: progress; }
+.btn-ghost { background: transparent; color: var(--ink-2); padding: 0 16px; }
+.btn-ghost:hover { background: var(--bg-2); }
+.btn-sm { min-height: 44px; padding: 0 18px; font-size: 15px; }
+
+/* ---- Header (the shared site header) ------------------------------------- */
+.site-header {
+    position: sticky; top: 0; z-index: 30; background: rgba(255, 255, 255, .9);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line);
+}
+.site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
+.brand img { height: 44px; width: auto; }
+.nav { display: flex; gap: 20px; font-size: 15px; font-weight: 500; }
+.nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; white-space: nowrap; }
+.nav a:hover, .nav a[aria-current] { color: var(--green); }
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 24px; }
+.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.signin:hover { color: var(--green); }
+.menu-btn {
+    display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--line-2); border-radius: var(--r); cursor: pointer;
+}
+.menu-btn .close { display: none; }
+.menu-btn[aria-expanded="true"] .open { display: none; }
+.menu-btn[aria-expanded="true"] .close { display: block; }
+.mobile-nav { display: none; }
+
+/* ---- Intro --------------------------------------------------------------- */
+.intro { padding: clamp(32px, 4.5vw, 52px) 0 clamp(24px, 3vw, 32px); }
+.intro-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px 48px; }
+.eyebrow {
+    display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--green);
+}
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.intro h1 {
+    margin-top: 14px; font-family: var(--display); font-weight: 600; font-size: clamp(2.1rem, 3.8vw, 3.2rem);
+    line-height: 1.04; letter-spacing: -.03em; text-wrap: balance;
+}
+.intro .lede { margin-top: 12px; max-width: 37rem; color: var(--muted); font-size: 1.1rem; text-wrap: pretty; }
+.facts { display: flex; gap: 28px; font-size: 14.5px; color: var(--muted); }
+.facts b { display: block; font-family: var(--display); font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; color: var(--ink); }
+
+/* ---- Layout -------------------------------------------------------------- */
+.shell { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(28px, 4vw, 56px); align-items: start; padding-bottom: clamp(56px, 7vw, 96px); }
+.card {
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-lg);
+    box-shadow: 0 1px 2px rgba(14, 21, 18, .04), 0 32px 64px -44px rgba(14, 21, 18, .35);
+}
+
+/* Progress: one bar per section, each filling as its screens are finished. */
+.rail { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 20px clamp(20px, 3.4vw, 40px) 0; }
+.rail button {
+    display: block; width: 100%; padding: 0 0 6px; text-align: left; background: none; border: 0; cursor: default;
+    font-size: 14px; font-weight: 700; color: var(--muted);
+}
+.rail button.can { cursor: pointer; }
+.rail button.can:hover { color: var(--green); }
+.rail button.now { color: var(--ink); }
+.rail button.done { color: var(--green); }
+.rail .bar { display: block; height: 4px; margin-top: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.rail .bar i { display: block; height: 100%; width: 0; border-radius: 4px; background: var(--green); transition: width .45s var(--ease); }
+
+.resume {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; margin: 18px clamp(20px, 3.4vw, 40px) 0; padding: 10px 14px;
+    border-radius: var(--r); background: var(--mint); color: var(--green-deep); font-size: 15px; font-weight: 500;
+}
+.linkbtn { padding: 0; border: 0; background: none; font-weight: 700; color: var(--green); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Screens ------------------------------------------------------------- */
+.screen { padding: clamp(26px, 3.6vw, 40px) clamp(20px, 3.4vw, 40px) 8px; }
+.screen.fwd { animation: in-fwd .38s var(--ease); }
+.screen.back { animation: in-back .38s var(--ease); }
+@keyframes in-fwd { from { opacity: 0; transform: translateX(18px); } }
+@keyframes in-back { from { opacity: 0; transform: translateX(-18px); } }
+.screen h2 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(1.6rem, 2.5vw, 2.05rem); line-height: 1.12;
+    letter-spacing: -.025em; text-wrap: balance;
+}
+.screen h2:focus { outline: none; }
+.screen > .sub { margin-top: 8px; color: var(--muted); max-width: 36rem; text-wrap: pretty; }
+.qs { display: grid; gap: 26px; margin-top: 28px; }
+.row { display: grid; gap: 26px 16px; grid-template-columns: 1fr 1fr; }
+.row.addr { grid-template-columns: 1.6fr .9fr 1fr; }
+.divider { height: 1px; background: var(--line); }
+
+.q { min-width: 0; }
+.q > label, .q > legend { display: block; width: 100%; font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.opt { margin-left: 6px; font-size: 14px; font-weight: 500; color: var(--muted); }
+.hint { margin-top: 3px; font-size: 14.5px; color: var(--muted); }
+.control { margin-top: 10px; }
+
+.input {
+    display: block; width: 100%; height: 52px; padding: 0 15px; background: #fff; border: 1.5px solid var(--line-2); border-radius: var(--r);
+    font-size: 16px; font-weight: 500; transition: border-color .15s, box-shadow .15s;
+}
+textarea.input { height: auto; min-height: 104px; padding: 13px 15px; line-height: 1.45; resize: vertical; field-sizing: content; }
+select.input {
+    appearance: none; -webkit-appearance: none; padding-right: 42px; cursor: pointer;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%235A6660' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center;
+}
+.input::placeholder { color: #98A29C; font-weight: 400; }
+.input:hover { border-color: #A7B3AC; }
+.input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px var(--mint); }
+.q.bad .input { border-color: var(--red); }
+.q.bad .input:focus { box-shadow: 0 0 0 4px var(--red-soft); }
+.err { margin-top: 7px; font-size: 14.5px; font-weight: 500; color: var(--red); }
+
+/* Tiles: the real radio or checkbox stays in the DOM and takes the keyboard. */
+.tiles { display: grid; gap: 10px; margin-top: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.tiles.wide { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.tiles.yn { grid-template-columns: repeat(2, minmax(0, 150px)); }
+.tile { position: relative; display: block; cursor: pointer; }
+.tile input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.tile .t {
+    position: relative; display: flex; flex-direction: column; justify-content: center; height: 100%; min-height: 52px; padding: 11px 42px 11px 15px;
+    background: #fff; border: 1.5px solid var(--line-2); border-radius: var(--r); font-size: 16px; font-weight: 700; line-height: 1.25;
+    transition: border-color .15s, background-color .15s, box-shadow .15s, transform .15s var(--ease);
+}
+.tile .t small { display: block; margin-top: 2px; font-size: 14px; font-weight: 500; line-height: 1.3; color: var(--muted); }
+.tile .t::after {
+    content: ""; position: absolute; right: 14px; top: 50%; width: 20px; height: 20px; margin-top: -10px;
+    border: 1.5px solid var(--line-2); border-radius: 50%; background: #fff center / 12px no-repeat; transition: background-color .15s, border-color .15s;
+}
+.tile input[type="checkbox"] + .t::after { border-radius: 6px; }
+.tile:hover .t { border-color: #A7B3AC; }
+.tile input:checked + .t { border-color: var(--green); background: var(--mint); box-shadow: 0 0 0 1px var(--green); }
+.tile input:checked + .t::after {
+    border-color: var(--green); background-color: var(--green);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.4l2.3 2.3 4.7-5' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.tile input:focus-visible + .t { outline: 2px solid var(--green); outline-offset: 2px; }
+.q.bad .tile .t { border-color: var(--red); }
+
+.reveal { margin-top: 12px; animation: drop .28s var(--ease); }
+@keyframes drop { from { opacity: 0; transform: translateY(-6px); } }
+
+/* One-tap answers lifted from earlier in the form. */
+.suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
+.chip {
+    max-width: 100%; padding: 6px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 1px solid var(--mint-2);
+    border-radius: 999px; background: var(--mint); color: var(--green-deep); font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color .15s, border-color .15s;
+}
+.chip:hover { background: var(--mint-2); }
+
+.helper {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 9px; padding: 7px 13px; border: 1px solid var(--mint-2); border-radius: 999px;
+    background: var(--mint); color: var(--green-deep); font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color .15s;
+}
+.helper:hover { background: var(--mint-2); }
+.helper svg { width: 14px; height: 14px; }
+
+.note { margin-top: 12px; padding: 11px 14px; border-radius: var(--r); background: var(--amber-soft); color: #5F3E00; font-size: 15px; }
+.note b { color: var(--amber); }
+
+/* Sample message cards */
+.sample-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.sample-head .helper { margin-top: 0; }
+.meter { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 14px; font-weight: 500; color: var(--muted); }
+.meter span { display: inline-flex; align-items: center; gap: 6px; }
+.meter span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); transition: background-color .2s; }
+.meter span.ok { color: var(--green); }
+.meter span.ok::before { background: var(--green-bright); }
+.meter .len { margin-left: auto; font-variant-numeric: tabular-nums; }
+.meter .len::before { display: none; }
+
+/* Number stepper */
+.stepper { display: inline-flex; align-items: center; margin-top: 10px; border: 1.5px solid var(--line-2); border-radius: var(--r); overflow: hidden; background: #fff; }
+.stepper button { width: 52px; height: 49px; border: 0; background: #fff; font-size: 22px; font-weight: 500; color: var(--green); cursor: pointer; transition: background-color .15s; }
+.stepper button:hover { background: var(--mint); }
+.stepper input {
+    width: 72px; height: 49px; padding: 0; border: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); text-align: center;
+    font-family: var(--display); font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; -moz-appearance: textfield; appearance: textfield;
+}
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper input:focus { outline: none; background: var(--mint); }
+
+/* Screenshot drop zone */
+.q > label.drop {
+    display: flex; align-items: center; gap: 14px; padding: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--r); background: var(--bg-2);
+    cursor: pointer; transition: border-color .15s, background-color .15s;
+}
+.drop:hover, .drop.over, .drop:focus-within { border-color: var(--green); background: var(--mint); }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.drop .ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r); background: #fff; color: var(--green); overflow: hidden; }
+.drop .ico svg { width: 20px; height: 20px; }
+.drop .ico img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.drop b { display: block; font-size: 15.5px; line-height: 1.3; word-break: break-word; }
+.drop small { font-size: 14px; color: var(--muted); }
+
+/* Card footer */
+.foot { display: flex; align-items: center; gap: 12px; margin-top: 30px; padding: 16px clamp(20px, 3.4vw, 40px); border-top: 1px solid var(--line); }
+.foot .saved { margin-left: auto; font-size: 14px; color: var(--muted); text-align: right; }
+.foot .saved::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 50%; background: var(--green-bright); vertical-align: 1px; }
+.foot .btn-primary { min-width: 164px; }
+
+/* Review */
+.review { display: grid; gap: 14px; margin-top: 26px; }
+.rv { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.rv-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 16px; background: var(--bg-2); }
+.rv-head h3 { font-family: var(--display); font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; }
+.rv dl { padding: 4px 16px 8px; }
+.rv dl > div { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 2px 16px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.rv dl > div:last-child { border-bottom: 0; }
+.rv dt { color: var(--muted); }
+.rv dd { font-weight: 500; white-space: pre-wrap; overflow-wrap: anywhere; }
+.certify { margin-top: 22px; }
+.certify .t { font-weight: 500; font-size: 15.5px; }
+.alert { margin-top: 16px; padding: 12px 14px; border-radius: var(--r); background: var(--red-soft); color: var(--red); font-size: 15px; font-weight: 500; }
+
+/* ---- Phone --------------------------------------------------------------- */
+.preview { position: sticky; top: calc(var(--header) + 20px); }
+.phone {
+    position: relative; height: min(560px, calc(100vh - var(--header) - 110px)); min-height: 420px; padding: 9px; border-radius: 44px; background: #101613;
+    box-shadow: 0 0 0 1px #2B342F, 0 40px 70px -36px rgba(7, 59, 44, .6);
+}
+.glass { display: flex; flex-direction: column; height: 100%; border-radius: 36px; overflow: hidden; background: #fff; }
+.ph-top { flex: none; display: grid; justify-items: center; gap: 4px; padding: 34px 12px 11px; background: #F6F7F6; border-bottom: 1px solid var(--line); }
+.ph-top::before { content: ""; position: absolute; top: 18px; left: 50%; width: 84px; height: 22px; margin-left: -42px; border-radius: 12px; background: #101613; }
+.avatar {
+    display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: #fff;
+    background: linear-gradient(160deg, #1B8A66, var(--green-deep)); font-family: var(--display); font-weight: 600; font-size: 18px;
+}
+.ph-name { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 700; }
+.thread { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 12px; overflow-y: auto; scrollbar-width: none; }
+.thread .stamp { text-align: center; font-size: 11.5px; font-weight: 500; color: var(--muted); }
+.bubble {
+    align-self: flex-start; max-width: 88%; padding: 8px 12px; border-radius: 17px 17px 17px 5px; background: #E9ECEA; font-size: 13.5px; line-height: 1.35;
+    overflow-wrap: anywhere; white-space: pre-wrap; animation: pop .26s var(--ease); transition: box-shadow .15s;
+}
+.bubble.on { box-shadow: 0 0 0 2px var(--green-bright); }
+.bubble.ghost { background: none; border: 1.5px dashed var(--line-2); color: var(--muted); animation: none; }
+@keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.97); } }
+.ph-bar { flex: none; margin: 4px 10px 12px; padding: 6px 13px; border: 1px solid var(--line-2); border-radius: 18px; font-size: 12.5px; color: #98A29C; }
+.preview figcaption { margin-top: 16px; text-align: center; font-size: 14px; color: var(--muted); }
+.preview figcaption a { color: var(--ink-2); font-weight: 700; text-decoration: none; }
+.preview figure { margin: 0; }
+
+/* ---- Done ---------------------------------------------------------------- */
+.finish { max-width: 620px; margin: 0 auto clamp(56px, 8vw, 104px); padding: clamp(36px, 6vw, 60px) clamp(22px, 5vw, 56px); text-align: center; }
+.finish h2 { margin-top: 22px; font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.1; }
+.finish h2:focus { outline: none; }
+.finish p { margin-top: 12px; color: var(--muted); text-wrap: pretty; }
+.finish .ref { display: inline-block; margin-top: 20px; padding: 8px 16px; border-radius: 999px; background: var(--mint); color: var(--green-deep); font-weight: 700; font-variant-numeric: tabular-nums; }
+.seal { width: 72px; height: 72px; margin: 0 auto; }
+.seal circle { fill: var(--mint); }
+.seal path { fill: none; stroke: var(--green); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 34; stroke-dashoffset: 34; animation: draw .55s .15s var(--ease) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* ---- Footer -------------------------------------------------------------- */
+.site-footer { padding: clamp(48px, 6vw, 72px) 0 32px; font-size: 15px; background: var(--bg); border-top: 1px solid var(--line); }
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+.foot-brand img { height: 40px; width: auto; }
+.foot-brand p { margin-top: 16px; color: var(--muted); max-width: 22rem; font-size: 14.5px; }
+.site-footer h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.site-footer li a { display: inline-block; padding: 4px 0; color: var(--ink-2); text-decoration: none; }
+.site-footer li a:hover { color: var(--green); }
+.foot-legal { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+.foot-legal p { margin: 0; }
+
+/* ---- Responsive ---------------------------------------------------------- */
+@media (max-width: 1180px) {
+    .nav, .signin, .header-actions .btn { display: none; }
+    .menu-btn { display: inline-flex; }
+    .mobile-nav {
+        display: block; position: absolute; top: var(--header); left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--line);
+        box-shadow: 0 24px 40px -24px rgba(14, 21, 18, .3); padding: 8px var(--gutter) 24px;
+    }
+    .mobile-nav > a { display: block; padding: 15px 0; border-bottom: 1px solid var(--line); font-family: var(--display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; text-decoration: none; color: var(--ink); }
+    .mobile-nav > a.signin { font-family: var(--text); font-size: 16px; font-weight: 700; color: var(--ink-2); }
+    .mobile-nav .cta-row { padding-top: 20px; }
+    .mobile-nav .cta-row .btn { width: 100%; }
+}
+@media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); }
+    .facts { display: none; }
+    /* The phone earns its space on a small screen only where it is the point. */
+    .preview { display: none; position: static; }
+    body[data-screen="samples"] .preview { display: block; max-width: 300px; width: 100%; margin: 0 auto; }
+    .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 640px) {
+    :root { --header: 64px; }
+    body { font-size: 16.5px; }
+    .brand img { height: 38px; }
+    .rail { gap: 5px; }
+    .rail::before { content: attr(data-now); grid-column: 1 / -1; font-size: 14px; font-weight: 700; }
+    .rail button { font-size: 0; padding-bottom: 0; }
+    .rail .bar { margin-top: 0; }
+    .row, .row.addr { grid-template-columns: 1fr; gap: 22px; }
+    .row.keep { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tiles.wide { grid-template-columns: 1fr; }
+    .tiles.yn { grid-template-columns: 1fr 1fr; }
+    .foot { flex-wrap: wrap; }
+    .foot .saved { order: 3; width: 100%; margin: 0; text-align: center; }
+    .foot .btn-primary { flex: 1; min-width: 0; }
+    .rv dl > div { grid-template-columns: 1fr; }
+    .foot-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body data-screen="identity">
+<a class="skip-link" href="#main">Skip to the form</a>
+
+<header class="site-header">
+    <div class="wrap">
+        <a class="brand" href="/" aria-label="NetEnroll home">
+            <img src="/netenroll-logo-tagline.png" width="1950" height="555" alt="NetEnroll — Pay-per-application">
+        </a>
+        <nav class="nav" aria-label="Primary">
+            <a href="/#how-it-works">How it works</a>
+            <a href="/#pricing">Rates</a>
+            <a href="/#agencies">For agencies</a>
+            <a href="/#faq">Questions</a>
+            <a href="/aca-agent-recruiting">Agent Recruiting</a>
+            <a href="/agency-planner">Agency Planner</a>
+            <a href="/a2p-registration" aria-current="page">A2P Registration</a>
+        </nav>
+        <div class="header-actions">
+            <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
+        </div>
+        <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
+            <svg class="open" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg class="close" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </div>
+    <div class="mobile-nav" id="mobile-nav" hidden>
+        <a href="/#how-it-works">How it works</a>
+        <a href="/#pricing">Rates</a>
+        <a href="/#agencies">For agencies</a>
+        <a href="/#faq">Questions</a>
+        <a href="/aca-agent-recruiting">Agent Recruiting</a>
+        <a href="/agency-planner">Agency Planner</a>
+        <a href="/a2p-registration" aria-current="page">A2P Registration</a>
+        <a href="/licensing-value">State License Tool</a>
+        <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in to the agent portal</a>
+    </div>
+</header>
+
+<main id="main">
+<section class="intro" id="intro">
+    <div class="wrap intro-row">
+        <div>
+            <p class="eyebrow">A2P 10DLC registration</p>
+            <h1>Register your business to text customers.</h1>
+            <p class="lede">Carriers require this before a business can text from a local number. Answer once here and we prepare your registration.</p>
+        </div>
+        <ul class="facts">
+            <li><b>10 min</b>to finish</li>
+            <li><b>One tap</b>for most answers</li>
+            <li><b>Saved</b>as you go</li>
+        </ul>
+    </div>
+</section>
+
+<div class="wrap shell" id="shell">
+<form class="card" id="a2p" action="/api/a2p-registration" method="post" novalidate>
+    <ol class="rail" id="rail" aria-label="Progress"></ol>
+    <p class="resume" id="resume" hidden><span>Welcome back. Your answers were saved on this device.</span><button type="button" class="linkbtn" id="restart">Start over</button></p>
+
+    <!-- 1. Business -->
+    <section class="screen" data-section="Business" data-key="identity" data-title="Your business">
+        <h2 tabindex="-1">Let's start with your business.</h2>
+        <p class="sub">Carriers match these details against IRS records, so use them exactly as they appear there.</p>
+        <div class="qs">
+            <div class="q" data-name="legal_name" data-req data-label="Legal business name">
+                <label for="legal_name">Legal business name</label>
+                <p class="hint">Exactly as registered with the IRS.</p>
+                <div class="control"><input class="input" id="legal_name" name="legal_name" autocomplete="organization" maxlength="200" placeholder="Acme Benefits LLC"></div>
+            </div>
+            <div class="q" data-name="dba_name" data-label="DBA or brand name">
+                <label for="dba_name">DBA or brand name <span class="opt">If different</span></label>
+                <div class="control"><input class="input" id="dba_name" name="dba_name" maxlength="200" placeholder="Acme Benefits"></div>
+            </div>
+            <fieldset class="q" data-name="entity_type" data-req data-label="Entity type">
+                <legend>Entity type</legend>
+                <div class="tiles">
+                    <label class="tile"><input type="radio" name="entity_type" value="LLC"><span class="t">LLC</span></label>
+                    <label class="tile"><input type="radio" name="entity_type" value="Corporation"><span class="t">Corporation</span></label>
+                    <label class="tile"><input type="radio" name="entity_type" value="Partnership"><span class="t">Partnership</span></label>
+                    <label class="tile"><input type="radio" name="entity_type" value="Sole Proprietor"><span class="t">Sole Proprietor</span></label>
+                    <label class="tile"><input type="radio" name="entity_type" value="Nonprofit"><span class="t">Nonprofit</span></label>
+                    <label class="tile"><input type="radio" name="entity_type" value="Other"><span class="t">Other</span></label>
+                </div>
+            </fieldset>
+            <div class="q reveal" data-name="entity_other" data-req data-when="entity_type:Other" data-label="Entity type, other">
+                <label for="entity_other">What type of entity?</label>
+                <div class="control"><input class="input" id="entity_other" name="entity_other" maxlength="100"></div>
+            </div>
+            <div class="row">
+                <div class="q" data-name="ein" data-req data-optional-when="entity_type:Sole Proprietor" data-type="ein" data-label="Federal EIN">
+                    <label for="ein">Federal EIN / Tax ID <span class="opt" id="ein-opt" hidden>Optional for sole proprietors</span></label>
+                    <div class="control"><input class="input" id="ein" name="ein" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="12-3456789"></div>
+                    <p class="hint">Never stored on this device.</p>
+                </div>
+            </div>
+            <fieldset class="q" data-name="ownership_type" data-req data-label="Ownership">
+                <legend>Your business is</legend>
+                <div class="tiles">
+                    <label class="tile"><input type="radio" name="ownership_type" value="Privately owned"><span class="t">Privately owned</span></label>
+                    <label class="tile"><input type="radio" name="ownership_type" value="Publicly traded"><span class="t">Publicly traded</span></label>
+                    <label class="tile"><input type="radio" name="ownership_type" value="Nonprofit"><span class="t">Nonprofit</span></label>
+                    <label class="tile"><input type="radio" name="ownership_type" value="Government"><span class="t">Government</span></label>
+                </div>
+            </fieldset>
+        </div>
+    </section>
+
+    <section class="screen" data-section="Business" data-key="about" data-title="What you do" hidden>
+        <h2 tabindex="-1">Tell us what you do.</h2>
+        <p class="sub">A sentence or two is plenty. Reviewers use this to confirm your messages fit your business.</p>
+        <div class="qs">
+            <div class="q" data-name="industry" data-req data-label="Industry">
+                <label for="industry">Industry</label>
+                <div class="control">
+                    <select class="input" id="industry" name="industry">
+                        <option value="">Choose your industry</option>
+                        <option>Agriculture</option>
+                        <option>Automotive</option>
+                        <option>Banking and Financial Services</option>
+                        <option>Construction and Trades</option>
+                        <option>Consumer Services</option>
+                        <option>Education</option>
+                        <option>Energy and Utilities</option>
+                        <option>Entertainment</option>
+                        <option>Government</option>
+                        <option>Healthcare</option>
+                        <option>Hospitality and Travel</option>
+                        <option>Insurance</option>
+                        <option>Legal</option>
+                        <option>Manufacturing</option>
+                        <option>Nonprofit</option>
+                        <option>Professional Services</option>
+                        <option>Real Estate</option>
+                        <option>Retail and E-commerce</option>
+                        <option>Technology</option>
+                        <option>Telecommunications</option>
+                        <option>Transportation and Logistics</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="q reveal" data-name="industry_other" data-req data-when="industry:Other" data-label="Industry, other">
+                <label for="industry_other">Which industry?</label>
+                <div class="control"><input class="input" id="industry_other" name="industry_other" maxlength="100"></div>
+            </div>
+            <div class="q" data-name="business_description" data-req data-label="What your business does">
+                <label for="business_description">What does your business do?</label>
+                <div class="control"><textarea class="input" id="business_description" name="business_description" rows="3" maxlength="1000" placeholder="We help families in Florida find affordable life insurance."></textarea></div>
+            </div>
+            <div class="q" data-name="website" data-req data-type="url" data-label="Website">
+                <label for="website">Business website</label>
+                <div class="control"><input class="input" id="website" name="website" type="url" inputmode="url" autocomplete="url" maxlength="300" placeholder="acmebenefits.com"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" data-section="Business" data-key="contact" data-title="Address and representative" hidden>
+        <h2 tabindex="-1">Where you are, and who signs off.</h2>
+        <p class="sub">Use your legal address and the person authorized to represent the business.</p>
+        <div class="qs">
+            <div class="row">
+                <div class="q" data-name="address_street" data-req data-label="Street address">
+                    <label for="address_street">Street address</label>
+                    <div class="control"><input class="input" id="address_street" name="address_street" autocomplete="address-line1" maxlength="200"></div>
+                </div>
+                <div class="q" data-name="address_line2" data-label="Suite or unit">
+                    <label for="address_line2">Suite or unit <span class="opt">Optional</span></label>
+                    <div class="control"><input class="input" id="address_line2" name="address_line2" autocomplete="address-line2" maxlength="100"></div>
+                </div>
+            </div>
+            <div class="row addr">
+                <div class="q" data-name="address_city" data-req data-label="City">
+                    <label for="address_city">City</label>
+                    <div class="control"><input class="input" id="address_city" name="address_city" autocomplete="address-level2" maxlength="100"></div>
+                </div>
+                <div class="q" data-name="address_state" data-req data-label="State">
+                    <label for="address_state">State</label>
+                    <div class="control">
+                        <select class="input" id="address_state" name="address_state" autocomplete="address-level1">
+                            <option value="">State</option>
+                            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>DC</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>PR</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="q" data-name="address_zip" data-req data-type="zip" data-label="ZIP code">
+                    <label for="address_zip">ZIP code</label>
+                    <div class="control"><input class="input" id="address_zip" name="address_zip" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="q" data-name="rep_name" data-req data-label="Representative">
+                    <label for="rep_name">Authorized representative</label>
+                    <div class="control"><input class="input" id="rep_name" name="rep_name" autocomplete="name" maxlength="200" placeholder="Full name"></div>
+                </div>
+                <div class="q" data-name="rep_title" data-req data-label="Job title">
+                    <label for="rep_title">Job title</label>
+                    <div class="control"><input class="input" id="rep_title" name="rep_title" autocomplete="organization-title" maxlength="100" placeholder="Owner"></div>
+                </div>
+                <div class="q" data-name="rep_email" data-req data-type="email" data-label="Business email">
+                    <label for="rep_email">Business email</label>
+                    <div class="control"><input class="input" id="rep_email" name="rep_email" type="email" autocomplete="email" maxlength="254"></div>
+                </div>
+                <div class="q" data-name="rep_phone" data-req data-type="phone" data-label="Direct phone">
+                    <label for="rep_phone">Direct phone</label>
+                    <div class="control"><input class="input" id="rep_phone" name="rep_phone" type="tel" autocomplete="tel" maxlength="40"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Messages -->
+    <section class="screen" data-section="Messages" data-key="purpose" data-title="What you'll send" hidden>
+        <h2 tabindex="-1">What will you text people about?</h2>
+        <p class="sub">Pick everything that applies. Your phone preview follows along.</p>
+        <div class="qs">
+            <div class="q" data-name="sms_brand" data-req data-label="Name in your texts">
+                <label for="sms_brand">Name shown in your texts</label>
+                <div class="control"><input class="input" id="sms_brand" name="sms_brand" maxlength="100" placeholder="Acme Benefits"></div>
+                <div class="suggest" data-suggest="sms_brand"></div>
+            </div>
+            <fieldset class="q" data-name="use_cases" data-req data-label="Used for" data-msg="Choose at least one.">
+                <legend>What you'll use texting for</legend>
+                <div class="tiles wide">
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Marketing"><span class="t">Marketing<small>Offers, promotions and news</small></span></label>
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Sales Follow-Ups"><span class="t">Sales Follow-Ups<small>Replying to people who asked</small></span></label>
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Customer Service"><span class="t">Customer Service<small>Answers and support updates</small></span></label>
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Appointment Reminders"><span class="t">Appointment Reminders<small>Confirmations and reminders</small></span></label>
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Notifications"><span class="t">Notifications<small>Account and order updates</small></span></label>
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Verification Codes"><span class="t">Verification Codes<small>One-time login codes</small></span></label>
+                    <label class="tile"><input type="checkbox" name="use_cases" value="Other"><span class="t">Other<small>Something else</small></span></label>
+                </div>
+            </fieldset>
+            <div class="q reveal" data-name="use_case_other" data-req data-when="use_cases:Other" data-label="Used for, other">
+                <label for="use_case_other">What else will you use it for?</label>
+                <div class="control"><input class="input" id="use_case_other" name="use_case_other" maxlength="200"></div>
+            </div>
+            <fieldset class="q" data-name="recipients" data-req data-label="Who receives your texts" data-msg="Choose at least one.">
+                <legend>Who will receive your texts?</legend>
+                <div class="tiles wide">
+                    <label class="tile"><input type="checkbox" name="recipients" value="Current customers"><span class="t">Current customers</span></label>
+                    <label class="tile"><input type="checkbox" name="recipients" value="Leads who requested information"><span class="t">Leads who requested information</span></label>
+                    <label class="tile"><input type="checkbox" name="recipients" value="Members or subscribers"><span class="t">Members or subscribers</span></label>
+                    <label class="tile"><input type="checkbox" name="recipients" value="Employees or staff"><span class="t">Employees or staff</span></label>
+                    <label class="tile"><input type="checkbox" name="recipients" value="Other"><span class="t">Other</span></label>
+                </div>
+            </fieldset>
+            <div class="q reveal" data-name="recipients_other" data-req data-when="recipients:Other" data-label="Recipients, other">
+                <label for="recipients_other">Who else?</label>
+                <div class="control"><input class="input" id="recipients_other" name="recipients_other" maxlength="200"></div>
+            </div>
+            <div class="q" data-name="message_description" data-req data-label="Types of messages">
+                <label for="message_description">Describe the messages you'll send</label>
+                <div class="control"><textarea class="input" id="message_description" name="message_description" rows="3" maxlength="1000"></textarea></div>
+                <button type="button" class="helper" id="draft-desc"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l1.6 4.9 4.9 1.6-4.9 1.6L8 14.5 6.4 9.6 1.5 8l4.9-1.6L8 1.5z" fill="currentColor"/></svg>Draft this from my answers</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" data-section="Messages" data-key="samples" data-title="Sample messages" hidden>
+        <h2 tabindex="-1">Show three real examples.</h2>
+        <p class="sub">Reviewers read these closely. Each one should name your business and say how to opt out.</p>
+        <div class="qs">
+            <div class="sample-head"><button type="button" class="helper" id="draft-samples"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l1.6 4.9 4.9 1.6-4.9 1.6L8 14.5 6.4 9.6 1.5 8l4.9-1.6L8 1.5z" fill="currentColor"/></svg>Write all three for me</button></div>
+            <div class="q" data-name="sample_1" data-req data-type="sample" data-label="Sample message 1">
+                <label for="sample_1">Message 1</label>
+                <div class="control"><textarea class="input" id="sample_1" name="sample_1" rows="3" maxlength="1000" data-sample="0"></textarea></div>
+                <div class="meter" data-meter="sample_1"></div>
+            </div>
+            <div class="q" data-name="sample_2" data-req data-type="sample" data-label="Sample message 2">
+                <label for="sample_2">Message 2</label>
+                <div class="control"><textarea class="input" id="sample_2" name="sample_2" rows="3" maxlength="1000" data-sample="1"></textarea></div>
+                <div class="meter" data-meter="sample_2"></div>
+            </div>
+            <div class="q" data-name="sample_3" data-req data-type="sample" data-label="Sample message 3">
+                <label for="sample_3">Message 3</label>
+                <div class="control"><textarea class="input" id="sample_3" name="sample_3" rows="3" maxlength="1000" data-sample="2"></textarea></div>
+                <div class="meter" data-meter="sample_3"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" data-section="Messages" data-key="details" data-title="Message details" hidden>
+        <h2 tabindex="-1">A few quick details.</h2>
+        <p class="sub">We filled in what your sample messages already told us. Change anything that's off.</p>
+        <div class="qs">
+            <div class="row">
+                <fieldset class="q" data-name="has_links" data-req data-label="Contains website links">
+                    <legend>Will messages contain links?</legend>
+                    <div class="tiles yn">
+                        <label class="tile"><input type="radio" name="has_links" value="Yes"><span class="t">Yes</span></label>
+                        <label class="tile"><input type="radio" name="has_links" value="No"><span class="t">No</span></label>
+                    </div>
+                </fieldset>
+                <fieldset class="q" data-name="has_phone_numbers" data-req data-label="Contains phone numbers">
+                    <legend>Will messages contain phone numbers?</legend>
+                    <div class="tiles yn">
+                        <label class="tile"><input type="radio" name="has_phone_numbers" value="Yes"><span class="t">Yes</span></label>
+                        <label class="tile"><input type="radio" name="has_phone_numbers" value="No"><span class="t">No</span></label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="q reveal" data-name="link_domains" data-req data-when="has_links:Yes" data-label="Link domains">
+                <label for="link_domains">Which domains will you link to?</label>
+                <div class="control"><input class="input" id="link_domains" name="link_domains" maxlength="500" placeholder="acmebenefits.com"></div>
+                <div class="suggest" data-suggest="link_domains"></div>
+            </div>
+            <fieldset class="q" data-name="daily_volume" data-req data-label="Texts per day">
+                <legend>About how many texts per day?</legend>
+                <div class="tiles">
+                    <label class="tile"><input type="radio" name="daily_volume" value="Under 100"><span class="t">Under 100</span></label>
+                    <label class="tile"><input type="radio" name="daily_volume" value="100 to 500"><span class="t">100 to 500</span></label>
+                    <label class="tile"><input type="radio" name="daily_volume" value="500 to 2,000"><span class="t">500 to 2,000</span></label>
+                    <label class="tile"><input type="radio" name="daily_volume" value="2,000 to 10,000"><span class="t">2,000 to 10,000</span></label>
+                    <label class="tile"><input type="radio" name="daily_volume" value="More than 10,000"><span class="t">More than 10,000</span></label>
+                </div>
+            </fieldset>
+            <fieldset class="q" data-name="allows_replies" data-req data-label="Customers can reply">
+                <legend>Can customers reply to your messages?</legend>
+                <div class="tiles yn">
+                    <label class="tile"><input type="radio" name="allows_replies" value="Yes"><span class="t">Yes</span></label>
+                    <label class="tile"><input type="radio" name="allows_replies" value="No"><span class="t">No</span></label>
+                </div>
+            </fieldset>
+        </div>
+    </section>
+
+    <!-- 3. Consent -->
+    <section class="screen" data-section="Consent" data-key="optin" data-title="How people opt in" hidden>
+        <h2 tabindex="-1">How do people say yes to your texts?</h2>
+        <p class="sub">This is what carriers care about most. Pick every way someone can opt in.</p>
+        <div class="qs">
+            <fieldset class="q" data-name="consent_methods" data-req data-label="Consent methods" data-msg="Choose at least one.">
+                <legend>How customers consent</legend>
+                <div class="tiles wide">
+                    <label class="tile"><input type="checkbox" name="consent_methods" value="Website Form"><span class="t">Website Form<small>A form or checkbox on your site</small></span></label>
+                    <label class="tile"><input type="checkbox" name="consent_methods" value="Text Keyword"><span class="t">Text Keyword<small>They text a word to your number</small></span></label>
+                    <label class="tile"><input type="checkbox" name="consent_methods" value="Written Consent"><span class="t">Written Consent<small>A signed paper or digital form</small></span></label>
+                    <label class="tile"><input type="checkbox" name="consent_methods" value="Verbal Consent"><span class="t">Verbal Consent<small>On a call or in person</small></span></label>
+                    <label class="tile"><input type="checkbox" name="consent_methods" value="Other"><span class="t">Other<small>Something else</small></span></label>
+                </div>
+            </fieldset>
+            <div class="q reveal" data-name="consent_other" data-req data-when="consent_methods:Other" data-label="Consent method, other">
+                <label for="consent_other">How else do they opt in?</label>
+                <div class="control"><input class="input" id="consent_other" name="consent_other" maxlength="200"></div>
+            </div>
+            <div class="q" data-name="optin_url" data-req-when="consent_methods:Website Form" data-type="url" data-label="Opt-in page">
+                <label for="optin_url">Opt-in page URL <span class="opt" id="optin-opt">Optional without a website form</span></label>
+                <p class="hint">The page where customers sign up for your texts.</p>
+                <div class="control"><input class="input" id="optin_url" name="optin_url" type="url" inputmode="url" maxlength="300" placeholder="acmebenefits.com/contact"></div>
+                <div class="suggest" data-suggest="optin_url"></div>
+            </div>
+            <div class="q" data-name="consent_language" data-req data-label="Consent language">
+                <label for="consent_language">The exact consent language customers see</label>
+                <div class="control"><textarea class="input" id="consent_language" name="consent_language" rows="5" maxlength="2000"></textarea></div>
+                <button type="button" class="helper" id="draft-consent"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l1.6 4.9 4.9 1.6-4.9 1.6L8 14.5 6.4 9.6 1.5 8l4.9-1.6L8 1.5z" fill="currentColor"/></svg>Start from standard wording</button>
+                <p class="hint">These exact words must appear where customers opt in.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" data-section="Consent" data-key="proof" data-title="Proof of consent" hidden>
+        <h2 tabindex="-1">Now, the proof.</h2>
+        <p class="sub">A screenshot of your opt-in is the quickest way through carrier review.</p>
+        <div class="qs">
+            <fieldset class="q" data-name="screenshot_choice" data-req data-label="Opt-in screenshot">
+                <legend>Screenshot of your opt-in</legend>
+                <div class="tiles">
+                    <label class="tile"><input type="radio" name="screenshot_choice" value="Upload now"><span class="t">Upload now</span></label>
+                    <label class="tile"><input type="radio" name="screenshot_choice" value="Send it later"><span class="t">Send it later</span></label>
+                </div>
+            </fieldset>
+            <div class="q reveal" data-name="screenshot" data-req data-when="screenshot_choice:Upload now" data-type="file" data-label="Screenshot file" data-msg="Add your screenshot, or choose to send it later.">
+                <label class="drop" id="drop">
+                    <input type="file" id="shot" accept="image/png,image/jpeg,image/webp">
+                    <span class="ico" id="shot-ico"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V5m0 0l-4 4m4-4l4 4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span><b id="shot-name">Drop your screenshot here, or browse</b><small id="shot-sub">PNG or JPG</small></span>
+                </label>
+            </div>
+            <fieldset class="q" data-name="list_source" data-req data-label="Contact lists">
+                <legend>Where do your contact lists come from?</legend>
+                <div class="tiles">
+                    <label class="tile"><input type="radio" name="list_source" value="Collected directly by us"><span class="t">Collected directly by us</span></label>
+                    <label class="tile"><input type="radio" name="list_source" value="Obtained from third parties"><span class="t">Obtained from third parties</span></label>
+                    <label class="tile"><input type="radio" name="list_source" value="Both"><span class="t">Both</span></label>
+                </div>
+                <p class="note reveal" data-when="list_source:Obtained from third parties|Both"><b>Heads up.</b> Carriers generally reject campaigns that text purchased or shared lists. We'll follow up on how your contacts opted in.</p>
+            </fieldset>
+            <fieldset class="q" data-name="keeps_records" data-req data-label="Keeps consent records">
+                <legend>Do you keep records of SMS consent?</legend>
+                <div class="tiles yn">
+                    <label class="tile"><input type="radio" name="keeps_records" value="Yes"><span class="t">Yes</span></label>
+                    <label class="tile"><input type="radio" name="keeps_records" value="No"><span class="t">No</span></label>
+                </div>
+                <p class="note reveal" data-when="keeps_records:No"><b>Worth starting now.</b> Carriers can ask for proof, so save the date, time and source of every opt-in.</p>
+            </fieldset>
+        </div>
+    </section>
+
+    <!-- 4. Compliance -->
+    <section class="screen" data-section="Compliance" data-key="policies" data-title="Policies and support" hidden>
+        <h2 tabindex="-1">Your policies and support.</h2>
+        <p class="sub">Tap a suggestion if it matches your site. Carriers check that these pages exist and mention texting.</p>
+        <div class="qs">
+            <div class="q" data-name="privacy_url" data-req data-type="url" data-label="Privacy Policy">
+                <label for="privacy_url">Privacy Policy URL</label>
+                <div class="control"><input class="input" id="privacy_url" name="privacy_url" type="url" inputmode="url" maxlength="300"></div>
+                <div class="suggest" data-suggest="privacy_url"></div>
+            </div>
+            <div class="q" data-name="terms_url" data-req data-type="url" data-label="Terms and Conditions">
+                <label for="terms_url">Terms &amp; Conditions URL</label>
+                <div class="control"><input class="input" id="terms_url" name="terms_url" type="url" inputmode="url" maxlength="300"></div>
+                <div class="suggest" data-suggest="terms_url"></div>
+            </div>
+            <div class="q" data-name="support_contact" data-req data-type="contact" data-label="Customer support">
+                <label for="support_contact">Where customers go for support</label>
+                <p class="hint">An email address or phone number.</p>
+                <div class="control"><input class="input" id="support_contact" name="support_contact" maxlength="254"></div>
+                <div class="suggest" data-suggest="support_contact"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" data-section="Compliance" data-key="numbers" data-title="Phone numbers" hidden>
+        <h2 tabindex="-1">Last one: your phone numbers.</h2>
+        <p class="sub">Tell us what you have today and what you need.</p>
+        <div class="qs">
+            <fieldset class="q" data-name="prior_registration" data-req data-label="Registered before">
+                <legend>Have you registered for A2P 10DLC before?</legend>
+                <div class="tiles yn">
+                    <label class="tile"><input type="radio" name="prior_registration" value="Yes"><span class="t">Yes</span></label>
+                    <label class="tile"><input type="radio" name="prior_registration" value="No"><span class="t">No</span></label>
+                </div>
+            </fieldset>
+            <div class="q reveal" data-name="prior_provider" data-req data-when="prior_registration:Yes" data-label="Previous provider">
+                <label for="prior_provider">With which provider?</label>
+                <div class="control"><input class="input" id="prior_provider" name="prior_provider" maxlength="100" list="providers"></div>
+                <datalist id="providers"><option>Twilio</option><option>Bandwidth</option><option>Telnyx</option><option>Sinch</option><option>Vonage</option><option>RingCentral</option><option>BulkVS</option><option>GoHighLevel</option></datalist>
+            </div>
+            <div class="q" data-name="number_count" data-req data-type="count" data-label="Numbers needed">
+                <label for="number_count">How many SMS numbers do you need?</label>
+                <div class="stepper">
+                    <button type="button" data-step="-1" aria-label="One fewer">&minus;</button>
+                    <input id="number_count" name="number_count" type="number" inputmode="numeric" min="1" max="1000" value="1">
+                    <button type="button" data-step="1" aria-label="One more">+</button>
+                </div>
+            </div>
+            <fieldset class="q" data-name="number_source" data-req data-label="Number source">
+                <legend>Existing numbers, or new ones?</legend>
+                <div class="tiles">
+                    <label class="tile"><input type="radio" name="number_source" value="Use existing numbers"><span class="t">Use existing numbers</span></label>
+                    <label class="tile"><input type="radio" name="number_source" value="Purchase new numbers"><span class="t">Purchase new numbers</span></label>
+                    <label class="tile"><input type="radio" name="number_source" value="Both"><span class="t">Both</span></label>
+                </div>
+            </fieldset>
+        </div>
+    </section>
+
+    <!-- 5. Review -->
+    <section class="screen" data-section="Review" data-key="review" data-title="Review" hidden>
+        <h2 tabindex="-1">Everything look right?</h2>
+        <p class="sub">Take one last look. Edit anything, then send it to us.</p>
+        <div class="review" id="review"></div>
+        <div class="q certify" data-name="certified" data-req data-label="Confirmation" data-msg="Please confirm before submitting.">
+            <label class="tile"><input type="checkbox" name="certified" id="certified"><span class="t">This information is accurate, and I'm authorized to submit it for this business.</span></label>
+        </div>
+        <p class="alert" id="alert" role="alert" hidden></p>
+    </section>
+
+    <div class="foot">
+        <button type="button" class="btn btn-ghost" id="back" hidden>Back</button>
+        <span class="saved" id="saved">Saved on this device</span>
+        <button type="submit" class="btn btn-primary" id="next"><span id="next-label">Continue</span><svg class="fwd" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+</form>
+
+<aside class="preview" aria-label="Live preview of your text messages">
+    <figure>
+        <div class="phone" aria-hidden="true">
+            <div class="glass">
+                <div class="ph-top"><span class="avatar" id="ph-avatar">Y</span><span class="ph-name" id="ph-name">Your business</span></div>
+                <div class="thread" id="thread"></div>
+                <div class="ph-bar">Text Message</div>
+            </div>
+        </div>
+        <figcaption>Live preview. Questions? <a href="tel:+19045128487">904-512-8487</a></figcaption>
+    </figure>
+</aside>
+</div>
+
+<section class="wrap" id="done" hidden>
+    <div class="card finish">
+        <svg class="seal" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="36"/><path d="M23 37.5l9 9 17-19"/></svg>
+        <h2 tabindex="-1" id="done-title">We have your registration.</h2>
+        <p>Our team will review your answers and contact <b id="done-email"></b> if anything needs a change.</p>
+        <p class="ref" id="done-ref"></p>
+        <p id="done-later" hidden>Send your opt-in screenshot when it's ready and include your reference number.</p>
+        <p>Questions? Call <a href="tel:+19045128487">904-512-8487</a>.</p>
+    </div>
+</section>
+<noscript><p class="wrap">This form needs JavaScript. Call 904-512-8487 and we'll take your registration by phone.</p></noscript>
+</main>
+
+<footer class="site-footer">
+    <div class="wrap">
+        <div class="foot-grid">
+            <div class="foot-brand">
+                <img src="/netenroll-logo-tagline.png" width="1950" height="555" alt="NetEnroll — Pay-per-application">
+                <p>Live Final Expense, Medicare and ACA Health calls for licensed producers, billed per submitted application. Producer recruiting for agencies.</p>
+            </div>
+            <div>
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="/#pricing">Insurance calls</a></li>
+                    <li><a href="/aca-agent-recruiting">ACA agent recruiting</a></li>
+                    <li><a href="/licensing-value">State license value tool</a></li>
+                    <li><a href="https://netenroll.com/agency-planner">Agency planner</a></li>
+                    <li><a href="/a2p-registration">A2P registration</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="footer">Agent portal</a></li>
+                    <li><a href="tel:+19045128487">904-512-8487</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/tcpa-compliance">TCPA &amp; Compliance</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="foot-legal">
+            <p>&copy; 2026 PVN LLC. All rights reserved. NetEnroll is a service of PVN LLC.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="/site.js" defer></script>
+<script>
+(function () {
+    'use strict';
+    var DRAFT_KEY = 'ne-a2p-draft';
+    var form = document.getElementById('a2p');
+    var screens = [].slice.call(form.querySelectorAll('.screen'));
+    var sections = screens.reduce(function (list, s) {
+        var name = s.dataset.section;
+        if (list.indexOf(name) < 0) list.push(name);
+        return list;
+    }, []);
+    var $ = function (id) { return document.getElementById(id); };
+    var current = 0, furthest = 0, fromReview = false, shotData = null, shotName = '';
+
+    /* ---- Reading answers -------------------------------------------------- */
+    function field(name) { return form.elements[name]; }
+    function val(name) {
+        var el = field(name);
+        if (!el) return '';
+        if (el.length !== undefined && el.tagName !== 'SELECT') {
+            var picked = [].filter.call(el, function (i) { return i.checked; }).map(function (i) { return i.value; });
+            return el[0].type === 'checkbox' ? picked : (picked[0] || '');
+        }
+        if (el.type === 'checkbox') return el.checked;
+        return el.value.trim();
+    }
+    function matches(rule) {
+        var at = rule.indexOf(':'), v = val(rule.slice(0, at)), wanted = rule.slice(at + 1).split('|');
+        return wanted.some(function (w) { return Array.isArray(v) ? v.indexOf(w) >= 0 : v === w; });
+    }
+    function set(name, value) {
+        var el = field(name);
+        if (!el) return;
+        if (el.length !== undefined && el.tagName !== 'SELECT') {
+            [].forEach.call(el, function (i) { i.checked = [].concat(value).indexOf(i.value) >= 0; });
+        } else if (el.type === 'checkbox') { el.checked = !!value; } else { el.value = value; }
+        form.dispatchEvent(new Event('input', { bubbles: true }));
+        clearError(name);
+    }
+    var brand = function () { return val('sms_brand') || val('dba_name') || val('legal_name'); };
+    var site = function () { return val('website').replace(/\/+$/, ''); };
+    var host = function () { return site().replace(/^https?:\/\//, '').replace(/^www\./, ''); };
+
+    /* ---- Validation ------------------------------------------------------- */
+    var GSM = /^[A-Za-z0-9 \r\n@£$¥èéùìòÇØøÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ!"#¤%&'()*+,\-.\/:;<=>?¡ÄÖÑÜ§¿äöñüà^{}\\[~\]|€]*$/;
+    var RULES = {
+        email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Enter a valid email address.'; },
+        phone: function (v) { return v.replace(/\D/g, '').length >= 10 ? '' : 'Enter a 10-digit phone number.'; },
+        ein: function (v) { return /^\d{2}-?\d{7}$/.test(v) ? '' : 'An EIN has 9 digits, like 12-3456789.'; },
+        zip: function (v) { return /^\d{5}(-\d{4})?$/.test(v) ? '' : 'Enter a 5-digit ZIP code.'; },
+        url: function (v) {
+            try { var u = new URL(v); return /^https?:$/.test(u.protocol) && u.hostname.indexOf('.') > 0 ? '' : 'Enter a full web address.'; }
+            catch (e) { return 'Enter a full web address.'; }
+        },
+        contact: function (v) { return !RULES.email(v) || !RULES.phone(v) ? '' : 'Enter an email address or phone number.'; },
+        sample: function (v) { return v.length >= 20 ? '' : 'Write the full message, as a customer would receive it.'; },
+        count: function (v) { var n = Number(v); return Number.isInteger(n) && n >= 1 && n <= 1000 ? '' : 'Enter a number from 1 to 1000.'; }
+    };
+    function visible(q) { return !q.hidden; }
+    function isRequired(q) {
+        if (q.dataset.reqWhen) return matches(q.dataset.reqWhen);
+        if (q.dataset.optionalWhen && matches(q.dataset.optionalWhen)) return false;
+        return q.dataset.req !== undefined;
+    }
+    function check(q) {
+        if (!visible(q)) return '';
+        var name = q.dataset.name, type = q.dataset.type;
+        if (type === 'file') return shotData ? '' : q.dataset.msg;
+        var v = val(name), empty = Array.isArray(v) ? !v.length : !v;
+        if (empty) return isRequired(q) ? (q.dataset.msg || (q.tagName === 'FIELDSET' ? 'Choose one.' : 'This one is required.')) : '';
+        return type && RULES[type] ? RULES[type](v) : '';
+    }
+    function showError(q, msg) {
+        var id = 'err-' + q.dataset.name, p = $(id);
+        q.classList.toggle('bad', !!msg);
+        var input = q.querySelector('.input');
+        if (input) { input.toggleAttribute('aria-invalid', !!msg); }
+        if (!msg) { if (p) p.remove(); return; }
+        if (!p) {
+            p = document.createElement('p');
+            p.className = 'err'; p.id = id;
+            q.appendChild(p);
+            if (input) input.setAttribute('aria-describedby', id);
+        }
+        p.textContent = msg;
+    }
+    function clearError(name) {
+        var q = form.querySelector('.q[data-name="' + name + '"]');
+        if (q && q.classList.contains('bad') && !check(q)) showError(q, '');
+    }
+    function validate(screen) {
+        var first = null;
+        screen.querySelectorAll('.q').forEach(function (q) {
+            var msg = check(q);
+            showError(q, msg);
+            if (msg && !first) first = q;
+        });
+        if (first) {
+            var target = first.querySelector('input, select, textarea');
+            if (target) target.focus({ preventScroll: true });
+            first.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        return !first;
+    }
+
+    /* ---- Conditional questions -------------------------------------------- */
+    function refreshConditions() {
+        form.querySelectorAll('[data-when]').forEach(function (el) { el.hidden = !matches(el.dataset.when); });
+        $('ein-opt').hidden = !matches('entity_type:Sole Proprietor');
+        $('optin-opt').hidden = matches('consent_methods:Website Form');
+    }
+
+    /* ---- Formatting ------------------------------------------------------- */
+    function formatPhone(v) {
+        var d = v.replace(/\D/g, '').replace(/^1(?=\d{10})/, '').slice(0, 10);
+        if (d.length < 4) return d;
+        if (d.length < 7) return '(' + d.slice(0, 3) + ') ' + d.slice(3);
+        return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+    }
+    function formatEin(v) {
+        var d = v.replace(/\D/g, '').slice(0, 9);
+        return d.length > 2 ? d.slice(0, 2) + '-' + d.slice(2) : d;
+    }
+    form.addEventListener('input', function (e) {
+        var t = e.target;
+        if (t.name === 'ein') t.value = formatEin(t.value);
+        if (t.name === 'rep_phone') t.value = formatPhone(t.value);
+        if (t.name === 'number_count' && t.value) clearError('number_count');
+    });
+    function completeUrl(el) {
+        if (el.type === 'url' && el.value.trim() && !/^https?:\/\//i.test(el.value.trim())) el.value = 'https://' + el.value.trim();
+    }
+    form.addEventListener('focusout', function (e) {
+        var t = e.target;
+        completeUrl(t);
+        if (t.name === 'support_contact' && /^[\d\s()+.-]+$/.test(t.value) && t.value.replace(/\D/g, '').length >= 10) t.value = formatPhone(t.value);
+        var q = t.closest && t.closest('.q');
+        if (q && t.value && t.type !== 'radio' && t.type !== 'checkbox') showError(q, check(q));
+    });
+
+    /* ---- Linked answers --------------------------------------------------- */
+    form.addEventListener('change', function (e) {
+        if (e.target.name === 'entity_type') {
+            if (e.target.value === 'Nonprofit') set('ownership_type', 'Nonprofit');
+            if (e.target.value === 'Sole Proprietor') set('ownership_type', 'Privately owned');
+        }
+    });
+    var SUGGEST = {
+        sms_brand: function () { return [val('dba_name'), val('legal_name')]; },
+        link_domains: function () { return [host()]; },
+        optin_url: function () { return site() ? [site(), site() + '/contact'] : []; },
+        privacy_url: function () { return site() ? [site() + '/privacy', site() + '/privacy-policy'] : []; },
+        terms_url: function () { return site() ? [site() + '/terms', site() + '/terms-and-conditions'] : []; },
+        support_contact: function () { return [val('rep_email'), val('rep_phone')]; }
+    };
+    function refreshSuggestions() {
+        form.querySelectorAll('[data-suggest]').forEach(function (box) {
+            var name = box.dataset.suggest;
+            box.textContent = '';
+            SUGGEST[name]().filter(function (v, i, all) { return v && all.indexOf(v) === i; }).forEach(function (v) {
+                var b = document.createElement('button');
+                b.type = 'button'; b.className = 'chip'; b.textContent = v;
+                b.addEventListener('click', function () { set(name, v); });
+                box.appendChild(b);
+            });
+        });
+    }
+    function prefillFromSamples() {
+        var all = [val('sample_1'), val('sample_2'), val('sample_3')].join(' ');
+        var link = all.match(/\b(?:https?:\/\/)?(?:www\.)?([a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|net|org|co|io|us|info|biz))\b/i);
+        if (!val('has_links')) set('has_links', link ? 'Yes' : 'No');
+        if (link && !val('link_domains')) set('link_domains', link[1].toLowerCase());
+        if (!val('has_phone_numbers')) set('has_phone_numbers', /\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/.test(all) ? 'Yes' : 'No');
+    }
+
+    /* ---- Drafting helpers ------------------------------------------------- */
+    var PURPOSE = { 'Marketing': 'marketing', 'Sales Follow-Ups': 'sales follow-up', 'Customer Service': 'customer service',
+        'Appointment Reminders': 'appointment reminder', 'Notifications': 'account notification', 'Verification Codes': 'verification code' };
+    function joinList(items) {
+        if (items.length < 2) return items.join('');
+        return items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
+    }
+    function purposes() {
+        var list = val('use_cases').map(function (u) { return PURPOSE[u]; }).filter(Boolean);
+        return joinList(list) || 'informational';
+    }
+    function fill(name, text) {
+        set(name, text);
+        field(name).focus();
+    }
+    // A draft button only shows while there is nothing of the client's to overwrite.
+    function refreshHelpers() {
+        $('draft-desc').hidden = !!val('message_description');
+        $('draft-consent').hidden = !!val('consent_language');
+        $('draft-samples').parentNode.hidden = !!(val('sample_1') && val('sample_2') && val('sample_3'));
+    }
+    $('draft-desc').addEventListener('click', function () {
+        var people = val('recipients').filter(function (r) { return r !== 'Other'; }).map(function (r) { return r.toLowerCase(); });
+        fill('message_description', (brand() || 'We') + ' sends ' + purposes() + ' text messages to ' +
+            (joinList(people) || 'people') + ' who have opted in to hear from us.');
+    });
+    $('draft-consent').addEventListener('click', function () {
+        fill('consent_language', 'By providing your phone number and checking this box, you agree to receive ' + purposes() +
+            ' text messages from ' + (brand() || 'us') + '. Consent is not a condition of purchase. Message frequency varies. ' +
+            'Message and data rates may apply. Reply HELP for help or STOP to cancel. See our Privacy Policy and Terms & Conditions.');
+    });
+    var STARTERS = {
+        'Marketing': function (b) { return b + ': Hi [First Name], our [offer] is available through [date]. Learn more at ' + (host() || '[your website]') + '. Reply STOP to opt out.'; },
+        'Sales Follow-Ups': function (b) { return b + ': Hi [First Name], this is [Agent Name] following up on your request for information. Is now a good time to talk? Reply STOP to opt out.'; },
+        'Customer Service': function (b) { return b + ': Hi [First Name], we received your request and have an update for you. Reply here with any questions. Reply STOP to opt out.'; },
+        'Appointment Reminders': function (b) { return b + ': Reminder, your appointment is on [Date] at [Time]. Reply C to confirm. Reply STOP to opt out.'; },
+        'Notifications': function (b) { return b + ': Hi [First Name], there is an update on your account. Reply with any questions. Reply STOP to opt out.'; },
+        'Verification Codes': function (b) { return b + ': Your verification code is [Code]. It expires in 10 minutes. Reply STOP to opt out.'; }
+    };
+    $('draft-samples').addEventListener('click', function () {
+        var b = brand() || '[Your Business]';
+        var order = val('use_cases').filter(function (u) { return STARTERS[u]; });
+        Object.keys(STARTERS).forEach(function (u) { if (order.indexOf(u) < 0) order.push(u); });
+        var next = 0;
+        ['sample_1', 'sample_2', 'sample_3'].forEach(function (name) {
+            if (!val(name)) set(name, STARTERS[order[next]](b));
+            next++;
+        });
+        refreshPreview();
+    });
+
+    /* ---- Message meter and phone preview ---------------------------------- */
+    function segments(text) {
+        var gsm = GSM.test(text), one = gsm ? 160 : 70, many = gsm ? 153 : 67;
+        return text.length <= one ? 1 : Math.ceil(text.length / many);
+    }
+    function refreshMeters() {
+        var b = brand().toLowerCase();
+        form.querySelectorAll('[data-meter]').forEach(function (m) {
+            var text = field(m.dataset.meter).value, lower = text.toLowerCase();
+            var parts = [
+                ['Names your business', b && lower.indexOf(b) >= 0],
+                ['Says how to opt out', /\bstop\b/.test(lower)]
+            ];
+            m.textContent = '';
+            parts.forEach(function (p) {
+                var s = document.createElement('span');
+                s.textContent = p[0];
+                if (p[1]) s.className = 'ok';
+                m.appendChild(s);
+            });
+            var len = document.createElement('span');
+            len.className = 'len';
+            var n = text ? segments(text) : 0;
+            len.textContent = text.length + (n > 1 ? ' characters, ' + n + ' texts' : ' characters');
+            m.appendChild(len);
+        });
+    }
+    var activeSample = -1;
+    function refreshPreview() {
+        var name = brand() || 'Your business';
+        $('ph-name').textContent = name;
+        $('ph-avatar').textContent = name.charAt(0).toUpperCase();
+        var thread = $('thread'), texts = ['sample_1', 'sample_2', 'sample_3'].map(val);
+        var had = thread.querySelectorAll('.bubble:not(.ghost)').length;
+        thread.textContent = '';
+        var stamp = document.createElement('p');
+        stamp.className = 'stamp'; stamp.textContent = 'Today 9:41 AM';
+        thread.appendChild(stamp);
+        var shown = 0;
+        texts.forEach(function (text, i) {
+            if (!text) return;
+            var b = document.createElement('p');
+            b.className = 'bubble' + (i === activeSample ? ' on' : '');
+            if (shown < had) b.style.animation = 'none';
+            b.textContent = text;
+            thread.appendChild(b);
+            shown++;
+        });
+        if (!shown) {
+            var g = document.createElement('p');
+            g.className = 'bubble ghost';
+            g.textContent = 'Your sample messages will appear here, just as customers will see them.';
+            thread.appendChild(g);
+        }
+        var on = thread.querySelector('.bubble.on');
+        if (on) thread.scrollTop = on.offsetTop - 60;
+    }
+    form.addEventListener('focusin', function (e) {
+        if (e.target.dataset.sample) { activeSample = Number(e.target.dataset.sample); refreshPreview(); }
+    });
+    form.addEventListener('focusout', function (e) {
+        if (e.target.dataset.sample) { activeSample = -1; refreshPreview(); }
+    });
+
+    /* ---- Number stepper --------------------------------------------------- */
+    form.querySelectorAll('[data-step]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var el = field('number_count');
+            el.value = Math.min(1000, Math.max(1, (Number(el.value) || 0) + Number(b.dataset.step)));
+            form.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+    });
+
+    /* ---- Screenshot ------------------------------------------------------- */
+    // Shrunk in the browser so a full-page capture fits the request limit and
+    // stays legible. Width sets legibility; a tall page keeps its height.
+    function shrink(file) {
+        return new Promise(function (resolve, reject) {
+            var img = new Image(), url = URL.createObjectURL(file);
+            img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('That file could not be read as an image.')); };
+            img.onload = function () {
+                var scale = Math.min(1, 1600 / img.width, 6000 / img.height);
+                var c = document.createElement('canvas');
+                c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+                var ctx = c.getContext('2d');
+                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+                ctx.drawImage(img, 0, 0, c.width, c.height);
+                URL.revokeObjectURL(url);
+                var q = 0.85, data = c.toDataURL('image/jpeg', q);
+                while (data.length > 2500000 && q > 0.35) { q -= 0.15; data = c.toDataURL('image/jpeg', q); }
+                resolve(data);
+            };
+            img.src = url;
+        });
+    }
+    function takeFile(file) {
+        var q = form.querySelector('.q[data-name="screenshot"]');
+        if (!file) return;
+        if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { showError(q, 'Use a PNG or JPG image.'); return; }
+        shrink(file).then(function (data) {
+            shotData = data; shotName = file.name;
+            var thumb = document.createElement('img');
+            thumb.src = data; thumb.alt = '';
+            $('shot-ico').textContent = ''; $('shot-ico').appendChild(thumb);
+            $('shot-name').textContent = file.name;
+            $('shot-sub').textContent = 'Added. Click to replace.';
+            showError(q, '');
+        }).catch(function (err) { showError(q, err.message); });
+    }
+    $('shot').addEventListener('change', function () { takeFile(this.files[0]); });
+    ['dragenter', 'dragover'].forEach(function (t) {
+        $('drop').addEventListener(t, function (e) { e.preventDefault(); this.classList.add('over'); });
+    });
+    ['dragleave', 'drop'].forEach(function (t) {
+        $('drop').addEventListener(t, function (e) { e.preventDefault(); this.classList.remove('over'); });
+    });
+    $('drop').addEventListener('drop', function (e) { takeFile(e.dataTransfer.files[0]); });
+
+    /* ---- Progress rail ---------------------------------------------------- */
+    sections.forEach(function (name) {
+        var li = document.createElement('li');
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.appendChild(document.createTextNode(name));
+        var bar = document.createElement('span'); bar.className = 'bar';
+        bar.appendChild(document.createElement('i'));
+        b.appendChild(bar);
+        b.addEventListener('click', function () {
+            var i = screens.findIndex(function (s) { return s.dataset.section === name; });
+            if (i <= furthest && i !== current) go(i);
+        });
+        li.appendChild(b);
+        $('rail').appendChild(li);
+    });
+    function refreshRail() {
+        var now = screens[current].dataset.section;
+        $('rail').dataset.now = now;
+        sections.forEach(function (name, n) {
+            var mine = screens.filter(function (s) { return s.dataset.section === name; });
+            var first = screens.indexOf(mine[0]);
+            var finished = Math.min(mine.length, Math.max(0, furthest - first));
+            var b = $('rail').children[n].firstChild;
+            b.className = (name === now ? 'now ' : '') + (finished === mine.length ? 'done ' : '') + (first <= furthest ? 'can' : '');
+            if (name === now) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+            b.querySelector('i').style.width = (finished / mine.length * 100) + '%';
+        });
+    }
+
+    /* ---- Review ----------------------------------------------------------- */
+    function display(q) {
+        var name = q.dataset.name;
+        if (name === 'screenshot') return shotName;
+        var v = val(name);
+        return Array.isArray(v) ? v.join(', ') : v;
+    }
+    function renderReview() {
+        var box = $('review');
+        box.textContent = '';
+        screens.slice(0, -1).forEach(function (s, i) {
+            var card = document.createElement('div'); card.className = 'rv';
+            var head = document.createElement('div'); head.className = 'rv-head';
+            var h = document.createElement('h3'); h.textContent = s.dataset.title;
+            var edit = document.createElement('button');
+            edit.type = 'button'; edit.className = 'linkbtn'; edit.textContent = 'Edit';
+            edit.setAttribute('aria-label', 'Edit ' + s.dataset.title);
+            edit.addEventListener('click', function () { fromReview = true; go(i); });
+            head.appendChild(h); head.appendChild(edit); card.appendChild(head);
+            var dl = document.createElement('dl');
+            s.querySelectorAll('.q').forEach(function (q) {
+                var text = visible(q) ? display(q) : '';
+                if (!text) return;
+                var row = document.createElement('div');
+                var dt = document.createElement('dt'); dt.textContent = q.dataset.label;
+                var dd = document.createElement('dd'); dd.textContent = text;
+                row.appendChild(dt); row.appendChild(dd); dl.appendChild(row);
+            });
+            card.appendChild(dl);
+            box.appendChild(card);
+        });
+    }
+
+    /* ---- Navigation ------------------------------------------------------- */
+    function go(i, opts) {
+        opts = opts || {};
+        var dir = i >= current ? 'fwd' : 'back';
+        if (!opts.instant) $('resume').hidden = true;
+        screens[current].hidden = true;
+        current = i;
+        furthest = Math.max(furthest, i);
+        var s = screens[i];
+        s.hidden = false;
+        s.classList.remove('fwd', 'back');
+        void s.offsetWidth;
+        if (!opts.instant) s.classList.add(dir);
+        document.body.dataset.screen = s.dataset.key;
+        var last = i === screens.length - 1;
+        $('back').hidden = i === 0;
+        $('next-label').textContent = last ? 'Submit registration' : (fromReview ? 'Back to review' : 'Continue');
+        $('alert').hidden = true;
+        if (s.dataset.key === 'details') prefillFromSamples();
+        if (s.dataset.key === 'purpose' && !val('sms_brand') && brand()) set('sms_brand', brand());
+        if (last) renderReview();
+        refreshSuggestions();
+        refreshRail();
+        refreshMeters();
+        saveDraft();
+        if (!opts.instant) {
+            var top = form.getBoundingClientRect().top + window.scrollY - document.querySelector('.site-header').offsetHeight - 16;
+            if (window.scrollY > top) window.scrollTo({ top: top });
+            s.querySelector('h2').focus({ preventScroll: true });
+        }
+    }
+    $('back').addEventListener('click', function () {
+        if (fromReview) { fromReview = false; go(screens.length - 1); } else { go(current - 1); }
+    });
+    form.addEventListener('keydown', function (e) {
+        var t = e.target;
+        if (e.key !== 'Enter' || t.tagName === 'TEXTAREA' || t.tagName === 'BUTTON' || t.tagName === 'A') return;
+        e.preventDefault();
+        if (t.type === 'radio' || t.type === 'checkbox') { t.click(); return; }
+        form.requestSubmit();
+    });
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        [].forEach.call(form.elements, completeUrl); // Enter submits without a blur
+        if (!validate(screens[current])) return;
+        if (current < screens.length - 1) {
+            var target = fromReview ? screens.length - 1 : current + 1;
+            fromReview = false;
+            go(target);
+            return;
+        }
+        // A restored draft has no EIN, and any screen may have been skipped by
+        // jumping around, so everything is checked again before sending.
+        for (var i = 0; i < screens.length - 1; i++) {
+            var bad = [].some.call(screens[i].querySelectorAll('.q'), function (q) { return check(q); });
+            if (bad) { fromReview = true; go(i); validate(screens[i]); return; }
+        }
+        send();
+    });
+
+    function payload() {
+        var body = { certified: val('certified') };
+        form.querySelectorAll('.q[data-name]').forEach(function (q) {
+            var name = q.dataset.name;
+            if (visible(q) && name !== 'screenshot' && name !== 'certified') body[name] = val(name);
+        });
+        if (val('screenshot_choice') === 'Upload now') body.screenshot = shotData;
+        return body;
+    }
+    function send() {
+        var btn = $('next'), body = payload();
+        btn.disabled = true;
+        $('next-label').textContent = 'Sending…';
+        $('alert').hidden = true;
+        window.NE && NE.track('a2p_form_submit', { use_cases: body.use_cases });
+        fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) })
+            .then(function (res) {
+                return res.json().catch(function () { return {}; }).then(function (data) {
+                    if (!res.ok) throw new Error(data.error || 'The registration could not be sent.');
+                    return data;
+                });
+            })
+            .then(function (data) {
+                clearDraft();
+                $('intro').hidden = true;
+                $('shell').hidden = true;
+                $('done').hidden = false;
+                $('done-email').textContent = body.rep_email;
+                $('done-ref').textContent = 'Reference A2P-' + String(data.id).padStart(5, '0');
+                $('done-later').hidden = body.screenshot_choice !== 'Send it later';
+                window.scrollTo({ top: 0 });
+                $('done-title').focus({ preventScroll: true });
+                window.NE && NE.track('a2p_form_success', { id: data.id });
+            })
+            .catch(function (err) {
+                var a = $('alert');
+                a.textContent = err.message + ' Your answers are still here. Try again, or call 904-512-8487.';
+                a.hidden = false;
+                window.NE && NE.track('a2p_form_error', { message: err.message });
+            })
+            .then(function () {
+                btn.disabled = false;
+                $('next-label').textContent = 'Submit registration';
+            });
+    }
+
+    /* ---- Draft: everything except the EIN and the certification ------------ */
+    var saveTimer = 0;
+    function saveDraft() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function () {
+            var draft = { step: current, furthest: furthest, answers: {} };
+            form.querySelectorAll('.q[data-name]').forEach(function (q) {
+                var n = q.dataset.name;
+                if (n !== 'ein' && n !== 'certified' && n !== 'screenshot') draft.answers[n] = val(n);
+            });
+            try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch (e) { $('saved').hidden = true; }
+        }, 250);
+    }
+    function clearDraft() {
+        clearTimeout(saveTimer);
+        try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* nothing was saved */ }
+    }
+    function restore() {
+        var draft = null;
+        try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY)); } catch (e) { /* no usable draft */ }
+        if (!draft || !draft.answers) return false;
+        Object.keys(draft.answers).forEach(function (n) { if (draft.answers[n]) set(n, draft.answers[n]); });
+        furthest = Math.min(draft.furthest || 0, screens.length - 1);
+        return Math.min(draft.step || 0, screens.length - 1);
+    }
+    $('restart').addEventListener('click', function () { clearDraft(); location.reload(); });
+
+    form.addEventListener('input', onChange);
+    form.addEventListener('change', onChange);
+    function onChange(e) {
+        refreshConditions();
+        refreshHelpers();
+        refreshMeters();
+        refreshPreview();
+        saveDraft();
+        if (e.target && e.target.name) clearError(e.target.name);
+    }
+
+    var start = restore();
+    refreshConditions();
+    refreshHelpers();
+    refreshPreview();
+    if (start !== false && (start > 0 || val('legal_name'))) $('resume').hidden = false;
+    go(start || 0, { instant: true });
+})();
+</script>
+</body>
+</html>

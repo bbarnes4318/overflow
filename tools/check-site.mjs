@@ -5,12 +5,13 @@
 //   node tools/check-site.mjs
 import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
 
 const read = (p) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 const server = read('messaging/server.js');
 const aca = read('aca-agent-recruiting.html');
 const pages = { 'index.html': read('index.html'), 'aca-agent-recruiting.html': aca, 'licensing-value.html': read('licensing-value.html'),
-                'apps/agency-planner/index.html': read('apps/agency-planner/index.html') };
+                'apps/agency-planner/index.html': read('apps/agency-planner/index.html'), 'a2p-registration.html': read('a2p-registration.html') };
 
 // 1. Every field the server requires is a named control in the form, and
 //    every <select> offers exactly the server's allowed values.
@@ -52,5 +53,19 @@ for (const file of ['index.html', 'aca-agent-recruiting.html']) {
 }
 // 4. The ACA page never routes a visitor into the Final Expense signup.
 assert.ok(!/href="https:\/\/agents\.netenroll\.com"[^>]*>(Get started|Start Receiving)/.test(aca), 'ACA page must not carry the Final Expense signup CTA');
+
+// 5. The A2P form offers exactly the server's choices, posts to the proxied
+//    path, and is published by the deploy.
+const { A2P_OPTIONS, A2P_MULTI } = createRequire(import.meta.url)('../messaging/a2p.js');
+const a2pPage = pages['a2p-registration.html'];
+for (const [name, allowed] of Object.entries({ ...A2P_OPTIONS, ...A2P_MULTI })) {
+    const sel = a2pPage.match(new RegExp(`<select[^>]*name="${name}"[^>]*>([\\s\\S]*?)</select>`));
+    const offered = sel
+        ? [...sel[1].matchAll(/<option>([^<]+)<\/option>/g)].map(m => m[1])
+        : [...a2pPage.matchAll(new RegExp(`<input type="(?:radio|checkbox)" name="${name}" value="([^"]+)"`, 'g'))].map(m => m[1]);
+    assert.deepEqual(offered, allowed, `a2p-registration.html: choices for "${name}" differ from messaging/a2p.js`);
+}
+assert.ok(a2pPage.includes('action="/api/a2p-registration"'), 'A2P form must post to the API path nginx proxies');
+assert.ok(read('deploy.sh').includes('a2p-registration.html'), 'deploy.sh must publish a2p-registration.html');
 
 console.log(`ok: ${required.length} required fields present, ${Object.keys(serverOptions).length} option lists match, ${Object.keys(pages).length} pages carry SEO head`);

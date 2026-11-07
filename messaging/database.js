@@ -627,6 +627,20 @@ function initDatabase() {
     )
   `).run();
 
+  // Registrations from the public A2P form. Platform-owned, like the inquiries.
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS a2p_registrations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      legal_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      answers TEXT NOT NULL,
+      screenshot BLOB,
+      screenshot_type TEXT,
+      client_ip TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `).run();
+
   // Bring a pre-tenancy database up to the multi-tenant shape.
   migrateToMultiTenant();
 
@@ -657,6 +671,21 @@ function insertRecruitingInquiry(row) {
     VALUES
       (@source, @agency_name, @contact_name, @email, @phone, @states, @agent_count, @offer, @timing, @notes, @client_ip)
   `).run(row).lastInsertRowid;
+}
+
+function insertA2pRegistration(row) {
+  return db.prepare(`
+    INSERT INTO a2p_registrations (legal_name, email, answers, screenshot, screenshot_type, client_ip)
+    VALUES (@legal_name, @email, @answers, @screenshot, @screenshot_type, @client_ip)
+  `).run(row).lastInsertRowid;
+}
+
+function listA2pRegistrations() {
+  return db.prepare('SELECT id, legal_name, email, created_at FROM a2p_registrations ORDER BY id DESC').all();
+}
+
+function getA2pRegistration(id) {
+  return db.prepare('SELECT * FROM a2p_registrations WHERE id = ?').get(id);
 }
 
 /**
@@ -2628,6 +2657,9 @@ module.exports = {
   initDatabase,
   requireTenant,
   insertRecruitingInquiry,
+  insertA2pRegistration,
+  listA2pRegistrations,
+  getA2pRegistration,
 
   // Tenancy
   createTenant,

@@ -61,7 +61,7 @@ function sendMail({ to, subject, text }) {
         const body = [
           `From: NetEnroll <${from}>`,
           `To: <${to}>`,
-          `Subject: ${subject}`,
+          `Subject: ${subject.replace(/[\r\n]+/g, ' ')}`,
           `Date: ${new Date().toUTCString()}`,
           'MIME-Version: 1.0',
           'Content-Type: text/plain; charset=utf-8',
