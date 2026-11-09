@@ -155,13 +155,14 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
     border-bottom: 1px solid var(--line);
 }
 .site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
-.brand img { height: 44px; width: auto; }
+.brand img { height: 44px; width: auto; display: block; }
+.brand, .header-actions { flex-shrink: 0; }
 .nav { display: flex; gap: 30px; font-size: 15px; font-weight: 500; }
 .nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; white-space: nowrap; }
 @media (max-width: 1200px) { .nav { gap: 20px; } }
 .nav a:hover { color: var(--green); }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 24px; }
-.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; }
+.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
 .signin:hover { color: var(--green); }
 .menu-btn {
     display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center;
@@ -650,7 +651,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
             <a href="#faq">Questions</a>
             <a href="/aca-agent-recruiting">Agent Recruiting</a>
             <a href="/agency-planner">Agency Planner</a>
-            <a href="/a2p-registration">A2P Registration</a>
         </nav>
         <div class="header-actions">
             <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>

@@ -110,7 +110,8 @@ strong, b { font-weight: 700; }
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line);
 }
 .site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
-.brand img { height: 44px; width: auto; }
+.brand img { height: 44px; width: auto; display: block; }
+.brand, .header-actions { flex-shrink: 0; }
 .nav { display: flex; gap: 20px; font-size: 15px; font-weight: 500; }
 .nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; white-space: nowrap; }
 .nav a:hover, .nav a[aria-current] { color: var(--green); }
@@ -420,7 +421,6 @@ select.input {
             <a href="/#faq">Questions</a>
             <a href="/aca-agent-recruiting">Agent Recruiting</a>
             <a href="/agency-planner">Agency Planner</a>
-            <a href="/a2p-registration" aria-current="page">A2P Registration</a>
         </nav>
         <div class="header-actions">
             <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>

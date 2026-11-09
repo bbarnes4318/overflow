@@ -89,13 +89,14 @@ section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
 /* ---- Header -------------------------------------------------------------- */
 .site-header { position: sticky; top: 0; z-index: 30; background: rgba(246, 244, 238, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--rule); }
 .site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 36px; }
-.brand img { height: 42px; width: auto; }
+.brand img { height: 42px; width: auto; display: block; }
+.brand, .header-actions { flex-shrink: 0; }
 .nav { display: flex; gap: 28px; font-size: 15px; font-weight: 500; }
 .nav a { color: var(--ink-2); text-decoration: none; white-space: nowrap; }
 @media (max-width: 1200px) { .nav { gap: 20px; } }
 .nav a:hover, .nav a[aria-current="page"] { color: var(--green); }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 22px; }
-.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; }
+.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
 .signin:hover { color: var(--green); }
 .menu-btn { display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--rule-2); cursor: pointer; }
 .menu-btn .close { display: none; }
@@ -449,7 +450,6 @@ select.input { appearance: none; -webkit-appearance: none; padding-right: 40px; 
             <a href="/">Insurance calls</a>
             <a href="/aca-agent-recruiting" aria-current="page">Agent Recruiting</a>
             <a href="/agency-planner">Agency Planner</a>
-            <a href="/a2p-registration">A2P Registration</a>
             <a href="#offer">The offer</a>
             <a href="#faq">Questions</a>
             <a href="/licensing-value">State License Tool</a>
