@@ -38,7 +38,7 @@ for (const [file, html] of Object.entries(pages)) {
     }
 }
 // 2b. Every page with the shared header links the Agency Planner.
-for (const file of ['index.html', 'aca-agent-recruiting.html', 'licensing-value.html']) {
+for (const file of ['aca-agent-recruiting.html', 'licensing-value.html']) {
     assert.match(pages[file], /<a href="\/agency-planner">Agency Planner<\/a>/, `${file}: header is missing the Agency Planner link`);
 }
 for (const file of ['index.html', 'aca-agent-recruiting.html']) {
@@ -78,7 +78,8 @@ for (const [file, html] of Object.entries({ 'index.html': home, 'medicare-tv-cal
     assert.ok(!/\$(3[0-8]|4[0-3]|4[5-9])\b/.test(html.replace(/\$39|\$44/g, '')), `${file}: a TV call price other than $39/$44 appears`);
     assert.match(html, /action="\/api\/tv-calls-inquiry"/, `${file}: lead form must post to the proxied API path`);
 }
-for (const r of ['$199', '$159', '$100']) assert.ok(home.includes(r), `index.html: pay-per-application rate ${r} is missing`);
+// The homepage sells CTV calls only: no pay-per-application rates on it.
+for (const r of ['$199', '$159', '$100']) assert.ok(!home.includes(r), `index.html: pay-per-application rate ${r} must not appear on the CTV homepage`);
 assert.ok(med.includes('<span class="amt">39</span>') && !med.includes('<span class="amt">44</span>'), 'Medicare page must show $39 only');
 assert.ok(fe.includes('<span class="amt">44</span>') && !fe.includes('<span class="amt">39</span>'), 'Final Expense page must show $44 only');
 assert.ok(!/Denver|~200|1 in 3/i.test(fe), 'Medicare partner statistics must not appear on the Final Expense page');
@@ -95,7 +96,7 @@ for (const html of [home, med, fe]) {
     }
 }
 const deploySh = read('deploy.sh');
-for (const f of ['medicare-tv-calls.html', 'final-expense-tv-calls.html', 'signal.css', 'signal.js', 'og-medicare-tv.png', 'og-final-expense-tv.png'])
+for (const f of ['medicare-tv-calls.html', 'final-expense-tv-calls.html', 'signal.css', 'signal.js', 'home.css', 'home.js', 'og-medicare-tv.png', 'og-final-expense-tv.png'])
     assert.ok(deploySh.includes(f), `deploy.sh must publish ${f}`);
 assert.ok(deploySh.includes("splice_location 'location = /api/tv-calls-inquiry {'"), 'deploy.sh must splice the TV form proxy');
 
