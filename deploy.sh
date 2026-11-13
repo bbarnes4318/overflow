@@ -197,8 +197,9 @@ install -m 0644 "${REMOTE_DIR}/${APP_FILE}" "${WEB_ROOT}/${INDEX_NAME}"
 # The other public routes and everything the pages reference by path. Each is
 # served at /<name> (or /<name> minus .html) through nginx's try_files rule.
 for asset in aca-agent-recruiting.html licensing-value.html a2p-registration.html site.css site.js \
+             medicare-tv-calls.html final-expense-tv-calls.html signal.css signal.js \
              favicon.svg favicon.png apple-touch-icon.png \
-             og-home.png og-final-expense.png og-recruiting.png \
+             og-home.png og-final-expense.png og-recruiting.png og-medicare-tv.png og-final-expense-tv.png \
              netenroll-logo.png netenroll-logo-dark.png netenroll-logo-tagline.png robots.txt sitemap.xml; do
   install -m 0644 "${REMOTE_DIR}/\${asset}" "${WEB_ROOT}/\${asset}"
 done
@@ -294,6 +295,8 @@ if [ "${WEB_SERVICE}" = "nginx" ]; then
   splice_location 'location = /agency-planner {'
   splice_location 'location ^~ /agency-planner/ {'
   splice_location 'location = /agency-planner/index.html {'
+  splice_location 'location ~ ^/(medicare-tv-calls|final-expense-tv-calls'
+  splice_location 'location = /api/tv-calls-inquiry {'
   # Ubuntu's stock catch-all would otherwise answer for these names.
   rm -f /etc/nginx/sites-enabled/default
 fi

@@ -83,7 +83,53 @@ og(["Licensed ACA producers,", "signed to your agency."],
     "Verified, scheduled onto your calendar. You interview and sign."],
    "ACA AGENT RECRUITING  ·  FOR AGENCY OWNERS", ROOT / "og-recruiting.png")
 print("wrote favicon.png apple-touch-icon.png og-final-expense.png og-recruiting.png")
-og(["Every call is free until", "it becomes an application."],
-   ["Live Final Expense, Medicare and ACA Health calls for licensed producers.",
-    "$199 · $125 · $100 per submitted application. $0 per call, $0 per month."],
-   "LIVE INSURANCE CALLS  ·  BILLED PER SUBMITTED APPLICATION", ROOT / "og-home.png")
+
+
+def og_dark(title, price, lines, eyebrow, accent, out):
+    """The "Inbound Signal" pages: night background, accent signal strands."""
+    W, H = 1200, 630
+    NIGHT, TX, TX3 = (4, 16, 11), (236, 245, 240), (130, 153, 142)
+    im = Image.new("RGB", (W, H), NIGHT)
+    d = ImageDraw.Draw(im, "RGBA")
+    # converging strands: broadcast (right edge) -> call node
+    import math
+    for k in range(7):
+        dy = (k - 3) * 46
+        pts = []
+        for i in range(61):
+            t = i / 60
+            x = 1180 - t * 330
+            y = 470 + dy * math.sin(t * math.pi) ** 1.3
+            pts.append((x, y))
+        d.line(pts, fill=accent + (90,), width=2)
+        d.ellipse((1180 - 165 - 6, 470 + dy - 6, 1180 - 165 + 6, 470 + dy + 6), outline=accent + (200,), width=2)
+    d.ellipse((820, 440, 880, 500), fill=accent)
+    logo = Image.open(ROOT / "netenroll-logo-dark.png").convert("RGBA")
+    lh = 40
+    logo = logo.resize((round(logo.width * lh / logo.height), lh), Image.LANCZOS)
+    im.paste(logo, (80, 64), logo)
+    d.text((80, 146), eyebrow, font=font(SANS, 22), fill=accent)
+    y = 190
+    for ln in title:
+        d.text((76, y), ln, font=font(SANS, 64), fill=TX)
+        y += 74
+    if price:
+        d.text((76, y + 10), price, font=font(SANS, 120), fill=TX)
+        y += 150
+    for ln in lines:
+        d.text((80, y + 6), ln, font=font(SANS, 26), fill=TX3)
+        y += 38
+    d.text((80, H - 62), "netenroll.com  ·  904-512-8487", font=font(SANS, 20), fill=TX3)
+    im.save(out, optimize=True)
+
+
+MINT, SKY, AMBER = (59, 240, 166), (143, 203, 255), (255, 194, 122)
+og_dark(["We bring the opportunities.", "You close the business."], None,
+        ["Live TV inbound calls: Medicare $39, Final Expense $44, 120-second buffer.",
+         "Or pay per submitted application: $199 · $159 · $100."],
+        "CUSTOMER ACQUISITION FOR INSURANCE PROFESSIONALS", MINT, ROOT / "og-home.png")
+og_dark(["Medicare TV inbound calls"], "$39 / call", ["120-second billing buffer. Live, consumer-initiated."],
+        "LIVE MEDICARE TV INBOUND CALLS", SKY, ROOT / "og-medicare-tv.png")
+og_dark(["They saw the ad.", "They made the call."], "$44 / call", ["Final Expense TV inbound. 120-second billing buffer."],
+        "LIVE FINAL EXPENSE TV INBOUND CALLS", AMBER, ROOT / "og-final-expense-tv.png")
+print("wrote og-home.png og-medicare-tv.png og-final-expense-tv.png")

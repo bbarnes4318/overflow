@@ -253,7 +253,8 @@ const PUBLIC_PATHS = [
   '/api/auth/signup',
   '/api/auth/login',
   '/api/recruiting-inquiry',
-  '/api/a2p-registration'
+  '/api/a2p-registration',
+  '/api/tv-calls-inquiry'
 ];
 
 /* ------------------------------------------------------------------
@@ -332,6 +333,95 @@ app.post('/api/recruiting-inquiry', (req, res) => {
   mail.sendMail({ to, subject: `Recruiting inquiry from ${r.agency_name}`, text })
     .then(() => console.log(`[inquiry] #${id} emailed to ${to}`))
     .catch(err => console.error(`[inquiry] #${id} stored but the email failed:`, err.message));
+});
+
+/* ------------------------------------------------------------------
+ * TV inbound call access — the shared form on netenroll.com (homepage,
+ * /medicare-tv-calls, /final-expense-tv-calls). Same shape as the recruiting
+ * inquiry: anonymous, proxied by the marketing vhost, stored before the email.
+ * ------------------------------------------------------------------ */
+const tvCallTimes = new Map();
+
+const TV_CALL_OPTIONS = {
+  products: ['medicare', 'final_expense'],
+  agent_type: ['Independent agent', 'Agency', 'Call center', 'Other'],
+  agent_count: ['Just me', '2 to 5', '6 to 20', '21 to 50', 'More than 50']
+};
+
+function validateTvCallInquiry(body) {
+  const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const products = [...new Set([].concat(body.products || []).filter(p => typeof p === 'string'))];
+  const row = {
+    source: str(body.source, 60) || 'unknown',
+    products: TV_CALL_OPTIONS.products.filter(p => products.includes(p)).join(','),
+    contact_name: str(body.contact_name, 200),
+    agency_name: str(body.agency_name, 200),
+    email: str(body.email, 254),
+    phone: str(body.phone, 40),
+    agent_type: str(body.agent_type, 40) || null,
+    states: str(body.states, 500) || null,
+    agent_count: str(body.agent_count, 40) || null,
+    notes: str(body.notes, 4000) || null,
+    attribution: null
+  };
+  for (const key of ['contact_name', 'agency_name', 'email', 'phone']) {
+    if (!row[key]) return { ok: false, error: `${key.replace('_', ' ')} is required` };
+  }
+  if (!row.products || products.length !== row.products.split(',').length) return { ok: false, error: 'Choose Medicare, Final Expense or both' };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) return { ok: false, error: 'A valid email address is required' };
+  if (row.phone.replace(/\D/g, '').length < 10) return { ok: false, error: 'A valid phone number is required' };
+  for (const key of ['agent_type', 'agent_count']) {
+    if (row[key] && !TV_CALL_OPTIONS[key].includes(row[key])) return { ok: false, error: `${key.replace('_', ' ')} is not one of the offered choices` };
+  }
+  // Campaign attribution: only the utm_* keys, the referrer and landing path, each capped.
+  if (body.attribution && typeof body.attribution === 'object') {
+    const keep = {};
+    for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'referrer', 'landing']) {
+      const v = str(body.attribution[k], 300);
+      if (v) keep[k] = v;
+    }
+    if (Object.keys(keep).length) row.attribution = JSON.stringify(keep);
+  }
+  return { ok: true, row };
+}
+
+app.post('/api/tv-calls-inquiry', (req, res) => {
+  const ip = clientIp(req);
+  const now = Date.now();
+  const recent = (tvCallTimes.get(ip) || []).filter(t => now - t < INQUIRY_WINDOW_MS);
+  if (recent.length >= INQUIRY_MAX_PER_IP) {
+    return res.status(429).json({ error: 'Too many requests from this connection. Please call 904-512-8487.' });
+  }
+  const checked = validateTvCallInquiry(req.body || {});
+  if (!checked.ok) return res.status(400).json({ error: checked.error });
+  const r = checked.row;
+
+  let id;
+  try {
+    const dup = db.findRecentTvCallInquiry(r.email, r.products);
+    if (dup) return res.json({ ok: true, id: dup.id, duplicate: true });
+    id = db.insertTvCallInquiry({ ...r, client_ip: ip });
+  } catch (err) {
+    return fail(res, 500, 'The request could not be saved', err);
+  }
+  tvCallTimes.set(ip, [...recent, now]);
+  res.json({ ok: true, id });
+
+  const to = process.env.TV_CALLS_INQUIRY_EMAIL || process.env.RECRUITING_INQUIRY_EMAIL;
+  if (!to) {
+    console.warn(`[tv-calls] #${id} stored; no notification address is set so no email was sent`);
+    return;
+  }
+  const names = { medicare: 'Medicare ($39/call)', final_expense: 'Final Expense ($44/call)' };
+  const text = [
+    `Products: ${r.products.split(',').map(p => names[p]).join(', ')}`,
+    `Name: ${r.contact_name}`, `Company: ${r.agency_name}`, `Email: ${r.email}`, `Phone: ${r.phone}`,
+    `Type: ${r.agent_type || '-'}`, `Licensed states: ${r.states || '-'}`, `Active agents: ${r.agent_count || '-'}`,
+    '', r.notes || '(no notes)', '', `Source: ${r.source}  Request #${id}`, r.attribution ? `Attribution: ${r.attribution}` : ''
+  ].join('\n');
+  mail.sendMail({ to, subject: `TV call access request from ${r.agency_name}`, text })
+    .then(() => console.log(`[tv-calls] #${id} emailed to ${to}`))
+    .catch(err => console.error(`[tv-calls] #${id} stored but the email failed:`, err.message));
 });
 
 /* ------------------------------------------------------------------

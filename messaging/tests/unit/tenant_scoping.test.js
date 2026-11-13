@@ -63,6 +63,8 @@ const ALLOWED_GLOBAL = new Map([
 
   ['INSERT INTO recruiting_inquiries (source, agency_name, contact_name, email, phone, states, agent_count, offer, timing, notes, client_ip) VALUES (@source, @agency_name, @contact_name, @email, @phone, @states, @agent_count, @offer, @timing, @notes, @client_ip)',
    'anonymous public form owned by the platform, not a tenant; "notes" here is a column, not the notes table'],
+  ['INSERT INTO tv_call_inquiries (source, products, contact_name, agency_name, email, phone, agent_type, states, agent_count, notes, attribution, client_ip) VALUES (@source, @products, @contact_name, @agency_name, @email, @phone, @agent_type, @states, @agent_count, @notes, @attribution, @client_ip)',
+   'anonymous public form owned by the platform, not a tenant; "notes" here is a column, not the notes table'],
 ]);
 
 /** Queue-worker reads are global: every row they return carries its tenant_id. */
