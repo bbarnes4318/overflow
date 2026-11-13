@@ -114,9 +114,9 @@ def og_tv(title, price, sub, pill, out):
     im.save(out, optimize=True)
 
 
-og_tv(["Live Medicare & Final Expense TV Calls.", "Direct to Your Agents."], None,
-      "Medicare $39 · Final Expense $44 per billable call · 120-second billing buffer",
-      "LIVE INBOUND CALLS FROM TV ADVERTISING", ROOT / "og-home.png")
+og_tv(["They saw the ad.", "They made the call.", "You write the policy."], None,
+      "Live CTV calls · Medicare $39 · Final Expense $44 · under 2:00 is free",
+      "LIVE INBOUND CALLS FROM CONNECTED TV", ROOT / "og-home.png")
 og_tv(["Medicare TV Inbound Calls"], "$39 per billable call",
       "Live Medicare inquiries from TV advertising · 120-second billing buffer",
       "MEDICARE", ROOT / "og-medicare-tv.png")

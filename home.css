@@ -15,7 +15,7 @@
     --cream: #FFFFFF;
     --yellow: #10B981;
     --yellow-2: #2BD198;
-    --tally: #FF4D3D;
+    --tally: #10B981;
     --bg: #FFFFFF;
     --display: 'General Sans', 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     background: #fff;
@@ -33,7 +33,7 @@
 .p-home .btn-ghost:hover { --b: rgba(255, 255, 255, .06); border-color: var(--cream); box-shadow: none; }
 
 /* ---- Hero ---------------------------------------------------------------- */
-.hx { background: var(--pine); color: var(--cream); padding: clamp(44px, 6vw, 88px) 0 0; overflow: hidden; }
+.hx { background: var(--pine); color: var(--cream); padding: clamp(44px, 6vw, 88px) 0 clamp(40px, 5vw, 72px); overflow: hidden; }
 .hx-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
 .hx h1 {
     color: #fff; font-size: clamp(40px, 5.6vw, 84px); line-height: .98; letter-spacing: -.04em;
@@ -67,11 +67,12 @@
 .tv-num { margin-top: 10px; display: inline-flex; align-self: flex-start; padding: 8px 14px; border-radius: 10px; background: var(--yellow); color: #0C1210; font: 600 clamp(17px, 1.9vw, 21px)/1 var(--display); letter-spacing: .02em; }
 .wire { width: 2px; height: 34px; background: repeating-linear-gradient(to bottom, var(--yellow) 0 6px, transparent 6px 12px); }
 .ring {
-    width: 100%; max-width: 440px; border-radius: 22px 22px 0 0; background: #fff; color: #0C1210;
+    width: 100%; max-width: 440px; border-radius: 22px; background: #fff; color: #0C1210;
     padding: 22px 24px 26px; box-shadow: 0 -10px 60px -20px rgba(0, 0, 0, .55);
 }
 .ring-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .ring-who { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 16px; }
+.ring-who span { text-wrap: balance; }
 .ring-who svg { width: 40px; height: 40px; padding: 10px; border-radius: 50%; background: #10B981; color: #fff; flex: none; }
 .ring-who small { display: block; font-weight: 500; font-size: 13.5px; color: #69726E; margin-top: 2px; }
 .ring-time { font: 600 34px/1 var(--display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
