@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NetEnroll — Live TV Inbound Calls and Pay-Per-Application Programs for Insurance Agents</title>
-<meta name="description" content="Customer acquisition for insurance agents and agencies. Live Medicare ($39/call) and Final Expense ($44/call) TV inbound calls with a 120-second buffer, or pay per submitted application: $199 Final Expense, $159 Medicare, $100 ACA.">
-<meta name="theme-color" content="#04100B">
+<title>NetEnroll — Stop Paying for Calls. Pay for Applications.</title>
+<meta name="description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $0 per call, $0 per month. You pay a published program rate only when an application is submitted: $199 Final Expense, $159 Medicare, $100 ACA Health.">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://netenroll.com/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" sizes="32x32" type="image/png">
@@ -14,20 +14,580 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NetEnroll">
 <meta property="og:url" content="https://netenroll.com/">
-<meta property="og:title" content="We Bring the Opportunities. You Close the Business.">
-<meta property="og:description" content="Live TV inbound calls: Medicare $39, Final Expense $44, 120-second buffer. Or pay per submitted application: $199 · $159 · $100.">
+<meta property="og:title" content="Stop Paying for Calls. Pay for Applications.">
+<meta property="og:description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $0 per call. $199 · $159 · $100 per submitted application.">
 <meta property="og:image" content="https://netenroll.com/og-home.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="We Bring the Opportunities. You Close the Business.">
-<meta name="twitter:description" content="Live TV inbound calls: Medicare $39, Final Expense $44, 120-second buffer. Or pay per submitted application: $199 · $159 · $100.">
+<meta name="twitter:title" content="Stop Paying for Calls. Pay for Applications.">
+<meta name="twitter:description" content="Live Final Expense, Medicare and ACA Health calls for licensed producers. $0 per call. $199 · $159 · $100 per submitted application.">
 <meta name="twitter:image" content="https://netenroll.com/og-home.png">
 
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&amp;f[]=satoshi@400,500,700&amp;display=swap">
-<link rel="stylesheet" href="/signal.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+
+<style>
+/* ---------------------------------------------------------------------------
+   NetEnroll homepage. Self-contained: served as / with its own stylesheet so
+   the other routes (which share site.css) are untouched. /site.js is reused
+   for the menu, scroll reveals, the mobile sticky CTA and the analytics hook.
+
+   The page tells one story: you pay for applications, not calls. The bill in
+   the hero shows it, the two columns in the difference section compare it,
+   and every later section restates it in a different form. General Sans
+   carries the headlines, Satoshi the reading. Green means money.
+--------------------------------------------------------------------------- */
+:root {
+    --bg: #FFFFFF;
+    --bg-2: #F4F6F4;
+    --ink: #0E1512;
+    --ink-2: #2B342F;
+    --muted: #5A6660;
+    --line: #E1E6E2;
+    --line-2: #C9D1CC;
+    --green: #0C5C43;
+    --green-hover: #094A36;
+    --green-deep: #073B2C;
+    --green-ink: #052A1F;
+    --green-bright: #2ED18E;
+    --mint: #E6F3EC;
+    --mint-2: #CBE7D8;
+
+    --display: 'General Sans', 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --text: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+    --wrap: 1200px;
+    --gutter: clamp(20px, 4vw, 40px);
+    --header: 72px;
+    --r: 10px;
+    --r-lg: 18px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+    margin: 0;
+    font-family: var(--text);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+strong, b { font-weight: 700; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 3px; }
+::selection { background: var(--green); color: #fff; }
+section[id], div[id] { scroll-margin-top: calc(var(--header) + 12px); }
+
+.skip-link {
+    position: absolute; left: 16px; top: -60px; z-index: 100;
+    padding: 10px 14px; background: var(--ink); color: #fff; border-radius: var(--r);
+    font-size: 14px; font-weight: 700; text-decoration: none;
+}
+.skip-link:focus { top: 12px; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
+
+/* ---- Type ---------------------------------------------------------------- */
+.eyebrow {
+    display: inline-flex; align-items: flex-start; gap: 10px; line-height: 1.4;
+    font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green);
+}
+.eyebrow::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: currentColor; }
+.on-green .eyebrow { color: var(--green-bright); }
+.h1, .h2, .h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; text-wrap: balance; }
+.h1 { font-size: clamp(2.6rem, 5vw, 4.4rem); line-height: 1.02; }
+.h2 { font-size: clamp(2rem, 3.9vw, 3.3rem); line-height: 1.05; }
+.h3 { font-size: clamp(1.25rem, 1.7vw, 1.5rem); line-height: 1.2; letter-spacing: -.02em; }
+.lede { font-size: clamp(1.1rem, 1.4vw, 1.25rem); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
+.lede strong { color: var(--ink); }
+.on-green .lede, .on-green .sec-head .lede { color: #C5DDD1; }
+.num { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+
+.sec-head { display: grid; gap: 16px; margin-bottom: clamp(36px, 5vw, 56px); max-width: 46rem; }
+.sec-head .h2 { margin-top: 0; }
+.sec-head .lede { color: var(--muted); }
+.sec-head.split { max-width: none; grid-template-columns: 1.1fr 1fr; align-items: end; gap: 40px; }
+.sec-head.split .lede { max-width: 30rem; justify-self: end; }
+.sec-head .lede + .lede { margin-top: -6px; }
+
+/* ---- Buttons ------------------------------------------------------------- */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 54px; padding: 0 26px;
+    border-radius: var(--r); border: 1px solid transparent;
+    font-family: var(--text); font-size: 16px; font-weight: 700; letter-spacing: -.005em; line-height: 1;
+    text-decoration: none; white-space: nowrap; cursor: pointer;
+    transition: background-color .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease);
+}
+.btn svg { width: 16px; height: 16px; flex: none; transition: transform .25s var(--ease); }
+.btn:hover svg { transform: translateX(3px); }
+.btn-primary { background: var(--green); color: #fff; }
+.btn-primary:hover { background: var(--green-hover); }
+.btn-ink { background: var(--ink); color: #fff; }
+.btn-ink:hover { background: #24302A; }
+.btn-outline { background: transparent; color: var(--ink); border-color: var(--line-2); }
+.btn-outline:hover { border-color: var(--ink); }
+.btn-white { background: #fff; color: var(--green-deep); }
+.btn-white:hover { background: var(--mint); }
+.btn-sm { min-height: 44px; padding: 0 18px; font-size: 15px; }
+.btn-sm svg { width: 14px; height: 14px; }
+.textlink { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--green); text-decoration: none; }
+.textlink:hover { text-decoration: underline; text-underline-offset: 4px; }
+.textlink svg { width: 16px; height: 16px; }
+
+/* ---- Header -------------------------------------------------------------- */
+.site-header {
+    position: sticky; top: 0; z-index: 30;
+    background: rgba(255, 255, 255, .9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+}
+.site-header > .wrap { height: var(--header); display: flex; align-items: center; gap: 40px; }
+.brand img { height: 44px; width: auto; display: block; }
+.brand, .header-actions { flex-shrink: 0; }
+.nav { display: flex; gap: 30px; font-size: 15px; font-weight: 500; }
+.nav a { color: var(--ink-2); text-decoration: none; transition: color .15s; white-space: nowrap; }
+@media (max-width: 1200px) { .nav { gap: 20px; } }
+.nav a:hover { color: var(--green); }
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 24px; }
+.signin { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.signin:hover { color: var(--green); }
+.menu-btn {
+    display: none; margin-left: auto; width: 44px; height: 44px; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--line-2); border-radius: var(--r); cursor: pointer;
+}
+.menu-btn .close { display: none; }
+.menu-btn[aria-expanded="true"] .open { display: none; }
+.menu-btn[aria-expanded="true"] .close { display: block; }
+.mobile-nav { display: none; }
+
+/* ---- Hero ---------------------------------------------------------------- */
+.hero { padding: clamp(44px, 6vw, 84px) 0 clamp(56px, 6vw, 88px); }
+.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: start; }
+.hero h1 { margin-top: 20px; font-size: clamp(2.5rem, 3.9vw, 3.6rem); line-height: 1.04; }
+.hero h1 em { display: block; font-style: normal; color: var(--green); }
+.hero .lede { margin-top: 22px; max-width: 30rem; }
+.hero .lede + .lede { margin-top: 14px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+.hero-micro { display: flex; flex-wrap: wrap; gap: 6px 0; margin-top: 22px; font-size: 14.5px; font-weight: 500; color: var(--muted); }
+.hero-micro li:not(:last-child)::after { content: "·"; margin: 0 12px; color: var(--line-2); }
+.hero-micro b { color: var(--ink); }
+
+.hero-visual { background: var(--mint); border-radius: var(--r-lg); padding: clamp(18px, 3vw, 36px); }
+
+/* The statement: what one call costs. */
+.bill { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 30px 60px -36px rgba(14, 21, 18, .35); overflow: hidden; }
+.bill-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+.bill-head h2 { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.015em; }
+.bill-head h2 span { color: var(--muted); font-weight: 500; font-size: 14px; }
+.seg { display: inline-flex; background: var(--bg-2); border-radius: 8px; padding: 3px; }
+.seg button {
+    padding: 7px 12px; border: 0; border-radius: 6px; background: transparent; cursor: pointer;
+    font-size: 13px; font-weight: 700; color: var(--muted); line-height: 1.2;
+    transition: background-color .15s, color .15s, box-shadow .15s;
+}
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(14, 21, 18, .16); }
+.seg button:focus-visible { outline-offset: -2px; }
+.bill-body { padding: 4px 22px 0; }
+.line { display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.line:last-child { border-bottom: 0; }
+.line .n { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--muted); }
+.line .what { font-size: 16px; font-weight: 500; line-height: 1.3; }
+.tag { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--bg-2); font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.line.pay { padding: 16px 0 18px; }
+.line.pay .n { background: var(--green); border-color: var(--green); color: #fff; }
+.line.pay .what { font-weight: 700; font-size: 17px; }
+.line.pay .amt { text-align: right; }
+.line.pay .amt b { display: block; font-family: var(--display); font-size: 36px; font-weight: 600; letter-spacing: -.03em; line-height: 1; color: var(--green); font-variant-numeric: tabular-nums; }
+.line.pay .amt span { display: block; max-width: 128px; margin-left: auto; margin-top: 5px; line-height: 1.25; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--green); }
+.bill-foot { padding: 16px 22px; background: var(--green); color: #fff; font-family: var(--display); font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; line-height: 1.4; text-wrap: pretty; }
+
+/* The bill prints itself once on load. */
+@keyframes print { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.bill .line { opacity: 0; animation: print .5s var(--ease) forwards; }
+.bill .line:nth-child(1) { animation-delay: .2s; }
+.bill .line:nth-child(2) { animation-delay: .36s; }
+.bill .line:nth-child(3) { animation-delay: .52s; }
+.bill .line:nth-child(4) { animation-delay: .68s; }
+.bill .line:nth-child(5) { animation-delay: .86s; }
+.bill-foot { opacity: 0; animation: print .5s var(--ease) 1.15s forwards; }
+
+/* ---- Rate strip ---------------------------------------------------------- */
+.rates { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.rates .wrap { display: grid; grid-template-columns: repeat(3, 1fr) auto; align-items: center; gap: 0 32px; }
+.rates li { display: flex; align-items: baseline; gap: 14px; padding: 22px 0; }
+.rates li + li { border-left: 1px solid var(--line-2); padding-left: 32px; }
+.rates .num { font-size: clamp(1.7rem, 2.6vw, 2.2rem); line-height: 1; }
+.rates .lbl { display: block; font-size: 15px; font-weight: 700; line-height: 1.2; }
+.rates .lbl small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-top: 3px; }
+.rates .zero { justify-self: end; text-align: right; font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); }
+
+/* ---- The difference: two ledgers, one invoice each ----------------------- */
+.shift { position: relative; overflow: hidden; background: var(--green-deep); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
+.shift::before { content: ""; position: absolute; right: -10%; top: -30%; width: 60%; height: 90%; background: radial-gradient(closest-side, rgba(46, 209, 142, .16), transparent 70%); pointer-events: none; }
+.shift .wrap { position: relative; }
+.shift .sec-head.split { grid-template-columns: 1.15fr 1fr; align-items: end; margin-bottom: clamp(36px, 5vw, 56px); }
+.shift .h2 { max-width: 20ch; }
+.shift .intro { justify-self: end; max-width: 26rem; padding-left: 24px; border-left: 2px solid var(--green-bright); }
+.shift .intro p { font-size: clamp(1.1rem, 1.4vw, 1.25rem); line-height: 1.5; color: #C5DDD1; }
+.shift .intro p + p { margin-top: 10px; color: #fff; font-weight: 700; }
+.stmts { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 32px); align-items: stretch; }
+.stmt { --row: 58px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; border-radius: 20px; padding: clamp(24px, 3vw, 36px); border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .04); }
+.stmt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, .14); }
+.stmt-head h3 { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #9DB8AB; }
+.stmt blockquote { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1.05; font-size: clamp(1.8rem, 3vw, 2.6rem); color: #C5DDD1; text-wrap: balance; }
+.stmt ol { display: grid; align-content: start; gap: 6px; }
+.stmt li { position: relative; height: calc(var(--row) - 6px); display: flex; align-items: center; gap: 14px; padding: 0 14px 0 12px; border-radius: 12px; background: rgba(255, 255, 255, .05); font-size: 16.5px; font-weight: 500; color: #D3E4DB; }
+.stmt li .dot { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .35); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; }
+.stmt li .tag { margin-left: auto; height: 28px; min-width: 0; padding: 0 10px; font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; }
+.stmt li.maybe { color: #8FAA9D; font-weight: 400; background: transparent; outline: 1px dashed rgba(255, 255, 255, .16); outline-offset: -1px; }
+.stmt li.maybe .dot { border-style: dashed; border-color: rgba(255, 255, 255, .28); color: #8FAA9D; }
+.stmt li.pay { background: transparent; padding-left: 0; z-index: 2; }
+.stmt-old li .tag { background: rgba(233, 161, 161, .12); color: #E9A1A1; }
+.stmt-old li.maybe .tag { background: transparent; outline: 1px solid rgba(233, 161, 161, .35); outline-offset: -1px; }
+.stmt .close { padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .14); display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; color: #fff; }
+.stmt .close small { font-family: var(--text); font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #8FAA9D; white-space: nowrap; }
+.stmt-old .close small { color: #E9A1A1; }
+/* NetEnroll: the winner, without saying so. */
+.stmt-ne { background: linear-gradient(180deg, rgba(46, 209, 142, .12), rgba(46, 209, 142, .05)); border-color: rgba(46, 209, 142, .55); box-shadow: 0 0 0 1px rgba(46, 209, 142, .25), 0 40px 80px -40px rgba(46, 209, 142, .5); }
+.stmt-ne .stmt-head h3 { color: var(--green-bright); }
+.stmt-ne blockquote { color: #fff; }
+.stmt-ne li { color: #fff; background: rgba(255, 255, 255, .06); }
+.stmt-ne li .dot { border-color: var(--green-bright); background: var(--green-bright); color: var(--green-ink); }
+.stmt-ne li .dot svg { width: 13px; height: 13px; }
+.stmt-ne li .tag { background: rgba(255, 255, 255, .1); color: #fff; font-family: var(--display); font-size: 15px; letter-spacing: -.01em; text-transform: none; }
+.stmt-ne li.app .tag { background: var(--green-bright); color: var(--green-ink); }
+.stmt-ne .close { color: var(--green-bright); }
+.stmt-ne .close small { color: #9DE5C4; }
+.pill { flex: none; white-space: nowrap; display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.pill-dim { background: rgba(255, 255, 255, .1); color: #D3E4DB; }
+.pill-bright { background: var(--green-bright); color: var(--green-ink); }
+.chip { display: inline-flex; align-items: center; gap: 10px; height: 38px; padding: 0 16px 0 12px; border-radius: 999px; background: #fff; color: var(--green-ink); font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .6); white-space: nowrap; }
+.chip .dollar { width: 22px; height: 22px; border-radius: 50%; background: var(--green-ink); color: #fff; display: grid; place-items: center; font-family: var(--display); font-size: 14px; font-weight: 700; }
+.stmt-ne .chip { background: var(--green-bright); }
+/* The invoice slides from the top of the NetEnroll column to the bottom once
+   the section scrolls in: the page's one animation that is itself the argument. */
+.js .stmt-ne li.pay { transform: translateY(calc(-4 * var(--row))); transition: transform 1.5s var(--ease) .3s; }
+.js .stmt-ne.is-in li.pay { transform: none; }
+.shift-close { margin-top: clamp(40px, 5vw, 64px); padding-top: clamp(28px, 3vw, 40px); border-top: 1px solid rgba(255, 255, 255, .14); text-align: center; font-family: var(--display); font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
+.shift-close em { font-style: normal; color: var(--green-bright); }
+
+/* ---- How it works -------------------------------------------------------- */
+.how { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; counter-reset: step; }
+.steps li { position: relative; padding-top: 26px; }
+.steps li::before { content: ""; position: absolute; left: 0; right: -32px; top: 0; height: 2px; background: var(--line-2); }
+.steps li:last-child::before { right: 0; }
+.steps li::after { content: ""; position: absolute; left: 0; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--green); }
+.steps .k { counter-increment: step; font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--green); letter-spacing: .02em; }
+.steps .k::before { content: "Step " counter(step); }
+.steps h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; margin-top: 10px; }
+.steps p { font-size: 15.5px; color: var(--muted); margin-top: 8px; max-width: 18rem; text-wrap: pretty; }
+.steps p + p { margin-top: 6px; }
+.steps p strong { color: var(--ink); }
+.steps .zero { display: block; margin-top: 10px; font-family: var(--display); font-size: 2.4rem; font-weight: 600; letter-spacing: -.04em; line-height: 1; color: var(--green); }
+.steps li.last h3 { color: var(--green); }
+.how-foot { margin-top: clamp(36px, 5vw, 56px); display: flex; align-items: center; gap: 14px 24px; flex-wrap: wrap; }
+
+/* ---- Why producers care: an editorial split, no cards -------------------- */
+.why { padding: clamp(64px, 8vw, 112px) 0; }
+.why-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
+.why-lead { position: sticky; top: calc(var(--header) + 32px); }
+.why-lead .h2 { margin-top: 14px; }
+.why-list { border-top: 1px solid var(--ink); counter-reset: why; }
+.why-list li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; padding: 24px 0; border-bottom: 1px solid var(--line-2); counter-increment: why; }
+.why-list li::before { content: counter(why, decimal-leading-zero); font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--green); padding-top: 5px; font-variant-numeric: tabular-nums; }
+.why-list h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.7vw, 1.45rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.15; text-wrap: balance; }
+.why-list p { font-size: 15.5px; line-height: 1.55; color: var(--muted); margin-top: 6px; max-width: 34rem; text-wrap: pretty; }
+.why-list p + p { margin-top: 4px; }
+.why-list p b { color: var(--ink); }
+
+/* ---- Programs: the rate sheet ------------------------------------------- */
+.programs { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.sheet { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+.sheet-head, .row { display: grid; grid-template-columns: 1.1fr 1.4fr auto; gap: 24px; align-items: center; }
+.sheet-head { padding: 14px 32px; background: var(--bg-2); border-bottom: 1px solid var(--line); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sheet-head span:last-child { text-align: right; }
+.row { padding: clamp(22px, 2.6vw, 30px) 32px; border-bottom: 1px solid var(--line); transition: background-color .15s; }
+.row:hover { background: #FAFBFA; }
+.row .name { font-family: var(--display); font-size: clamp(1.4rem, 2.2vw, 1.9rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.1; }
+.row .desc { font-size: 16px; color: var(--muted); max-width: 30rem; text-wrap: pretty; }
+.row .price { text-align: right; }
+.row .price b { display: block; font-family: var(--display); font-size: clamp(2rem, 3.4vw, 2.9rem); font-weight: 600; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.row .price span { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.sheet-note { padding: 22px 32px; background: var(--mint); font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.4rem); font-weight: 600; letter-spacing: -.02em; color: var(--green); }
+.sheet-foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 20px; font-size: 14.5px; color: var(--muted); }
+
+/* ---- The real economics: the ledger ---------------------------------------- */
+.econ { background: var(--ink); color: #fff; padding: clamp(64px, 8vw, 112px) 0; }
+.econ .wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(40px, 6vw, 88px); align-items: start; }
+.econ .eyebrow { color: var(--green-bright); }
+.econ .h2 { margin-top: 14px; max-width: 22ch; }
+.econ .body { margin-top: 24px; max-width: 30rem; }
+.econ .body p { font-size: 17px; line-height: 1.6; color: #B9C8C0; }
+.econ .body p + p { margin-top: 14px; }
+.econ .body ul { margin: 14px 0; }
+.econ .body li { position: relative; padding-left: 22px; font-size: 17px; line-height: 1.7; color: #B9C8C0; }
+.econ .body li::before { content: ""; position: absolute; left: 0; top: .78em; width: 10px; height: 2px; background: var(--green-bright); }
+.econ .body p.key { color: #fff; font-weight: 700; }
+.econ-quote { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .16); }
+.econ-quote p { font-family: var(--display); font-size: clamp(1.5rem, 2.2vw, 1.9rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; color: var(--green-bright); text-wrap: balance; }
+.econ-quote cite { display: block; margin-top: 10px; font-style: normal; font-size: 14px; color: #8FAA9D; }
+/* Same five outcomes, two invoices. Counts charges, not conversions. */
+.ledger { position: sticky; top: calc(var(--header) + 32px); background: #131B17; border: 1px solid rgba(255, 255, 255, .12); border-radius: var(--r-lg); overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .8); }
+.ledger-head { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: end; padding: 20px 24px 14px; border-bottom: 1px solid rgba(255, 255, 255, .12); }
+.ledger-head h3 { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: #fff; }
+.ledger-head h3 small { display: block; font-family: var(--text); font-size: 12.5px; font-weight: 500; color: #8FAA9D; margin-top: 2px; }
+.ledger-head .col { text-align: right; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; }
+.ledger-head .col.ne { color: var(--green-bright); }
+.ledger-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: center; padding: 13px 24px; border-bottom: 1px solid rgba(255, 255, 255, .08); font-size: 15.5px; color: #D3E4DB; }
+.ledger-row .o { display: flex; align-items: center; gap: 12px; }
+.ledger-row .o i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #56705F; }
+.ledger-row .old, .ledger-row .ne { text-align: right; font-family: var(--display); font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.ledger-row .old { color: #E9A1A1; font-size: 14px; }
+.ledger-row .old::before { content: "\2212"; margin-right: 3px; }
+.ledger-row .ne { color: #fff; font-size: 17px; }
+.ledger-row.app { background: rgba(46, 209, 142, .08); }
+.ledger-row.app .o { color: #fff; font-weight: 700; }
+.ledger-row.app .o i { background: var(--green-bright); }
+.ledger-row.app .ne { color: var(--green-bright); font-size: 19px; }
+.ledger-foot { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: center; padding: 18px 24px; background: rgba(255, 255, 255, .04); border-top: 1px solid rgba(255, 255, 255, .12); }
+.ledger-foot .lbl { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8FAA9D; }
+.ledger-foot .old, .ledger-foot .ne { text-align: right; font-family: var(--display); font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.ledger-foot .old { color: #E9A1A1; font-size: 22px; }
+.ledger-foot .ne { color: var(--green-bright); font-size: 30px; }
+.ledger-foot small { display: block; font-family: var(--text); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #8FAA9D; margin-top: 6px; }
+
+/* ---- Agencies: the routing panel ------------------------------------------- */
+.agency { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.agency-top { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(40px, 6vw, 88px); align-items: center; }
+.agency .lede { margin-top: 20px; color: var(--muted); max-width: 30rem; }
+.agency .lede + .lede { margin-top: 12px; }
+.agency .lede b { color: var(--ink); }
+.agency .hero-actions { margin-top: 30px; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 34px 70px -40px rgba(14, 21, 18, .4); overflow: hidden; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+.panel-head h3 { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.panel-head .badge { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--mint); color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.panel-row { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; padding: 14px 22px; border-bottom: 1px solid var(--line); }
+.panel-row .lbl { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 13.5px; font-weight: 700; color: var(--ink-2); }
+.chips span.on { background: var(--green); border-color: var(--green); color: #fff; }
+.chips span.on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green-bright); }
+.chips span.off { color: var(--muted); font-weight: 500; }
+.chips span.st { padding: 0 10px; font-family: var(--display); letter-spacing: .02em; }
+.producers { display: grid; gap: 6px; }
+.producers li { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 10px; background: var(--bg-2); font-size: 14px; }
+.producers .av { width: 32px; height: 32px; border-radius: 50%; background: var(--mint-2); color: var(--green-deep); display: grid; place-items: center; font-family: var(--display); font-size: 12px; font-weight: 700; }
+.producers .who b { display: block; font-size: 14px; }
+.producers .who small { font-size: 12.5px; color: var(--muted); }
+.producers .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--green); white-space: nowrap; }
+.producers .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green-bright); }
+.producers .status.busy { color: var(--muted); }
+.producers .status.busy::before { background: var(--line-2); }
+.producers li.hit { background: var(--mint); outline: 1px solid var(--mint-2); }
+.panel-call { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 16px 22px; background: var(--green); color: #fff; }
+.panel-call .ring { width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, .14); display: grid; place-items: center; }
+.panel-call .ring svg { width: 18px; height: 18px; }
+.panel-call b { display: block; font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.panel-call small { display: block; font-size: 13px; color: #CDE5D9; margin-top: 2px; }
+.panel-call .tag { background: rgba(255, 255, 255, .14); color: #fff; }
+.agency-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: clamp(40px, 5vw, 64px); }
+.agency-facts li { padding-top: 20px; border-top: 2px solid var(--line-2); position: relative; }
+.agency-facts li::before { content: ""; position: absolute; left: 0; top: -2px; width: 48px; height: 2px; background: var(--green); }
+.agency-facts h3 { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.agency-facts p { font-size: 15.5px; color: var(--muted); margin-top: 8px; text-wrap: pretty; }
+.agency-close { margin-top: clamp(36px, 4vw, 48px); font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.2rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; color: var(--ink); max-width: 30ch; text-wrap: balance; }
+.agency-close em { font-style: normal; color: var(--green); }
+
+/* ---- Replacement callout ------------------------------------------------- */
+.callout { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; background: var(--green); color: #fff; border-radius: var(--r-lg); padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 40px); }
+.callout .big { font-family: var(--display); font-size: clamp(2.4rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; white-space: nowrap; }
+.callout .big small { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DE5C4; margin-top: 8px; white-space: normal; max-width: 12ch; }
+.callout h3 { font-family: var(--display); font-size: clamp(1.25rem, 1.8vw, 1.55rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; text-wrap: balance; }
+.callout p { margin-top: 8px; font-size: 15.5px; line-height: 1.55; color: #CDE5D9; max-width: 42rem; }
+.callout p a { color: #fff; text-underline-offset: 3px; }
+.callout .ref { justify-self: start; display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 6px; background: rgba(255, 255, 255, .12); color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; white-space: nowrap; }
+.callout .ref:hover { background: rgba(255, 255, 255, .2); }
+
+/* ---- Proof: quiet, human, no cards --------------------------------------- */
+.proof { padding: clamp(64px, 8vw, 112px) 0; }
+.proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; border-top: 1px solid var(--ink); }
+.proof-grid li { padding: 22px 0 24px; border-bottom: 1px solid var(--line-2); display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
+.proof-grid li::before { content: ""; width: 20px; height: 20px; margin-top: 2px; border-radius: 50%; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+.proof-grid h3 { font-family: var(--display); font-size: 18px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.proof-grid p { font-size: 15px; line-height: 1.5; color: var(--muted); margin-top: 4px; text-wrap: pretty; }
+.proof-grid p a { color: var(--ink); text-underline-offset: 3px; }
+.proof-foot { margin-top: 20px; font-size: 14.5px; color: var(--muted); }
+.proof-foot a { color: var(--ink); text-underline-offset: 3px; }
+
+/* ---- Questions ----------------------------------------------------------- */
+.qa { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(64px, 8vw, 112px) 0; }
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(32px, 5vw, 72px); border-top: 1px solid var(--line-2); }
+.qa .q { padding: 26px 0; border-bottom: 1px solid var(--line-2); }
+.qa dt { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
+.qa dd { margin-top: 10px; font-size: 16px; line-height: 1.6; color: var(--muted); text-wrap: pretty; }
+.qa dd b { color: var(--ink); }
+.qa dd .yes { display: block; font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -.02em; color: var(--green); margin-bottom: 6px; }
+.qa dd p + p { margin-top: 6px; }
+.qa dd a { color: var(--green); font-weight: 700; text-underline-offset: 3px; }
+
+/* ---- Final: centered, with the three numbers -------------------------------- */
+.final { position: relative; overflow: hidden; background: var(--green-deep); color: #fff; padding: clamp(72px, 9vw, 128px) 0; text-align: center; }
+.final::before { content: ""; position: absolute; left: -20%; right: -20%; top: -40%; height: 120%; background: radial-gradient(closest-side, rgba(46, 209, 142, .22), transparent 70%); pointer-events: none; }
+.final .wrap { position: relative; display: grid; justify-items: center; }
+.final .eyebrow { color: var(--green-bright); }
+.final .h2 { margin-top: 16px; max-width: 18ch; font-size: clamp(2.3rem, 5vw, 4.2rem); }
+.final .sub { margin-top: 20px; font-size: 18px; color: #C5DDD1; max-width: 34rem; text-wrap: pretty; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; width: min(100%, 860px); margin-top: clamp(36px, 5vw, 56px); background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-lg); overflow: hidden; }
+.tiles li { background: var(--green-deep); padding: 26px 20px 24px; }
+.tiles b { display: block; font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; color: var(--green-bright); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tiles li:last-child b { font-size: clamp(1.5rem, 2.4vw, 2.1rem); padding-top: .2em; }
+.tiles span { display: block; margin-top: 10px; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #9DB8AB; }
+.final-actions { margin-top: clamp(32px, 4vw, 44px); display: grid; justify-items: center; gap: 16px; }
+.final .btn-white { min-height: 60px; padding: 0 34px; font-size: 17px; }
+.final .tel { color: #fff; font-size: 15.5px; text-decoration: none; }
+.final .tel b { text-decoration: underline; text-underline-offset: 4px; }
+.final .micro { margin-top: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6F9C87; }
+.final ::selection { background: #fff; color: var(--green); }
+
+/* ---- Footer -------------------------------------------------------------- */
+.site-footer { padding: clamp(48px, 6vw, 72px) 0 32px; font-size: 15px; }
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+.foot-brand img { height: 40px; width: auto; }
+.foot-brand p { margin-top: 16px; color: var(--muted); max-width: 22rem; font-size: 14.5px; }
+.site-footer h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.site-footer li a { display: inline-block; padding: 4px 0; color: var(--ink-2); text-decoration: none; }
+.site-footer li a:hover { color: var(--green); }
+.foot-legal { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+
+/* ---- Sticky mobile CTA --------------------------------------------------- */
+.sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: none;
+    align-items: center; justify-content: space-between; gap: 14px;
+    padding: 10px var(--gutter); background: rgba(255, 255, 255, .96); border-top: 1px solid var(--line);
+    transform: translateY(110%); transition: transform .3s var(--ease);
+}
+.sticky-cta.is-on { transform: none; }
+.sticky-cta .lbl { font-size: 14px; font-weight: 700; }
+.sticky-cta .lbl small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); }
+
+/* ---- Reveal -------------------------------------------------------------- */
+.js .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.js .reveal.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .bill .line, .bill-foot { animation: none; opacity: 1; }
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .js .stmt-ne li.pay { transform: none; transition: none; }
+    .btn svg { transition: none; }
+}
+
+/* ---- Responsive ---------------------------------------------------------- */
+@media (max-width: 1080px) {
+    .hero-grid { grid-template-columns: 1fr 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; gap: 40px 32px; }
+    .steps li:nth-child(2)::before { right: 0; }
+    .proof-grid { grid-template-columns: 1fr 1fr; }
+}
+/* Seven header links need about 1180px; below that the menu button takes over. */
+@media (max-width: 1180px) {
+    .nav, .signin, .header-actions .btn { display: none; }
+    .menu-btn { display: inline-flex; }
+    .mobile-nav {
+        display: block; position: absolute; top: var(--header); left: 0; right: 0;
+        background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 24px 40px -24px rgba(14, 21, 18, .3);
+        padding: 8px var(--gutter) 24px;
+    }
+    .mobile-nav > a { display: block; padding: 15px 0; border-bottom: 1px solid var(--line); font-family: var(--display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; text-decoration: none; }
+    .mobile-nav > a.signin { display: block; font-family: var(--text); font-size: 16px; font-weight: 700; color: var(--ink-2); }
+    .mobile-nav .cta-row { padding-top: 20px; }
+    .mobile-nav .cta-row .btn { width: 100%; }
+}
+@media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    .rates .wrap { grid-template-columns: repeat(3, 1fr); }
+    .rates .zero { grid-column: 1 / -1; justify-self: start; text-align: left; padding-bottom: 18px; margin-top: -8px; }
+    .rates li { padding: 18px 0 14px; }
+    .sec-head.split, .shift .sec-head.split { grid-template-columns: 1fr; align-items: start; }
+    .sec-head.split .lede { justify-self: start; }
+    .shift .intro { justify-self: start; }
+    .stmts, .why-grid, .econ .wrap, .agency-top { grid-template-columns: 1fr; }
+    .callout { grid-template-columns: 1fr; gap: 16px; }
+    .callout .big small { max-width: none; }
+    .why-lead, .ledger { position: static; }
+    .agency-facts { grid-template-columns: 1fr 1fr; }
+    .qa-grid { grid-template-columns: 1fr; }
+    .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 640px) {
+    :root { --header: 64px; }
+    .brand img { height: 38px; }
+    .hero { padding-top: 36px; }
+    .hero h1 { font-size: clamp(1.9rem, 8.8vw, 2.4rem); }
+    .hero .lede { font-size: 1.05rem; margin-top: 18px; }
+    .hero-actions { margin-top: 26px; }
+    .hero-actions .btn { width: 100%; }
+    .hero-micro { margin-top: 16px; }
+    .hero-visual { padding: 14px; margin-left: calc(var(--gutter) * -1 + 8px); margin-right: calc(var(--gutter) * -1 + 8px); border-radius: 14px; }
+    .bill-head, .bill-body, .bill-foot { padding-left: 16px; padding-right: 16px; }
+    .line { grid-template-columns: 24px 1fr auto; gap: 12px; padding: 12px 0; }
+    .line .n { width: 24px; height: 24px; font-size: 11px; }
+    .line .what { font-size: 15px; }
+    .line.pay .amt b { font-size: 30px; }
+    .rates .wrap { grid-template-columns: 1fr; gap: 0; }
+    .rates li { padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+    .rates li + li { border-left: 0; padding-left: 0; }
+    .rates .zero { padding: 14px 0 16px; margin: 0; }
+    .stmt { --row: 54px; padding: 20px 16px; }
+    .stmt li { font-size: 15px; line-height: 1.2; gap: 10px; padding: 0 10px; }
+    .stmt li .tag { font-size: 11.5px; padding: 0 8px; }
+    .stmt .close { flex-direction: column; gap: 4px; }
+    .steps { grid-template-columns: 1fr; gap: 32px; }
+    .steps li::before { right: 0; }
+    .why-list li { grid-template-columns: 32px 1fr; gap: 12px; padding: 20px 0; }
+    .sheet-head { display: none; }
+    .row { grid-template-columns: 1fr auto; gap: 6px 16px; padding-left: 20px; padding-right: 20px; }
+    .row .desc { grid-column: 1; font-size: 14.5px; }
+    .row .price { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+    .row .price span { font-size: 10.5px; max-width: 96px; margin-left: auto; line-height: 1.25; }
+    .row .name { font-size: 1.35rem; }
+    .row .price b { font-size: 1.9rem; }
+    .sheet-note { padding: 18px 20px; }
+    .proof-grid { grid-template-columns: 1fr; }
+    .final-actions .btn { width: 100%; }
+    .final-actions { width: 100%; }
+    .tiles { grid-template-columns: 1fr; }
+    .tiles li:last-child b { font-size: 1.6rem; }
+    .agency-facts { grid-template-columns: 1fr; gap: 24px; }
+    .panel-row { grid-template-columns: 1fr; gap: 8px; padding: 12px 16px; }
+    .panel-head, .panel-call { padding-left: 16px; padding-right: 16px; }
+    .panel-call { grid-template-columns: auto 1fr; }
+    .panel-call .tag { display: none; }
+    .ledger-head, .ledger-row, .ledger-foot { grid-template-columns: 1.3fr .8fr .8fr; gap: 8px; padding-left: 16px; padding-right: 16px; }
+    .ledger-row { font-size: 14px; }
+    .ledger-row .old { font-size: 12.5px; }
+    .foot-grid { grid-template-columns: 1fr; gap: 28px; }
+    .sticky-cta { display: flex; }
+    body.has-sticky { padding-bottom: 74px; }
+}
+</style>
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -40,181 +600,61 @@
       "url": "https://netenroll.com/",
       "logo": "https://netenroll.com/netenroll-logo.png",
       "telephone": "+1-904-512-8487",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "2800 N 6th Street #796",
-        "addressLocality": "Saint Augustine",
-        "addressRegion": "FL",
-        "postalCode": "32084",
-        "addressCountry": "US"
-      }
-    },
-    {
-      "@type": "Service",
-      "name": "Live TV inbound insurance calls, billed per call",
-      "serviceType": "Insurance call distribution",
-      "provider": {
-        "@id": "https://netenroll.com/#org"
-      },
-      "areaServed": "US",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Medicare TV inbound calls",
-          "price": "39",
-          "priceCurrency": "USD",
-          "url": "https://netenroll.com/medicare-tv-calls",
-          "description": "Per billable call. Calls under 120 seconds are not billable."
-        },
-        {
-          "@type": "Offer",
-          "name": "Final Expense TV inbound calls",
-          "price": "44",
-          "priceCurrency": "USD",
-          "url": "https://netenroll.com/final-expense-tv-calls",
-          "description": "Per billable call. Calls under 120 seconds are not billable."
-        }
-      ]
+      "address": { "@type": "PostalAddress", "streetAddress": "2800 N 6th Street #796", "addressLocality": "Saint Augustine", "addressRegion": "FL", "postalCode": "32084", "addressCountry": "US" }
     },
     {
       "@type": "Service",
       "name": "Live insurance calls, billed per submitted application",
       "serviceType": "Insurance call distribution",
-      "provider": {
-        "@id": "https://netenroll.com/#org"
-      },
+      "provider": { "@id": "https://netenroll.com/#org" },
       "areaServed": "US",
-      "url": "https://netenroll.com/#pay-per-application",
+      "url": "https://netenroll.com/",
       "offers": [
-        {
-          "@type": "Offer",
-          "name": "Final Expense",
-          "price": "199",
-          "priceCurrency": "USD",
-          "description": "Per submitted application. No charge for the call."
-        },
-        {
-          "@type": "Offer",
-          "name": "Medicare",
-          "price": "159",
-          "priceCurrency": "USD",
-          "description": "Per submitted application. No charge for the call."
-        },
-        {
-          "@type": "Offer",
-          "name": "ACA Health",
-          "price": "100",
-          "priceCurrency": "USD",
-          "description": "Per submitted application. No charge for the call."
-        }
+        { "@type": "Offer", "name": "Final Expense", "price": "199", "priceCurrency": "USD", "description": "Per submitted application. No charge for the call." },
+        { "@type": "Offer", "name": "Medicare", "price": "159", "priceCurrency": "USD", "description": "Per submitted application. No charge for the call." },
+        { "@type": "Offer", "name": "ACA Health", "price": "100", "priceCurrency": "USD", "description": "Per submitted application. No charge for the call." }
       ]
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What&rsquo;s the difference between the two programs?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Pay per application: your producers take live calls and you pay the published program rate only when a qualifying application is submitted. The call itself is $0. Pay per live inbound call: consumers call in from our television advertising and are routed live to your licensed agents. Calls that reach 120 seconds are billed at a flat $39 (Medicare) or $44 (Final Expense)."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does the 120-second buffer work on TV calls?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Calls shorter than 120 seconds are not billable. A TV call that reaches 120 seconds is billed at the program&rsquo;s flat rate: $39 for Medicare, $44 for Final Expense."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "On the pay-per-application program, do I pay for the call?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. On that program NetEnroll does not charge you for connecting the consumer, the length of the conversation or a call that doesn&rsquo;t result in an application. You pay the published program rate when a qualifying application is submitted."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What are the rates?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Pay per live inbound call: Medicare TV $39 per billable call, Final Expense TV $44 per billable call, each with a 120-second buffer. Pay per application: Final Expense $199, Medicare $159, ACA Health $100 per submitted application."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is there a monthly fee?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "On the pay-per-application program there is no monthly subscription or per-producer seat fee. For TV inbound calls, account and billing setup is confirmed with our team before calls begin."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Where do the consumers come from?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "TV inbound calls come from our television advertising: a consumer sees the ad and calls the number on screen. On the pay-per-application program, consumers call looking for insurance coverage and NetEnroll routes those live conversations to available producers based on the programs and states you&rsquo;ve enabled."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I choose my states?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. On the application program you control the programs and states your account receives. For TV calls, tell us where your agents are licensed and our team will confirm coverage."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do you guarantee a certain number of calls?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. Consumer demand and airtime vary by program, state and time of day. What we can tell you upfront is exactly what a billable event costs."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What happens if a policy doesn&rsquo;t take effect?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "On the pay-per-application program, if an application qualifies under the applicable replacement terms, NetEnroll provides the corresponding replacement application according to those terms. See Terms &sect;5.5"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I get started?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "For pay per application, open a producer account. No sales appointment required. Open my producer account For TV inbound calls, request access and our team will follow up."
-          }
-        }
+        { "@type": "Question", "name": "Do I pay for the call?", "acceptedAnswer": { "@type": "Answer", "text": "No. NetEnroll does not charge you for connecting the consumer, the length of the conversation or a call that doesn't result in an application. You pay the published program rate when a qualifying application is submitted." } },
+        { "@type": "Question", "name": "What if the consumer says no?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. That's the point." } },
+        { "@type": "Question", "name": "What if the consumer isn't qualified?", "acceptedAnswer": { "@type": "Answer", "text": "You pay $0. A conversation that doesn't produce a qualifying submitted application does not become a call charge." } },
+        { "@type": "Question", "name": "Is there a monthly fee?", "acceptedAnswer": { "@type": "Answer", "text": "No. There is no monthly subscription or per-producer seat fee." } },
+        { "@type": "Question", "name": "What are the rates?", "acceptedAnswer": { "@type": "Answer", "text": "Final Expense: $199 per submitted application. Medicare: $159 per submitted application. ACA Health: $100 per submitted application. Flat rates; the call itself is $0." } },
+        { "@type": "Question", "name": "Where do the consumers come from?", "acceptedAnswer": { "@type": "Answer", "text": "Consumers call looking for insurance coverage. NetEnroll routes those live conversations to available producers based on the programs and states you've enabled." } },
+        { "@type": "Question", "name": "Can I choose my states?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You control the programs and states your account is set up to receive." } },
+        { "@type": "Question", "name": "Can I use NetEnroll for my entire agency?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Agency accounts can have multiple producers operating under the account, subject to the applicable program requirements." } },
+        { "@type": "Question", "name": "Do you guarantee a certain number of calls?", "acceptedAnswer": { "@type": "Answer", "text": "No. Consumer demand varies by program, state and time. What we can tell you upfront is what you will pay when an application is submitted." } },
+        { "@type": "Question", "name": "What happens if a policy doesn't take effect?", "acceptedAnswer": { "@type": "Answer", "text": "If an application qualifies under the applicable replacement terms, NetEnroll provides the corresponding replacement application according to those terms." } },
+        { "@type": "Question", "name": "How do I get started?", "acceptedAnswer": { "@type": "Answer", "text": "Create your producer account, select the programs and states you want, and get your team ready to take calls. No sales appointment required." } }
       ]
     }
   ]
 }
 </script>
 </head>
-<body class="p-home">
+<body>
 <script>document.documentElement.classList.add('js');</script>
 <a class="skip-link" href="#main">Skip to content</a>
 
-<header class="nx-head">
-    <div class="wrap nx-head-in">
-        <a class="nx-brand" href="/" aria-label="NetEnroll home"><img src="/netenroll-logo-dark.png" width="918" height="179" alt="NetEnroll"></a>
-        <nav class="nx-nav" aria-label="Primary">
-            <a href="/medicare-tv-calls">Medicare TV Calls</a>
-            <a href="/final-expense-tv-calls">Final Expense TV Calls</a>
-            <a href="/#pay-per-application">Pay per Application</a>
+<header class="site-header">
+    <div class="wrap">
+        <a class="brand" href="/" aria-label="NetEnroll home">
+            <img src="/netenroll-logo-tagline.png" width="1950" height="555" alt="NetEnroll — Pay-per-application">
+        </a>
+        <nav class="nav" aria-label="Primary">
+            <a href="#how-it-works">How it works</a>
+            <a href="#pricing">Rates</a>
+            <a href="#agencies">For agencies</a>
+            <a href="#faq">Questions</a>
             <a href="/aca-agent-recruiting">Agent Recruiting</a>
             <a href="/agency-planner">Agency Planner</a>
         </nav>
-        <div class="nx-actions">
-            <a class="nx-signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
-            <a class="btn btn-accent btn-sm" href="#contact" data-track="cta_click" data-loc="header" data-label="Speak with our team">Speak with our team</a>
+        <div class="header-actions">
+            <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="header">Sign in</a>
+            <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="header" data-label="Open an account">Open an account</a>
         </div>
         <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
             <svg class="open" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -222,381 +662,403 @@
         </button>
     </div>
     <div class="mobile-nav" id="mobile-nav" hidden>
-        <a href="/medicare-tv-calls">Medicare TV Calls</a>
-        <a href="/final-expense-tv-calls">Final Expense TV Calls</a>
-        <a href="/#pay-per-application">Pay per Application</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#pricing">Rates</a>
+        <a href="#agencies">For agencies</a>
+        <a href="#faq">Questions</a>
         <a href="/aca-agent-recruiting">Agent Recruiting</a>
         <a href="/agency-planner">Agency Planner</a>
         <a href="/a2p-registration">A2P Registration</a>
         <a href="/licensing-value">State License Tool</a>
-        <a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in to the agent portal</a>
-        <a class="btn btn-accent" href="#contact" data-track="cta_click" data-loc="mobile-nav" data-label="Speak with our team">Speak with our team</a>
+        <a class="signin" href="https://agents.netenroll.com" data-track="portal_cta" data-loc="mobile-nav">Sign in to the agent portal</a>
+        <div class="cta-row">
+            <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="mobile-nav" data-label="Open My Producer Account">Open My Producer Account</a>
+        </div>
     </div>
 </header>
 
 <main id="main">
 
 <!-- 1. Hero -->
-<section class="night hero" id="top" aria-labelledby="hero-title">
-    <div class="glow g1" aria-hidden="true"></div><div class="glow g2" aria-hidden="true"></div>
-    <div class="wrap">
-        <p class="eyebrow"><span class="rise" style="--d:0">Customer acquisition for insurance professionals</span></p>
-        <h1 id="hero-title" class="d-xxl hero-title" style="margin-top:26px">
-            <span class="mask"><span class="rise" style="--d:1">We bring the opportunities.</span></span>
-            <span class="mask"><span class="rise lit" style="--d:2">You close the business.</span></span>
-        </h1>
-        <div class="hero-row">
-            <div>
-                <p class="lede rise" style="--d:5">Performance-driven acquisition for insurance agents and agencies. Buy live TV inbound calls by the call, or pay only when a submitted application comes through. Either way, your agents spend their day in conversations.</p>
-                <div class="hero-actions rise" style="--d:6">
-                    <a class="btn" href="#programs" data-track="cta_click" data-loc="hero" data-label="Explore our programs">Explore our programs <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    <a class="btn btn-ghost" href="#contact" data-track="cta_click" data-loc="hero" data-label="Speak with our team">Speak with our team</a>
-                </div>
-            </div>
-            <nav class="hero-programs rise" style="--d:7" aria-label="Programs">
-                <a class="med" href="/medicare-tv-calls" data-track="cta_click" data-loc="hero-programs" data-label="Medicare TV"><span class="k">Medicare TV</span><span class="v num">$39<small>/call</small></span><span class="s">120-second buffer</span></a>
-                <a class="fe" href="/final-expense-tv-calls" data-track="cta_click" data-loc="hero-programs" data-label="Final Expense TV"><span class="k">Final Expense TV</span><span class="v num">$44<small>/call</small></span><span class="s">120-second buffer</span></a>
-                <a class="cpa" href="#pay-per-application" data-track="cta_click" data-loc="hero-programs" data-label="Pay per application"><span class="k">Per application</span><span class="v num">$100+<small>/app</small></span><span class="s">ACA &middot; Medicare &middot; FE</span></a>
-            </nav>
-        </div>
-    </div>
-    <div class="signal" data-live><svg viewBox="0 0 1440 420" role="img" aria-labelledby="sig-t"><title id="sig-t">A television broadcast reaches consumers, who call in; the calls converge into one live inbound call that connects to a licensed agent.</title><defs><linearGradient id="sigGrad" x1="0" x2="1"><stop offset="0" stop-color="#3BF0A6" stop-opacity=".25"/><stop offset=".5" stop-color="#3BF0A6" stop-opacity=".55"/><stop offset="1" stop-color="#3BF0A6"/></linearGradient><linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173A2C"/><stop offset="1" stop-color="#0A1A13"/></linearGradient></defs><line class="sig-grid" x1="120" y1="40" x2="120" y2="380"/><line class="sig-grid" x1="240" y1="40" x2="240" y2="380"/><line class="sig-grid" x1="360" y1="40" x2="360" y2="380"/><line class="sig-grid" x1="480" y1="40" x2="480" y2="380"/><line class="sig-grid" x1="600" y1="40" x2="600" y2="380"/><line class="sig-grid" x1="720" y1="40" x2="720" y2="380"/><line class="sig-grid" x1="840" y1="40" x2="840" y2="380"/><line class="sig-grid" x1="960" y1="40" x2="960" y2="380"/><line class="sig-grid" x1="1080" y1="40" x2="1080" y2="380"/><line class="sig-grid" x1="1200" y1="40" x2="1200" y2="380"/><line class="sig-grid" x1="1320" y1="40" x2="1320" y2="380"/><path class="sig-arc" style="--i:0" d="M203.5 150.5 A80 80 0 0 1 203.5 269.5"/><path class="sig-arc" style="--i:1" d="M229.0 122.3 A118 118 0 0 1 229.0 297.7"/><path class="sig-arc" style="--i:2" d="M254.4 94.1 A156 156 0 0 1 254.4 325.9"/><path class="sig-strand sig-draw" style="--i:0" pathLength="1000" d="M212 210 C380 210 420 60 600 60 S860 210 968 210"/><path class="sig-strand sig-draw" style="--i:1" pathLength="1000" d="M212 210 C380 210 420 110 600 110 S860 210 968 210"/><path class="sig-strand sig-draw" style="--i:2" pathLength="1000" d="M212 210 C380 210 420 160 600 160 S860 210 968 210"/><path class="sig-strand sig-draw" style="--i:3" pathLength="1000" d="M212 210 C380 210 420 210 600 210 S860 210 968 210"/><path class="sig-strand sig-draw" style="--i:4" pathLength="1000" d="M212 210 C380 210 420 260 600 260 S860 210 968 210"/><path class="sig-strand sig-draw" style="--i:5" pathLength="1000" d="M212 210 C380 210 420 310 600 310 S860 210 968 210"/><path class="sig-strand sig-draw" style="--i:6" pathLength="1000" d="M212 210 C380 210 420 360 600 360 S860 210 968 210"/><path class="sig-pulse" style="--i:3" pathLength="1000" d="M212 210 C380 210 420 60 600 60 S860 210 968 210"/><path class="sig-pulse" style="--i:1" pathLength="1000" d="M212 210 C380 210 420 110 600 110 S860 210 968 210"/><path class="sig-pulse" style="--i:5" pathLength="1000" d="M212 210 C380 210 420 160 600 160 S860 210 968 210"/><path class="sig-pulse" style="--i:0" pathLength="1000" d="M212 210 C380 210 420 210 600 210 S860 210 968 210"/><path class="sig-pulse" style="--i:4" pathLength="1000" d="M212 210 C380 210 420 260 600 260 S860 210 968 210"/><path class="sig-pulse" style="--i:2" pathLength="1000" d="M212 210 C380 210 420 310 600 310 S860 210 968 210"/><path class="sig-pulse" style="--i:6" pathLength="1000" d="M212 210 C380 210 420 360 600 360 S860 210 968 210"/><g class="sig-pop" style="--i:0"><circle class="sig-dot" cx="600" cy="60" r="7"/><circle class="sig-dot-core" style="--i:3" cx="600" cy="60" r="3.5"/></g><g class="sig-pop" style="--i:1"><circle class="sig-dot" cx="600" cy="110" r="7"/><circle class="sig-dot-core" style="--i:1" cx="600" cy="110" r="3.5"/></g><g class="sig-pop" style="--i:2"><circle class="sig-dot" cx="600" cy="160" r="7"/><circle class="sig-dot-core" style="--i:5" cx="600" cy="160" r="3.5"/></g><g class="sig-pop" style="--i:3"><circle class="sig-dot" cx="600" cy="210" r="7"/><circle class="sig-dot-core" style="--i:0" cx="600" cy="210" r="3.5"/></g><g class="sig-pop" style="--i:4"><circle class="sig-dot" cx="600" cy="260" r="7"/><circle class="sig-dot-core" style="--i:4" cx="600" cy="260" r="3.5"/></g><g class="sig-pop" style="--i:5"><circle class="sig-dot" cx="600" cy="310" r="7"/><circle class="sig-dot-core" style="--i:2" cx="600" cy="310" r="3.5"/></g><g class="sig-pop" style="--i:6"><circle class="sig-dot" cx="600" cy="360" r="7"/><circle class="sig-dot-core" style="--i:6" cx="600" cy="360" r="3.5"/></g><g class="sig-pop" style="--i:0"><rect class="sig-screen" x="92" y="174" width="116" height="72" rx="12"/><path class="sig-ico" d="M126 262h48M150 246v16"/><path d="M120 200h40M120 214h60M120 228h28" stroke="rgba(214,255,236,.35)" stroke-width="5" stroke-linecap="round"/></g><path class="sig-strand sig-draw" style="--i:8" pathLength="1000" d="M1052 210 L1262 210"/><path class="sig-pulse sig-handoff" pathLength="1000" d="M1052 210 L1262 210"/><circle class="sig-ring" style="--i:0" cx="1010" cy="210" r="42"/><circle class="sig-ring" style="--i:1" cx="1010" cy="210" r="42"/><g class="sig-pop" style="--i:9"><circle class="sig-node-hot" cx="1010" cy="210" r="42"/><g class="sig-ico sig-ico-dark" transform="translate(993.0 193.0) scale(1.417)"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></g></g><g class="sig-pop" style="--i:10"><circle class="sig-node" cx="1300" cy="210" r="38"/><g class="sig-ico" transform="translate(1284.0 194.0) scale(1.333)"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 14h3v5H5.5A1.5 1.5 0 0 1 4 17.5zM20 14h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z"/><path d="M17 19c0 1.6-2 2.5-4.5 2.5"/></g></g></svg><div class="sig-labels" aria-hidden="true"><span style="left:10.4%"><b>01</b>Broadcast</span><span style="left:41.7%"><b>02</b>Consumers respond</span><span style="left:70.1%"><b>03</b>Inbound call</span><span style="left:90.3%"><b>04</b>Licensed agent</span></div></div>
-</section>
-
-<!-- 2. TV inbound showcase -->
-<section class="night" id="programs" aria-labelledby="show-title" style="padding-top:clamp(40px,6vw,90px)">
-    <div class="wrap">
-        <div class="show-head">
-            <div>
-                <p class="eyebrow reveal">Introducing live TV inbound calls</p>
-                <h2 id="show-title" class="d-xl reveal" style="margin-top:22px">We buy the airtime. <span class="dim">You take the calls.</span></h2>
-            </div>
-            <p class="lede reveal">Consumers see our advertising and pick up the phone. Your licensed agents get access to live inbound Medicare and Final Expense conversations, at one flat price per billable call.</p>
-        </div>
-        <div class="prods">
-            <article class="prod prod-med reveal" aria-labelledby="pm-name">
-                <div class="prod-top"><span class="prod-tag">Medicare &middot; TV inbound</span><span class="prod-live">Live inbound</span></div>
-                <h3 id="pm-name" class="prod-name">Medicare TV Inbound Calls</h3>
-                <p class="price" aria-label="$39 per call"><span class="cur">$</span><span class="amt">39</span><span class="per">/ call</span></p>
-                <p class="buffer-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="rt" cx="12" cy="12" r="9"/><circle class="rf" cx="12" cy="12" r="9" pathLength="100"/></svg>120-second buffer</p>
-                <p class="prod-desc">Live, TV-generated Medicare inquiries routed to your licensed agents.</p>
-                <div class="prod-stat">
-                    <div><b>~200</b><span>applications a day, reported by our Denver agency partner</span></div>
-                    <div><b>~1 in 3</b><span>inbound calls converted, as reported</span></div>
-                    <p class="fine">Reported partner agency performance. Individual results vary and are not guaranteed.</p>
-                </div>
-                <svg class="prod-wave" viewBox="0 0 480 46" preserveAspectRatio="none" aria-hidden="true"><rect x="0.0" y="9.5" width="5.0" height="26.9" rx="2" style="--i:0"/><rect x="10.0" y="2.6" width="5.0" height="40.7" rx="2" style="--i:1"/><rect x="20.0" y="0.0" width="5.0" height="46.0" rx="2" style="--i:2"/><rect x="30.0" y="2.2" width="5.0" height="41.6" rx="2" style="--i:3"/><rect x="40.0" y="8.5" width="5.0" height="29.0" rx="2" style="--i:4"/><rect x="50.0" y="16.6" width="5.0" height="12.8" rx="2" style="--i:5"/><rect x="60.0" y="16.8" width="5.0" height="12.4" rx="2" style="--i:6"/><rect x="70.0" y="13.0" width="5.0" height="20.0" rx="2" style="--i:7"/><rect x="80.0" y="13.4" width="5.0" height="19.1" rx="2" style="--i:8"/><rect x="90.0" y="17.6" width="5.0" height="10.9" rx="2" style="--i:9"/><rect x="100.0" y="17.2" width="5.0" height="11.6" rx="2" style="--i:10"/><rect x="110.0" y="12.4" width="5.0" height="21.1" rx="2" style="--i:11"/><rect x="120.0" y="11.0" width="5.0" height="24.1" rx="2" style="--i:12"/><rect x="130.0" y="13.9" width="5.0" height="18.3" rx="2" style="--i:13"/><rect x="140.0" y="19.9" width="5.0" height="6.1" rx="2" style="--i:14"/><rect x="150.0" y="11.5" width="5.0" height="23.1" rx="2" style="--i:15"/><rect x="160.0" y="3.9" width="5.0" height="38.2" rx="2" style="--i:16"/><rect x="170.0" y="0.0" width="5.0" height="46.0" rx="2" style="--i:17"/><rect x="180.0" y="0.7" width="5.0" height="44.7" rx="2" style="--i:18"/><rect x="190.0" y="6.1" width="5.0" height="33.8" rx="2" style="--i:19"/><rect x="200.0" y="14.4" width="5.0" height="17.1" rx="2" style="--i:20"/><rect x="210.0" y="17.5" width="5.0" height="10.9" rx="2" style="--i:21"/><rect x="220.0" y="11.5" width="5.0" height="22.9" rx="2" style="--i:22"/><rect x="230.0" y="9.7" width="5.0" height="26.7" rx="2" style="--i:23"/><rect x="240.0" y="12.1" width="5.0" height="21.8" rx="2" style="--i:24"/><rect x="250.0" y="17.4" width="5.0" height="11.2" rx="2" style="--i:25"/><rect x="260.0" y="17.4" width="5.0" height="11.1" rx="2" style="--i:26"/><rect x="270.0" y="14.0" width="5.0" height="18.0" rx="2" style="--i:27"/><rect x="280.0" y="14.4" width="5.0" height="17.1" rx="2" style="--i:28"/><rect x="290.0" y="19.0" width="5.0" height="8.0" rx="2" style="--i:29"/><rect x="300.0" y="14.2" width="5.0" height="17.7" rx="2" style="--i:30"/><rect x="310.0" y="6.6" width="5.0" height="32.8" rx="2" style="--i:31"/><rect x="320.0" y="1.5" width="5.0" height="43.1" rx="2" style="--i:32"/><rect x="330.0" y="0.7" width="5.0" height="44.5" rx="2" style="--i:33"/><rect x="340.0" y="4.9" width="5.0" height="36.1" rx="2" style="--i:34"/><rect x="350.0" y="12.8" width="5.0" height="20.3" rx="2" style="--i:35"/><rect x="360.0" y="18.4" width="5.0" height="9.2" rx="2" style="--i:36"/><rect x="370.0" y="10.7" width="5.0" height="24.7" rx="2" style="--i:37"/><rect x="380.0" y="6.7" width="5.0" height="32.7" rx="2" style="--i:38"/><rect x="390.0" y="7.3" width="5.0" height="31.4" rx="2" style="--i:39"/><rect x="400.0" y="11.7" width="5.0" height="22.5" rx="2" style="--i:40"/><rect x="410.0" y="17.9" width="5.0" height="10.2" rx="2" style="--i:41"/><rect x="420.0" y="17.4" width="5.0" height="11.3" rx="2" style="--i:42"/><rect x="430.0" y="15.3" width="5.0" height="15.4" rx="2" style="--i:43"/><rect x="440.0" y="17.4" width="5.0" height="11.2" rx="2" style="--i:44"/><rect x="450.0" y="17.5" width="5.0" height="11.0" rx="2" style="--i:45"/><rect x="460.0" y="10.4" width="5.0" height="25.1" rx="2" style="--i:46"/><rect x="470.0" y="4.6" width="5.0" height="36.7" rx="2" style="--i:47"/></svg>
-                <a class="prod-cta" href="/medicare-tv-calls" data-track="cta_click" data-loc="showcase" data-label="Explore Medicare Calls">Explore Medicare Calls <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-            </article>
-            <article class="prod prod-fe reveal" style="--d:2" aria-labelledby="pf-name">
-                <div class="prod-top"><span class="prod-tag">Final Expense &middot; TV inbound</span><span class="prod-live">Live inbound</span></div>
-                <h3 id="pf-name" class="prod-name">Final Expense TV Inbound Calls</h3>
-                <p class="price" aria-label="$44 per call"><span class="cur">$</span><span class="amt">44</span><span class="per">/ call</span></p>
-                <p class="buffer-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="rt" cx="12" cy="12" r="9"/><circle class="rf" cx="12" cy="12" r="9" pathLength="100"/></svg>120-second buffer</p>
-                <p class="prod-desc">Live Final Expense inquiries generated through television advertising and routed to participating licensed agents.</p>
-                <svg class="prod-wave" viewBox="0 0 480 46" preserveAspectRatio="none" aria-hidden="true"><rect x="0.0" y="16.3" width="5.0" height="13.3" rx="2" style="--i:0"/><rect x="10.0" y="17.8" width="5.0" height="10.4" rx="2" style="--i:1"/><rect x="20.0" y="10.0" width="5.0" height="26.1" rx="2" style="--i:2"/><rect x="30.0" y="3.3" width="5.0" height="39.3" rx="2" style="--i:3"/><rect x="40.0" y="0.4" width="5.0" height="45.2" rx="2" style="--i:4"/><rect x="50.0" y="2.3" width="5.0" height="41.4" rx="2" style="--i:5"/><rect x="60.0" y="8.7" width="5.0" height="28.6" rx="2" style="--i:6"/><rect x="70.0" y="17.7" width="5.0" height="10.7" rx="2" style="--i:7"/><rect x="80.0" y="14.1" width="5.0" height="17.9" rx="2" style="--i:8"/><rect x="90.0" y="8.1" width="5.0" height="29.7" rx="2" style="--i:9"/><rect x="100.0" y="6.6" width="5.0" height="32.8" rx="2" style="--i:10"/><rect x="110.0" y="9.5" width="5.0" height="27.1" rx="2" style="--i:11"/><rect x="120.0" y="15.1" width="5.0" height="15.7" rx="2" style="--i:12"/><rect x="130.0" y="19.4" width="5.0" height="7.2" rx="2" style="--i:13"/><rect x="140.0" y="15.7" width="5.0" height="14.6" rx="2" style="--i:14"/><rect x="150.0" y="15.9" width="5.0" height="14.2" rx="2" style="--i:15"/><rect x="160.0" y="20.0" width="5.0" height="6.0" rx="2" style="--i:16"/><rect x="170.0" y="13.7" width="5.0" height="18.7" rx="2" style="--i:17"/><rect x="180.0" y="6.9" width="5.0" height="32.2" rx="2" style="--i:18"/><rect x="190.0" y="2.8" width="5.0" height="40.5" rx="2" style="--i:19"/><rect x="200.0" y="3.0" width="5.0" height="39.9" rx="2" style="--i:20"/><rect x="210.0" y="8.1" width="5.0" height="29.8" rx="2" style="--i:21"/><rect x="220.0" y="16.6" width="5.0" height="12.9" rx="2" style="--i:22"/><rect x="230.0" y="14.5" width="5.0" height="16.9" rx="2" style="--i:23"/><rect x="240.0" y="7.0" width="5.0" height="31.9" rx="2" style="--i:24"/><rect x="250.0" y="3.6" width="5.0" height="38.8" rx="2" style="--i:25"/><rect x="260.0" y="4.9" width="5.0" height="36.2" rx="2" style="--i:26"/><rect x="270.0" y="10.0" width="5.0" height="25.9" rx="2" style="--i:27"/><rect x="280.0" y="16.8" width="5.0" height="12.4" rx="2" style="--i:28"/><rect x="290.0" y="18.0" width="5.0" height="10.0" rx="2" style="--i:29"/><rect x="300.0" y="15.6" width="5.0" height="14.8" rx="2" style="--i:30"/><rect x="310.0" y="17.3" width="5.0" height="11.3" rx="2" style="--i:31"/><rect x="320.0" y="18.0" width="5.0" height="9.9" rx="2" style="--i:32"/><rect x="330.0" y="11.6" width="5.0" height="22.8" rx="2" style="--i:33"/><rect x="340.0" y="6.6" width="5.0" height="32.9" rx="2" style="--i:34"/><rect x="350.0" y="5.2" width="5.0" height="35.7" rx="2" style="--i:35"/><rect x="360.0" y="8.4" width="5.0" height="29.1" rx="2" style="--i:36"/><rect x="370.0" y="15.7" width="5.0" height="14.5" rx="2" style="--i:37"/><rect x="380.0" y="15.4" width="5.0" height="15.1" rx="2" style="--i:38"/><rect x="390.0" y="7.0" width="5.0" height="32.0" rx="2" style="--i:39"/><rect x="400.0" y="1.9" width="5.0" height="42.2" rx="2" style="--i:40"/><rect x="410.0" y="1.6" width="5.0" height="42.8" rx="2" style="--i:41"/><rect x="420.0" y="5.8" width="5.0" height="34.3" rx="2" style="--i:42"/><rect x="430.0" y="12.9" width="5.0" height="20.2" rx="2" style="--i:43"/><rect x="440.0" y="20.0" width="5.0" height="6.0" rx="2" style="--i:44"/><rect x="450.0" y="15.5" width="5.0" height="15.0" rx="2" style="--i:45"/><rect x="460.0" y="14.7" width="5.0" height="16.7" rx="2" style="--i:46"/><rect x="470.0" y="17.8" width="5.0" height="10.4" rx="2" style="--i:47"/></svg>
-                <a class="prod-cta" href="/final-expense-tv-calls" data-track="cta_click" data-loc="showcase" data-label="Explore Final Expense Calls">Explore Final Expense Calls <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-            </article>
-        </div>
-    </div>
-</section>
-
-<!-- 3. The buffer -->
-<section class="paper" id="buffer" aria-labelledby="buffer-title">
-    <div class="wrap buffer-grid">
+<section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
         <div>
-            <p class="eyebrow reveal">The 120-second buffer</p>
-            <h2 id="buffer-title" class="d-xl reveal" style="margin-top:22px">Under two minutes? Not billable.</h2>
-            <p class="lede reveal" style="margin-top:24px">Every TV call carries a 120-second buffer. Hang-ups, misdials and quick exits that end before the two-minute mark aren&rsquo;t billed. Once a call reaches 120 seconds, it&rsquo;s billable at the published rate.</p>
-            <ol class="rules reveal">
-                <li><span>01</span><div><h3>Under 120 seconds</h3><p>Not billable.</p></div></li>
-                <li><span>02</span><div><h3>120 seconds or longer</h3><p>$39 for Medicare. $44 for Final Expense.</p></div></li>
-                <li><span>03</span><div><h3>One published price per billable call</h3><p>Nothing to bid on.</p></div></li>
-            </ol>
-        </div>
-        <div><div class="meter reveal" id="meter-home" data-meter data-prod="med" data-price-med="39" data-price-fe="44">
-                <div class="meter-switch" role="radiogroup" aria-label="Program">
-                    <label><input type="radio" name="meter-home-prod" value="med" checked><span>Medicare &middot; $39</span></label>
-                    <label><input type="radio" name="meter-home-prod" value="fe"><span>Final Expense &middot; $44</span></label>
-                </div>
-                <div class="meter-read">
-                    <div class="meter-time" data-time>0:47<small>Call length</small></div>
-                    <div class="meter-bill" aria-live="polite"><span class="meter-state" data-state>Not billable</span><span class="meter-cost" data-cost>$0</span></div>
-                </div>
-                <div class="meter-track" aria-hidden="true"><div class="meter-bars"></div><div class="meter-mark"><span>120 sec</span></div></div>
-                <div class="meter-zones" aria-hidden="true"><span><b>0&ndash;119 sec</b> &middot; not billable</span><span><b>120 sec +</b> &middot; billable</span></div>
-                <label class="sr-only" for="meter-home-range">Call length in seconds</label>
-                <input id="meter-home-range" type="range" min="0" max="240" step="1" value="47">
-                <div class="meter-foot">
-                    <button type="button" class="btn btn-sm meter-play" data-play><span>Play a call</span></button>
-                    <span class="meter-note">Drag, or play a call at 30&times; speed.</span>
-                </div>
-            </div></div>
-    </div>
-</section>
-
-<!-- 4. Journey -->
-<section class="night-2" id="how-it-works" aria-labelledby="how-title">
-    <div class="wrap">
-        <p class="eyebrow reveal">How TV inbound works</p>
-        <h2 id="how-title" class="d-xl reveal" style="margin-top:22px;max-width:14ch">From the television screen to the conversation.</h2>
-        
-        <div class="journey-grid" data-journey style="margin-top:clamp(40px,6vw,80px)">
-            <div><div class="stage" data-stage="1" data-live aria-hidden="true"><svg viewBox="0 0 600 600"><g class="scene s1"><circle class="scn-line" cx="300" cy="285" r="170" stroke-dasharray="2 8"/><circle class="scn-line" cx="300" cy="285" r="230" stroke-dasharray="2 8"/><circle class="sig-ring" style="--i:0" cx="300" cy="285" r="150"/><circle class="sig-ring" style="--i:1.5" cx="300" cy="285" r="150"/><rect class="scn-node" x="175" y="205" width="250" height="160" rx="22"/><rect class="scn-soft" x="195" y="225" width="210" height="120" rx="10"/><path class="scn-hot" d="M215 310 l18 -22 16 12 22 -34 20 26 18 -10 22 18 20 -24 22 20 22 -10"/><path class="scn-line" d="M250 405h100M300 365v40"/><circle class="scn-fill" cx="395" cy="240" r="6"/><text class="scn-txt" x="300" y="490" text-anchor="middle">On air &#183; TV</text></g><g class="scene s2"><path class="scn-line" d="M210 300 C 260 220, 340 220, 390 300" stroke-dasharray="3 7"/><path class="scn-hot" d="M210 300 C 260 380, 340 380, 390 300"/><circle class="scn-node" cx="190" cy="300" r="62"/><g class="scn-ico" transform="translate(163.0 273.0) scale(2.250)"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></g><circle class="sig-ring" style="--i:0" cx="410" cy="300" r="62"/><circle class="scn-fill" cx="410" cy="300" r="62"/><g class="scn-ico sig-ico-dark" transform="translate(385.0 275.0) scale(2.083)"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></g><text class="scn-txt" x="300" y="490" text-anchor="middle">The consumer dials</text></g><g class="scene s3"><path class="scn-line" d="M300 175 C 300 280, 150 300, 150 410"/><path class="scn-line" d="M300 175 C 300 280, 450 300, 450 410"/><path class="scn-hot" d="M300 175 L300 410"/><circle class="scn-fill" cx="300" cy="150" r="26"/><g class="scn-ico sig-ico-dark" transform="translate(288.0 138.0) scale(1.000)"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></g><circle class="scn-node" cx="150" cy="430" r="36"/><g class="scn-ico" transform="translate(135.0 415.0) scale(1.250)"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></g><circle class="scn-node" cx="450" cy="430" r="36"/><g class="scn-ico" transform="translate(435.0 415.0) scale(1.250)"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></g><circle class="sig-ring" style="--i:0" cx="300" cy="430" r="42"/><circle class="scn-fill" cx="300" cy="430" r="42"/><g class="scn-ico sig-ico-dark" transform="translate(282.0 412.0) scale(1.500)"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 14h3v5H5.5A1.5 1.5 0 0 1 4 17.5zM20 14h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z"/><path d="M17 19c0 1.6-2 2.5-4.5 2.5"/></g><text class="scn-txt" x="300" y="530" text-anchor="middle">Matched by routing criteria</text></g><g class="scene s4"><circle class="scn-line" cx="300" cy="260" r="130" stroke-dasharray="2 8"/><circle class="sig-ring" style="--i:0" cx="300" cy="260" r="90"/><circle class="sig-ring" style="--i:1" cx="300" cy="260" r="90"/><circle class="scn-fill" cx="300" cy="260" r="90"/><g class="scn-ico sig-ico-dark" transform="translate(262.0 222.0) scale(3.167)"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 14h3v5H5.5A1.5 1.5 0 0 1 4 17.5zM20 14h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z"/><path d="M17 19c0 1.6-2 2.5-4.5 2.5"/></g><text class="scn-big" x="300" y="455" text-anchor="middle">Connected</text><text class="scn-txt" x="300" y="495" text-anchor="middle">Licensed agent on the line</text></g></svg><div class="stage-count"><i></i><i></i><i></i><i></i></div></div></div>
-            <div class="steps">
-                <div class="step is-on" data-n="1" data-cap="On air">
-                    <span class="step-ico"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="13" rx="2.5"/><path d="M8 21h8M12 17.5V21"/></svg></span>
-                    <span class="k" aria-hidden="true">01</span>
-                    <h3 class="d-m">Advertising reaches consumers.</h3>
-                    <p>We buy and run the television airtime. Medicare and Final Expense audiences see a clear offer and a number to call.</p>
-                </div>
-                <div class="step" data-n="2" data-cap="Consumer dials">
-                    <span class="step-ico"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg></span>
-                    <span class="k" aria-hidden="true">02</span>
-                    <h3 class="d-m">Consumers respond by calling.</h3>
-                    <p>The viewer decides to pick up the phone. The conversation starts with them, not with a dial list.</p>
-                </div>
-                <div class="step" data-n="3" data-cap="Routing">
-                    <span class="step-ico"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.5 12h4c2 0 2.5-7 5-7M11.5 12c2 0 2.5 7 5 7"/></svg></span>
-                    <span class="k" aria-hidden="true">03</span>
-                    <h3 class="d-m">Live inquiries enter routing.</h3>
-                    <p>Each call is matched to participating agents according to the routing criteria agreed for your account.</p>
-                </div>
-                <div class="step" data-n="4" data-cap="Connected">
-                    <span class="step-ico"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 14h3v5H5.5A1.5 1.5 0 0 1 4 17.5zM20 14h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z"/><path d="M17 19c0 1.6-2 2.5-4.5 2.5"/></svg></span>
-                    <span class="k" aria-hidden="true">04</span>
-                    <h3 class="d-m">Licensed agents answer.</h3>
-                    <p>Your agent picks up a live consumer. The call becomes billable once it reaches 120 seconds.</p>
-                </div>
+            <p class="eyebrow">Live Final Expense &middot; Medicare &middot; ACA Health calls</p>
+            <h1 id="hero-title" class="h1">Stop Paying for Calls. <em>Pay for Applications.</em></h1>
+            <p class="lede">Give your producers live consumers to talk to without putting a call bill in front of them.</p>
+            <p class="lede">They take the call. They qualify the consumer. They make the sale. <strong>If an application isn't submitted, you don't pay for the call.</strong></p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="hero" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                <a class="btn btn-outline" href="#how-it-works" data-track="cta_click" data-loc="hero" data-label="See How It Works">See How It Works</a>
             </div>
+            <ul class="hero-micro">
+                <li><b>$0</b> per call</li>
+                <li><b>$0</b> per month</li>
+                <li>No subscription</li>
+            </ul>
+        </div>
+
+        <div class="hero-visual">
+            <figure class="bill" aria-label="What one call costs">
+                <div class="bill-head">
+                    <h2>What does one call cost? <span>&middot; <span id="bill-prog">Final Expense</span></span></h2>
+                    <div class="seg" role="group" aria-label="Program">
+                        <button type="button" data-prog="fe" aria-pressed="true">Final Expense</button>
+                        <button type="button" data-prog="med" aria-pressed="false">Medicare</button>
+                        <button type="button" data-prog="aca" aria-pressed="false">ACA</button>
+                    </div>
+                </div>
+                <div class="bill-body">
+                    <div class="line"><span class="n">1</span><span class="what">Consumer connects</span><span class="tag">$0</span></div>
+                    <div class="line"><span class="n">2</span><span class="what">Producer talks to them</span><span class="tag">$0</span></div>
+                    <div class="line"><span class="n">3</span><span class="what">Consumer isn't interested</span><span class="tag">$0</span></div>
+                    <div class="line"><span class="n">4</span><span class="what">Consumer doesn't qualify</span><span class="tag">$0</span></div>
+                    <div class="line pay"><span class="n">5</span><span class="what">Application submitted</span><span class="amt"><b id="bill-amt" aria-live="polite">$199</b><span>per submitted application</span></span></div>
+                </div>
+                <figcaption class="bill-foot">You don't pay for the conversation. You pay when it produces an application.</figcaption>
+            </figure>
         </div>
     </div>
 </section>
 
-<!-- 5. Two ways to buy -->
-<section class="paper" id="models" aria-labelledby="models-title">
+<!-- Rates at a glance -->
+<div class="rates" aria-label="Published rates">
+    <ul class="wrap">
+        <li><span class="num">$199</span><span class="lbl">Final Expense<small>per submitted application</small></span></li>
+        <li><span class="num">$159</span><span class="lbl">Medicare<small>per submitted application</small></span></li>
+        <li><span class="num">$100</span><span class="lbl">ACA Health<small>per submitted application</small></span></li>
+        <li class="zero">$0 per call &nbsp;&middot;&nbsp; $0 per month</li>
+    </ul>
+</div>
+
+<!-- 2. The difference -->
+<section class="shift on-green" id="difference" aria-labelledby="shift-title">
     <div class="wrap">
-        <div class="show-head" style="margin-bottom:0">
+        <div class="sec-head split reveal">
             <div>
-                <p class="eyebrow reveal">Two ways to buy</p>
-                <h2 id="models-title" class="d-xl reveal" style="margin-top:22px">Pay per application. Or pay per live call.</h2>
+                <p class="eyebrow">A different way to buy calls</p>
+                <h2 id="shift-title" class="h2" style="margin-top:14px">Your producers shouldn't have to make every call profitable before they even pick up the phone.</h2>
             </div>
-            <p class="lede reveal">NetEnroll runs two acquisition programs side by side. Pick the billing model that fits your agents, your budget and how you measure acquisition.</p>
+            <div class="intro">
+                <p>Most call programs charge you for the opportunity.</p>
+                <p>NetEnroll lets your producers work the opportunity first.</p>
+            </div>
         </div>
-        <div class="models">
-            <article class="model reveal" id="pay-per-application" aria-labelledby="cpa-title">
-                <p class="model-k">Pay per application</p>
-                <h3 id="cpa-title" class="d-m">Live calls. You pay when an application is submitted.</h3>
-                <p>Your producers take live calls and work them. If a qualifying application is submitted, the published program rate applies. If it isn&rsquo;t, the call costs $0.</p>
-                <ul class="rates">
-                    <li><span class="n">Final Expense<small>Consumers shopping for final expense life coverage</small></span><span class="p">$199<small>per submitted application</small></span></li>
-                    <li><span class="n">Medicare<small>Medicare Advantage and Supplement shoppers</small></span><span class="p">$159<small>per submitted application</small></span></li>
-                    <li><span class="n">ACA Health<small>Marketplace health coverage shoppers</small></span><span class="p">$100<small>per submitted application</small></span></li>
-                </ul>
-                <ul class="ticks">
-                    <li>$0 per call and $0 per month</li>
-                    <li>No subscription or per-producer seat fee</li>
-                    <li>Choose your programs and the states you&rsquo;re licensed in</li>
-                    <li>One agency account for multiple producers</li>
-                    <li>30-day dispute window, written into the <a href="/terms#fees">Terms</a></li>
-                </ul>
-                <div class="model-foot">
-                    <a class="btn btn-ink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="models" data-label="Open My Producer Account">Open my producer account <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    <a class="tlink" href="tel:+19045128487">Call 904-512-8487</a>
-                </div>
-            </article>
-            <article class="model model-tv reveal" style="--d:2" aria-labelledby="tv-title">
-                <p class="model-k">Pay per live inbound call</p>
-                <h3 id="tv-title" class="d-m">TV-generated calls. A flat price per billable call.</h3>
-                <p>Consumers call in from our television advertising and are routed live to your licensed agents. Calls that reach 120 seconds are billed at a flat rate.</p>
-                <ul class="rates">
-                    <li class="med"><span class="n">Medicare TV<small>Live, TV-generated Medicare inquiries</small></span><span class="p">$39<small>per billable call</small></span></li>
-                    <li class="fe"><span class="n">Final Expense TV<small>Live, TV-generated Final Expense inquiries</small></span><span class="p">$44<small>per billable call</small></span></li>
-                </ul>
-                <ul class="ticks">
-                    <li>120-second buffer on every call</li>
-                    <li>Consumer-initiated, live inbound conversations</li>
-                    <li>Routed to participating licensed agents</li>
-                    <li>Separate from the pay-per-application program</li>
-                </ul>
-                <div class="model-foot">
-                    <a class="btn" href="#contact" data-track="cta_click" data-loc="models" data-label="Request call access">Request call access <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    <a class="tlink" href="/medicare-tv-calls">Medicare</a>
-                    <a class="tlink" href="/final-expense-tv-calls">Final Expense</a>
-                </div>
-            </article>
+
+        <div class="stmts">
+            <div class="stmt stmt-old reveal">
+                <div class="stmt-head"><h3>Traditional call programs</h3><span class="pill pill-dim">Pay first</span></div>
+                <blockquote>You pay for the call.</blockquote>
+                <ol>
+                    <li class="pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
+                    <li><span class="dot">1</span>The consumer answers.<span class="tag">Paid</span></li>
+                    <li><span class="dot">2</span>Your producer works the lead.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">3</span>Maybe they qualify.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">4</span>Maybe they don't.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">5</span>Maybe they buy.<span class="tag">Paid</span></li>
+                    <li class="maybe"><span class="dot">6</span>Maybe they don't.<span class="tag">Paid</span></li>
+                </ol>
+                <p class="close">You paid either way.<small>Charged before step 1</small></p>
+            </div>
+            <div class="stmt stmt-ne reveal">
+                <div class="stmt-head"><h3>NetEnroll</h3><span class="pill pill-bright">Pay last</span></div>
+                <blockquote>You pay for the result.</blockquote>
+                <ol>
+                    <li><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>The consumer answers.<span class="tag">$0</span></li>
+                    <li><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your producer works the call.<span class="tag">$0</span></li>
+                    <li><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>They qualify the opportunity.<span class="tag">$0</span></li>
+                    <li class="app"><span class="dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>They submit the application.<span class="tag">Program rate</span></li>
+                    <li class="pay"><span class="chip"><span class="dollar" aria-hidden="true">$</span>You pay here</span></li>
+                </ol>
+                <p class="close">That's when the charge happens.<small>Charged after step 4</small></p>
+            </div>
         </div>
-        <div class="fit reveal">
-            <div><b>Choose pay per application when</b><p>you want acquisition cost tied directly to submitted applications.</p></div>
-            <div><b>Choose pay per call when</b><p>you have agent capacity and want one fixed price for every live conversation that reaches two minutes.</p></div>
+
+        <p class="shift-close reveal">More conversations. <em>Less wasted spend.</em></p>
+    </div>
+</section>
+
+<!-- 3. How it works -->
+<section class="how" id="how-it-works" aria-labelledby="how-title">
+    <div class="wrap">
+        <div class="sec-head reveal">
+            <p class="eyebrow">How NetEnroll works</p>
+            <h2 id="how-title" class="h2">Put your producers on the phone. Let them sell.</h2>
+            <p class="lede">There isn't a complicated lead-buying strategy to figure out.</p>
+            <p class="lede">Choose what you sell. Choose where you're licensed. We send qualified consumers into the conversation.</p>
+        </div>
+        <ol class="steps reveal">
+            <li><span class="k"></span><h3>Choose your business</h3><p>Turn on Final Expense, Medicare, ACA Health, or whichever programs make sense for your producers.</p></li>
+            <li><span class="k"></span><h3>Set your states</h3><p>Control where your calls go based on your producers' active licenses.</p></li>
+            <li><span class="k"></span><h3>Take the call</h3><p>A live consumer is connected to an available producer.</p><p>Your producer does what they already know how to do: <strong>talk, qualify and sell.</strong></p></li>
+            <li class="last"><span class="k"></span><h3>Submit the application</h3><p>If the conversation turns into an application, the published program rate applies.</p><p>If it doesn't?</p><span class="zero">$0.</span></li>
+        </ol>
+        <div class="how-foot reveal">
+            <a class="btn btn-primary" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="how" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="textlink" href="tel:+19045128487">Questions? Call 904-512-8487</a>
         </div>
     </div>
 </section>
 
-<!-- 6. In writing -->
-<section class="night" id="in-writing" aria-labelledby="trust-title">
+<!-- 4. Why producers care -->
+<section class="why" id="why" aria-labelledby="why-title">
+    <div class="wrap why-grid">
+        <div class="why-lead reveal">
+            <p class="eyebrow">Built for the producer</p>
+            <h2 id="why-title" class="h2">Give your producers more opportunities without asking them to gamble on every call.</h2>
+        </div>
+        <ol class="why-list reveal">
+            <li><div><h3>Work the call first.</h3><p>Your producer gets the chance to actually talk to the consumer before an application charge ever happens.</p></div></li>
+            <li><div><h3>Know exactly what you're paying.</h3><p>No auction pricing. No mystery rates. No subscription hiding in the fine print.</p><p><b>Published rates are published rates.</b></p></div></li>
+            <li><div><h3>Take the calls you can actually sell.</h3><p>Choose the programs and states that fit your licenses and business.</p></div></li>
+            <li><div><h3>Build around your existing team.</h3><p>One producer or an entire agency. Route opportunities to the people you already trust to close them.</p></div></li>
+            <li><div><h3>No monthly platform bill.</h3><p>No subscription. No seat charge. No fee simply for having an account.</p></div></li>
+            <li><div><h3>A bad call doesn't become a bad purchase.</h3><p>If the consumer says no, isn't qualified or simply isn't ready, the call costs you nothing.</p></div></li>
+        </ol>
+    </div>
     <div class="wrap">
-        <p class="eyebrow reveal">In writing</p>
-        <h2 id="trust-title" class="d-xl reveal" style="margin-top:22px;max-width:14ch">You should never have to guess what you&rsquo;re buying.</h2>
-        <p class="lede reveal" style="margin-top:24px">Every number on this site is a published price or a clearly labelled partner report. Here is what you can hold us to.</p>
-        <ul class="ledger">
-            <li class="reveal"><span class="i">01</span><h3>Published prices</h3><p>$39 and $44 per billable TV call. $199, $159 and $100 per submitted application. Nothing to bid on.</p></li>
-            <li class="reveal" style="--d:1"><span class="i">02</span><h3>A defined billable event</h3><p>TV calls become billable at 120 seconds. Applications become billable when a qualifying application is submitted.</p></li>
-            <li class="reveal" style="--d:2"><span class="i">03</span><h3>Billing rules on paper</h3><p>The application program&rsquo;s billing and 30-day dispute process are in our <a href="/terms#fees">Terms of Service</a>.</p></li>
-            <li class="reveal"><span class="i">04</span><h3>Consent matters</h3><p>Calls are supported by consumer consent requirements. See our <a href="/tcpa-compliance">TCPA &amp; Compliance</a> statement.</p></li>
-            <li class="reveal" style="--d:1"><span class="i">05</span><h3>State controls</h3><p>Only take opportunities your agents are licensed to handle.</p></li>
-            <li class="reveal" style="--d:2"><span class="i">06</span><h3>Real people</h3><p>Talk to our team at <a href="tel:+19045128487">904-512-8487</a>. NetEnroll is operated by PVN LLC, Saint Augustine, Florida.</p></li>
+        <div class="callout reveal">
+            <div class="big">Support<small>Real people</small></div>
+            <div>
+                <h3>Questions before you start? Just call.</h3>
+                <p>Talk to someone on our team about programs, states and how ordering works. No sales script and no obligation.</p>
+            </div>
+            <a class="ref" href="tel:+19045128487">Call 904-512-8487</a>
+        </div>
+    </div>
+</section>
+
+<!-- 5. Application rates -->
+<section class="programs" id="pricing" aria-labelledby="programs-title">
+    <div class="wrap">
+        <div class="sec-head split reveal">
+            <div>
+                <p class="eyebrow">Simple, published rates</p>
+                <h2 id="programs-title" class="h2" style="margin-top:14px">Know the number before your producers ever pick up the phone.</h2>
+            </div>
+            <p class="lede">There is nothing to bid on and nothing to negotiate after the fact.</p>
+        </div>
+        <div class="sheet reveal">
+            <div class="sheet-head" aria-hidden="true"><span>Program</span><span>Who's calling</span><span>What you pay</span></div>
+            <div class="row">
+                <h3 class="name">Final Expense</h3>
+                <p class="desc">Consumers shopping for final expense life coverage.</p>
+                <p class="price"><b>$199</b><span>per submitted application</span></p>
+            </div>
+            <div class="row">
+                <h3 class="name">Medicare</h3>
+                <p class="desc">Consumers shopping for Medicare Advantage and Supplement plans.</p>
+                <p class="price"><b>$159</b><span>per submitted application</span></p>
+            </div>
+            <div class="row">
+                <h3 class="name">ACA Health</h3>
+                <p class="desc">Consumers shopping for marketplace health coverage.</p>
+                <p class="price"><b>$100</b><span>per submitted application</span></p>
+            </div>
+            <p class="sheet-note">The call is $0. The application is the billable event.</p>
+        </div>
+        <div class="sheet-foot reveal">
+            <p>The rate shown for your program at checkout is the rate that applies to your account.</p>
+            <a class="textlink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="programs" data-label="Open My Producer Account">Open my producer account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+    </div>
+</section>
+
+<!-- 6. The real economics -->
+<section class="econ" id="economics" aria-labelledby="econ-title">
+    <div class="wrap">
+        <div class="reveal">
+            <p class="eyebrow">Look at the math</p>
+            <h2 id="econ-title" class="h2">You shouldn't have to win the call before you can afford to take it.</h2>
+            <div class="body">
+                <p>When you're paying for every call, every bad conversation comes directly out of your acquisition budget.</p>
+                <ul>
+                    <li>A consumer can answer and say no.</li>
+                    <li>They can be outside the target market.</li>
+                    <li>They can change their mind.</li>
+                    <li>They can simply not be ready.</li>
+                </ul>
+                <p>With NetEnroll, those conversations don't create a call charge.</p>
+                <p class="key">Your producer gets the opportunity. You pay when the opportunity becomes an application.</p>
+            </div>
+            <blockquote class="econ-quote">
+                <p>&ldquo;Give me the conversation. I'll worry about the sale.&rdquo;</p>
+                <cite>The producer's side of the deal</cite>
+            </blockquote>
+        </div>
+        <div class="ledger reveal" role="table" aria-label="Five conversations, two invoices">
+            <div class="ledger-head" role="row">
+                <h3 role="columnheader">Five conversations<small>The same afternoon, billed two ways</small></h3>
+                <span class="col" role="columnheader">Pay per call</span>
+                <span class="col ne" role="columnheader">NetEnroll</span>
+            </div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Answers and says no</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Outside the target market</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Changes their mind</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row" role="row"><span class="o" role="cell"><i></i>Simply not ready</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">$0</span></div>
+            <div class="ledger-row app" role="row"><span class="o" role="cell"><i></i>Submits an application</span><span class="old" role="cell">call charge</span><span class="ne" role="cell">Program rate</span></div>
+            <div class="ledger-foot" role="row">
+                <span class="lbl" role="cell">Charges on the invoice</span>
+                <span class="old" role="cell">5<small>one per call</small></span>
+                <span class="ne" role="cell">1<small>the application</small></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. Agencies -->
+<section class="agency" id="agencies" aria-labelledby="agency-title">
+    <div class="wrap">
+        <div class="agency-top">
+            <div class="reveal">
+                <p class="eyebrow">For agency owners</p>
+                <h2 id="agency-title" class="h2" style="margin-top:14px">Give your agents something better than another lead list.</h2>
+                <p class="lede">Your agents don't need more names to chase.</p>
+                <p class="lede"><b>They need more real consumers to talk to.</b></p>
+                <p class="lede">NetEnroll puts live insurance conversations in front of your licensed producers across the programs and states you choose.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-ink" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="agency" data-label="Set up an agency account">Set up an agency account</a>
+                    <a class="btn btn-outline" href="tel:+19045128487">Call 904-512-8487</a>
+                </div>
+            </div>
+            <div class="panel reveal" aria-label="How an agency account routes a call">
+                <div class="panel-head"><h3>Agency account</h3><span class="badge">One bill</span></div>
+                <div class="panel-row"><span class="lbl">Programs</span><div class="chips"><span class="on">Final Expense</span><span class="on">Medicare</span><span class="off">ACA Health</span></div></div>
+                <div class="panel-row"><span class="lbl">States</span><div class="chips"><span class="st">FL</span><span class="st">GA</span><span class="st">TX</span><span class="st">NC</span><span class="st off">+</span></div></div>
+                <div class="panel-row"><span class="lbl">Producers</span>
+                    <ul class="producers">
+                        <li class="hit"><span class="av">P1</span><span class="who"><b>Producer 1</b><small>Licensed FL &middot; GA</small></span><span class="status">Available</span></li>
+                        <li><span class="av">P2</span><span class="who"><b>Producer 2</b><small>Licensed TX</small></span><span class="status busy">On a call</span></li>
+                        <li><span class="av">P3</span><span class="who"><b>Producer 3</b><small>Licensed FL &middot; NC</small></span><span class="status">Available</span></li>
+                    </ul>
+                </div>
+                <div class="panel-call">
+                    <span class="ring" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+                    <span><b>Live Final Expense call &middot; Florida</b><small>Routed to Producer 1: available, licensed in FL. Billed only if an application is submitted.</small></span>
+                    <span class="tag">$0</span>
+                </div>
+            </div>
+        </div>
+        <ul class="agency-facts reveal">
+            <li><h3>Feed your team</h3><p>Route calls to the producers who are available and licensed to take them.</p></li>
+            <li><h3>Protect your acquisition budget</h3><p>Calls that don't become applications don't create a call charge.</p></li>
+            <li><h3>Scale without changing your sales process</h3><p>Your producers keep using the sales process, carriers and systems they already know.</p></li>
+            <li><h3>One account. Multiple producers.</h3><p>Build your team under an agency account and manage your programs and states from one place.</p></li>
         </ul>
+        <p class="agency-close reveal">Your agents know how to sell insurance. <em>Give them more people to sell to.</em></p>
     </div>
 </section>
 
-<!-- 7. Questions -->
-<section class="paper" id="faq" aria-labelledby="faq-title">
-    <div class="wrap faq-grid">
-        <div>
-            <p class="eyebrow reveal">Questions</p>
-            <h2 id="faq-title" class="d-l reveal" style="margin-top:20px;max-width:10ch">Questions, answered.</h2>
-            <p class="reveal dim" style="margin-top:20px">Something else? Call <a href="tel:+19045128487">904-512-8487</a>.</p>
+<!-- 9. Proof -->
+<section class="proof" id="in-writing" aria-labelledby="proof-title">
+    <div class="wrap">
+        <div class="sec-head reveal">
+            <p class="eyebrow">No surprises</p>
+            <h2 id="proof-title" class="h2">You should never have to guess what you're buying.</h2>
         </div>
-        <div class="qa">
-                <details class="reveal"><summary>What&rsquo;s the difference between the two programs?</summary><div class="a"><p><b>Pay per application:</b> your producers take live calls and you pay the published program rate only when a qualifying application is submitted. The call itself is $0.</p><p><b>Pay per live inbound call:</b> consumers call in from our television advertising and are routed live to your licensed agents. Calls that reach 120 seconds are billed at a flat $39 (Medicare) or $44 (Final Expense).</p></div></details>
-                <details class="reveal"><summary>How does the 120-second buffer work on TV calls?</summary><div class="a"><p>Calls shorter than 120 seconds are not billable. A TV call that reaches 120 seconds is billed at the program&rsquo;s flat rate: $39 for Medicare, $44 for Final Expense.</p></div></details>
-                <details class="reveal"><summary>On the pay-per-application program, do I pay for the call?</summary><div class="a"><p>No. On that program NetEnroll does not charge you for connecting the consumer, the length of the conversation or a call that doesn&rsquo;t result in an application. You pay the published program rate when a qualifying application is submitted.</p></div></details>
-                <details class="reveal"><summary>What are the rates?</summary><div class="a"><p>Pay per live inbound call: Medicare TV <b>$39 per billable call</b>, Final Expense TV <b>$44 per billable call</b>, each with a 120-second buffer.</p><p>Pay per application: Final Expense <b>$199</b>, Medicare <b>$159</b>, ACA Health <b>$100</b> per submitted application.</p></div></details>
-                <details class="reveal"><summary>Is there a monthly fee?</summary><div class="a"><p>On the pay-per-application program there is no monthly subscription or per-producer seat fee. For TV inbound calls, account and billing setup is confirmed with our team before calls begin.</p></div></details>
-                <details class="reveal"><summary>Where do the consumers come from?</summary><div class="a"><p>TV inbound calls come from our television advertising: a consumer sees the ad and calls the number on screen.</p><p>On the pay-per-application program, consumers call looking for insurance coverage and NetEnroll routes those live conversations to available producers based on the programs and states you&rsquo;ve enabled.</p></div></details>
-                <details class="reveal"><summary>Can I choose my states?</summary><div class="a"><p>Yes. On the application program you control the programs and states your account receives. For TV calls, tell us where your agents are licensed and our team will confirm coverage.</p></div></details>
-                <details class="reveal"><summary>Do you guarantee a certain number of calls?</summary><div class="a"><p>No. Consumer demand and airtime vary by program, state and time of day. What we can tell you upfront is exactly what a billable event costs.</p></div></details>
-                <details class="reveal"><summary>What happens if a policy doesn&rsquo;t take effect?</summary><div class="a"><p>On the pay-per-application program, if an application qualifies under the applicable replacement terms, NetEnroll provides the corresponding replacement application according to those terms. <a href="/terms#replacement">See Terms &sect;5.5</a></p></div></details>
-                <details class="reveal"><summary>How do I get started?</summary><div class="a"><p>For pay per application, open a producer account. No sales appointment required. <a href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="faq" data-label="Open My Producer Account">Open my producer account</a></p><p>For TV inbound calls, <a href="#contact">request access</a> and our team will follow up.</p></div></details>
-        </div>
+        <ul class="proof-grid reveal">
+            <li><div><h3>Published rates</h3><p>Know the application rate before you start.</p></div></li>
+            <li><div><h3>$0 per call</h3><p>No charge simply because a consumer picked up.</p></div></li>
+            <li><div><h3>$0 per month</h3><p>No subscription just to maintain your account.</p></div></li>
+            <li><div><h3>Clear billing rules</h3><p>Only qualifying submitted applications are billable.</p></div></li>
+            <li><div><h3>30-day dispute window</h3><p>Questions about a charge? We give you a defined process to challenge it.</p></div></li>
+            <li><div><h3>Consent matters</h3><p>Calls are supported by consumer consent requirements.</p></div></li>
+            <li><div><h3>State controls</h3><p>Only take opportunities your producers are licensed to handle.</p></div></li>
+            <li><div><h3>Real support</h3><p>Need help? Talk to a person: <a href="tel:+19045128487">904-512-8487</a>.</p></div></li>
+            <li><div><h3>PVN LLC</h3><p>NetEnroll is operated by PVN LLC.</p></div></li>
+        </ul>
+        <p class="proof-foot reveal">The billing rules are written into the <a href="/terms#fees">Terms of Service</a>. Consent and call handling are covered in our <a href="/tcpa-compliance">TCPA &amp; Compliance</a> statement and <a href="/privacy">Privacy Policy</a>.</p>
     </div>
 </section>
 
-<!-- 8. Close -->
-<section class="night close" id="contact" aria-labelledby="close-title">
-    <div class="glow g1" aria-hidden="true"></div>
-    <div class="wrap close-grid">
-        <div>
-            <p class="eyebrow reveal">Get started</p>
-            <h2 id="close-title" class="d-xl reveal" style="margin-top:22px">Your next opportunity starts here.</h2>
-            <p class="lede reveal" style="margin-top:24px">Explore our performance-based acquisition programs and find the right fit for your insurance operation.</p>
-            <p class="eyebrow reveal" style="margin-top:44px;color:var(--tx-3)">Explore available programs</p>
-            <div class="close-links reveal" style="margin-top:16px">
-                <a class="med" href="/medicare-tv-calls"><b>Medicare TV calls</b><span>$39<small class="dim" style="font-size:.6em"> /call</small></span></a>
-                <a class="fe" href="/final-expense-tv-calls"><b>Final Expense TV calls</b><span>$44<small class="dim" style="font-size:.6em"> /call</small></span></a>
-                <a class="cpa" href="/#pay-per-application"><b>Pay per application</b><span>from $100<small class="dim" style="font-size:.6em"> /app</small></span></a>
-            </div>
-            <p class="reveal" style="margin-top:28px"><a class="tlink" href="tel:+19045128487">Or call 904-512-8487</a></p>
+<!-- 10. Questions -->
+<section class="qa" id="faq" aria-labelledby="qa-title">
+    <div class="wrap">
+        <div class="sec-head reveal">
+            <p class="eyebrow">Questions</p>
+            <h2 id="qa-title" class="h2">You probably have questions. Here are the answers.</h2>
         </div>
-        <div>
-            <form class="lead reveal" id="lead-form" action="/api/tv-calls-inquiry" method="post" novalidate data-lead data-source="home" data-done="lead-done">
-                <h3>Request TV call access</h3>
-                <p>Two short steps. Our team follows up to confirm states and routing.</p>
-                <div class="lead-steps" aria-hidden="true"><i class="on"></i><i></i></div>
-                <div data-pane>
-                    <fieldset>
-                        <legend>Programs</legend>
-                        <div class="picks">
-                            <label class="pick"><input type="checkbox" name="products" value="medicare"><span><b>Medicare TV calls</b><em>$39 per call &middot; 120-second buffer</em></span></label>
-                            <label class="pick"><input type="checkbox" name="products" value="final_expense"><span><b>Final Expense TV calls</b><em>$44 per call &middot; 120-second buffer</em></span></label>
-                        </div>
-                        <p class="err" data-products-err aria-live="polite"></p>
-                    </fieldset>
-                    <fieldset>
-                        <legend>Contact</legend>
-                        <div class="fields">
-                    <div class="field">
-                        <label for="lf-contact_name">Full name</label>
-                        <input id="lf-contact_name" name="contact_name" type="text" autocomplete="name" required>
-                        <span class="err" id="lf-contact_name-err" aria-live="polite"></span>
-                    </div>
-                    <div class="field">
-                        <label for="lf-agency_name">Company or agency</label>
-                        <input id="lf-agency_name" name="agency_name" type="text" autocomplete="organization" required>
-                        <span class="err" id="lf-agency_name-err" aria-live="polite"></span>
-                    </div>
-                    <div class="field">
-                        <label for="lf-email">Business email</label>
-                        <input id="lf-email" name="email" type="email" autocomplete="email" required>
-                        <span class="err" id="lf-email-err" aria-live="polite"></span>
-                    </div>
-                    <div class="field">
-                        <label for="lf-phone">Phone</label>
-                        <input id="lf-phone" name="phone" type="tel" autocomplete="tel" required>
-                        <span class="err" id="lf-phone-err" aria-live="polite"></span>
-                    </div>
-                        </div>
-                    </fieldset>
-                    <div class="lead-actions"><button type="button" class="btn btn-ink" data-next>Continue <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-                </div>
-                <div data-pane hidden>
-                    <fieldset>
-                        <legend>About your operation</legend>
-                        <div class="fields">
-                    <div class="field">
-                        <label for="lf-agent_type">You are</label>
-                        <select id="lf-agent_type" name="agent_type" required>
-                            <option value="">Choose one</option>
-                            <option>Independent agent</option><option>Agency</option><option>Call center</option><option>Other</option>
-                        </select>
-                        <span class="err" id="lf-agent_type-err" aria-live="polite"></span>
-                    </div>
-                    <div class="field">
-                        <label for="lf-agent_count">Active agents</label>
-                        <select id="lf-agent_count" name="agent_count" required>
-                            <option value="">Choose one</option>
-                            <option>Just me</option><option>2 to 5</option><option>6 to 20</option><option>21 to 50</option><option>More than 50</option>
-                        </select>
-                        <span class="err" id="lf-agent_count-err" aria-live="polite"></span>
-                    </div>
-                    <div class="field full">
-                        <label for="lf-states">Licensed states <small>(e.g. FL, GA, TX)</small></label>
-                        <input id="lf-states" name="states" type="text" autocomplete="off" required>
-                        <span class="err" id="lf-states-err" aria-live="polite"></span>
-                    </div>
-                            <div class="field full">
-                                <label for="lf-notes">Anything else? <small>(optional)</small></label>
-                                <textarea id="lf-notes" name="notes" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
-                    <div class="lead-actions"><button type="button" class="lead-back" data-back>Back</button><button type="submit" class="btn btn-ink">Request access <svg class="arr" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-                </div>
-                <p class="lead-error" role="alert"></p>
-                <p class="lead-legal">We use these details only to respond to your request. See our <a href="/privacy">Privacy Policy</a>. Prefer to talk? Call <a href="tel:+19045128487">904-512-8487</a>.</p>
-            </form>
-            <div class="lead lead-done" id="lead-done" hidden>
-                <div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <h3>Request received.</h3>
-                <p>Thank you. Our team will reach out using the details you shared to talk through programs, states and routing.</p>
-                <p>Questions in the meantime? Call <a href="tel:+19045128487">904-512-8487</a>.</p>
+        <dl class="qa-grid reveal">
+            <div class="q">
+                <dt>Do I pay for the call?</dt>
+                <dd><span class="yes">No.</span><p>NetEnroll does not charge you for connecting the consumer, the length of the conversation or a call that doesn't result in an application.</p><p>You pay the published program rate when a qualifying application is submitted.</p></dd>
             </div>
+            <div class="q">
+                <dt>What if the consumer says no?</dt>
+                <dd><span class="yes">You pay $0.</span><p>That's the point.</p></dd>
+            </div>
+            <div class="q">
+                <dt>What if the consumer isn't qualified?</dt>
+                <dd><span class="yes">You pay $0.</span><p>A conversation that doesn't produce a qualifying submitted application does not become a call charge.</p></dd>
+            </div>
+            <div class="q">
+                <dt>Is there a monthly fee?</dt>
+                <dd><span class="yes">No.</span><p>There is no monthly subscription or per-producer seat fee.</p></dd>
+            </div>
+            <div class="q">
+                <dt>What are the rates?</dt>
+                <dd><p>Final Expense: <b>$199 per submitted application</b></p><p>Medicare: <b>$159 per submitted application</b></p><p>ACA Health: <b>$100 per submitted application</b></p><p>Flat rates. The call itself is $0.</p></dd>
+            </div>
+            <div class="q">
+                <dt>Where do the consumers come from?</dt>
+                <dd><p>Consumers call looking for insurance coverage. NetEnroll routes those live conversations to available producers based on the programs and states you've enabled.</p></dd>
+            </div>
+            <div class="q">
+                <dt>Can I choose my states?</dt>
+                <dd><span class="yes">Yes.</span><p>You control the programs and states your account is set up to receive.</p></dd>
+            </div>
+            <div class="q">
+                <dt>Can I use NetEnroll for my entire agency?</dt>
+                <dd><span class="yes">Yes.</span><p>Agency accounts can have multiple producers operating under the account, subject to the applicable program requirements.</p></dd>
+            </div>
+            <div class="q">
+                <dt>Do you guarantee a certain number of calls?</dt>
+                <dd><span class="yes">No.</span><p>Consumer demand varies by program, state and time.</p><p>What we can tell you upfront is what you will pay when an application is submitted.</p></dd>
+            </div>
+            <div class="q">
+                <dt>What happens if a policy doesn't take effect?</dt>
+                <dd><p>If an application qualifies under the applicable replacement terms, NetEnroll provides the corresponding replacement application according to those terms. <a href="/terms#replacement">See Terms §5.5</a></p></dd>
+            </div>
+            <div class="q">
+                <dt>How do I get started?</dt>
+                <dd><p>Create your producer account, select the programs and states you want, and get your team ready to take calls.</p><p><b>No sales appointment required.</b> <a href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="faq" data-label="Open My Producer Account">Open my producer account</a></p></dd>
+            </div>
+        </dl>
+    </div>
+</section>
+
+<!-- 11. Final -->
+<section class="final on-green" id="final" aria-labelledby="final-title">
+    <div class="wrap">
+        <p class="eyebrow reveal">Ready to try it?</p>
+        <h2 id="final-title" class="h2 reveal">Stop paying for opportunities that never become business.</h2>
+        <p class="sub reveal">Put your producers on live insurance calls and let them work the opportunity before you pay.</p>
+        <ul class="tiles reveal" aria-label="What you pay">
+            <li><b>$0</b><span>per call</span></li>
+            <li><b>$0</b><span>per month</span></li>
+            <li><b>$199 &middot; $159 &middot; $100</b><span>per submitted application</span></li>
+        </ul>
+        <div class="final-actions reveal">
+            <a class="btn btn-white" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="final" data-label="Open My Producer Account">Open My Producer Account <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="tel" href="tel:+19045128487">Questions? <b>Call 904-512-8487</b></a>
+            <p class="micro">Final Expense &middot; Medicare &middot; ACA Health</p>
         </div>
     </div>
 </section>
 
 </main>
 
-<footer class="nx-foot">
+<footer class="site-footer">
     <div class="wrap">
-        <div class="foot-top">
-            <div>
-                <img src="/netenroll-logo-dark.png" width="918" height="179" alt="NetEnroll">
-                <p>Customer acquisition for insurance professionals: live TV inbound calls billed per call, and live calls billed per submitted application.</p>
-            </div>
-            <div>
-                <h3>Programs</h3>
-                <ul>
-                    <li><a href="/medicare-tv-calls">Medicare TV calls</a></li>
-                    <li><a href="/final-expense-tv-calls">Final Expense TV calls</a></li>
-                    <li><a href="/#pay-per-application">Pay per application</a></li>
-                </ul>
+        <div class="foot-grid">
+            <div class="foot-brand">
+                <img src="/netenroll-logo-tagline.png" width="1950" height="555" alt="NetEnroll — Pay-per-application">
+                <p>Live Final Expense, Medicare and ACA Health calls for licensed producers, billed per submitted application. Producer recruiting for agencies.</p>
             </div>
             <div>
                 <h3>Services</h3>
                 <ul>
+                    <li><a href="/#pricing">Insurance calls</a></li>
                     <li><a href="/aca-agent-recruiting">ACA agent recruiting</a></li>
                     <li><a href="/licensing-value">State license value tool</a></li>
                     <li><a href="https://netenroll.com/agency-planner">Agency planner</a></li>
@@ -604,30 +1066,66 @@
                 </ul>
             </div>
             <div>
-                <h3>Company</h3>
+                <h3>Account</h3>
                 <ul>
                     <li><a href="https://agents.netenroll.com" data-track="portal_cta" data-loc="footer">Agent portal</a></li>
+                    <li><a href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="footer" data-label="Open My Producer Account">Open a producer account</a></li>
                     <li><a href="tel:+19045128487">904-512-8487</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Legal</h3>
+                <ul>
                     <li><a href="/terms">Terms of Service</a></li>
                     <li><a href="/privacy">Privacy Policy</a></li>
                     <li><a href="/tcpa-compliance">TCPA &amp; Compliance</a></li>
                 </ul>
             </div>
         </div>
-        <p class="foot-word" aria-hidden="true">netEnroll</p>
         <div class="foot-legal">
-            <p>&copy; 2026 PVN LLC. All rights reserved. NetEnroll is a service of PVN LLC, Saint Augustine, Florida.</p>
-            <p>Program availability depends on licensing and account configuration. No call volume is guaranteed. Not affiliated with or endorsed by the U.S. government or the federal Medicare program.</p>
+            <p>&copy; 2026 PVN LLC. All rights reserved. NetEnroll is a service of PVN LLC.</p>
+            <p>Program availability depends on your licensing and account configuration. No call volume is guaranteed.</p>
         </div>
     </div>
 </footer>
 
-<div class="sticky-cta" data-sticky-after="#top" data-sticky-until="#contact" aria-hidden="true">
-    <span class="lbl">$39 &middot; $44 per call<small>Live TV inbound calls</small></span>
-    <a class="btn btn-accent btn-sm" href="#contact" data-track="cta_click" data-loc="sticky" data-label="Get access" tabindex="-1">Get access</a>
+<div class="sticky-cta" data-sticky-after="#top" data-sticky-until="#final" aria-hidden="true">
+    <span class="lbl">$0 per call<small>Pay per submitted application</small></span>
+    <a class="btn btn-primary btn-sm" href="https://agents.netenroll.com/login?mode=create" data-track="cta_click" data-loc="sticky" data-label="Open an account" tabindex="-1">Open an account</a>
 </div>
 
 <script src="/site.js" defer></script>
-<script src="/signal.js" defer></script>
+<script>
+/* Program switch on the bill. Counts the figure to the new rate; jumps under
+   prefers-reduced-motion. */
+(function () {
+    var rates = { fe: 199, med: 159, aca: 100 };
+    var names = { fe: 'Final Expense', med: 'Medicare', aca: 'ACA Health' };
+    var amt = document.getElementById('bill-amt'), prog = document.getElementById('bill-prog');
+    var btns = document.querySelectorAll('.seg button');
+    if (!amt || !btns.length) return;
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var cur = 199, raf = 0;
+    function show(to) {
+        cancelAnimationFrame(raf);
+        if (reduced) { amt.textContent = '$' + to; cur = to; return; }
+        var from = cur, t0 = performance.now();
+        (function step(t) {
+            var p = Math.min(1, (t - t0) / 420); p = 1 - Math.pow(1 - p, 3);
+            amt.textContent = '$' + Math.round(from + (to - from) * p);
+            if (p < 1) raf = requestAnimationFrame(step); else cur = to;
+        })(t0);
+    }
+    btns.forEach(function (b) {
+        b.addEventListener('click', function () {
+            btns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+            var k = b.getAttribute('data-prog');
+            prog.textContent = names[k];
+            show(rates[k]);
+            if (window.NE) window.NE.track('bill_program', { program: k });
+        });
+    });
+})();
+</script>
 </body>
 </html>

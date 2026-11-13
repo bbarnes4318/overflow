@@ -83,44 +83,7 @@ og(["Licensed ACA producers,", "signed to your agency."],
     "Verified, scheduled onto your calendar. You interview and sign."],
    "ACA AGENT RECRUITING  ·  FOR AGENCY OWNERS", ROOT / "og-recruiting.png")
 print("wrote favicon.png apple-touch-icon.png og-final-expense.png og-recruiting.png")
-
-
-def og_tv(title, price, sub, pill, out):
-    """The TV inbound pages: warm white, near-black type, one green accent."""
-    W, H = 1200, 630
-    BG, INK2, INK3, LINE = (250, 249, 246), (59, 68, 64), (105, 114, 110), (231, 229, 223)
-    GINK, TINT, NEAR = (6, 122, 85), (234, 247, 241), (12, 18, 16)
-    BOLD = ["seguisb.ttf", "segoeuib.ttf", "arialbd.ttf", "DejaVuSans-Bold.ttf"]
-    im = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(im)
-    logo = Image.open(ROOT / "netenroll-logo.png").convert("RGBA")
-    lh = 38
-    logo = logo.resize((round(logo.width * lh / logo.height), lh), Image.LANCZOS)
-    im.paste(logo, (80, 70), logo)
-    fp = font(BOLD, 22)
-    tw = d.textlength(pill, font=fp)
-    d.rounded_rectangle((80, 150, 80 + tw + 36, 194), radius=22, fill=TINT)
-    d.text((98, 160), pill, font=fp, fill=GINK)
-    y = 226
-    for i, ln in enumerate(title):
-        d.text((76, y), ln, font=font(BOLD, 64), fill=GINK if (i == len(title) - 1 and len(title) > 1 and price is None) else NEAR)
-        y += 76
-    if price:
-        d.text((74, y + 4), price, font=font(BOLD, 112), fill=NEAR)
-        y += 140
-    d.text((80, y + 14), sub, font=font(SANS, 28), fill=INK2)
-    d.line((80, H - 80, W - 80, H - 80), fill=LINE, width=2)
-    d.text((80, H - 62), "netenroll.com  ·  904-512-8487", font=font(SANS, 20), fill=INK3)
-    im.save(out, optimize=True)
-
-
-og_tv(["They saw the ad.", "They made the call.", "You write the policy."], None,
-      "Live CTV calls · Medicare $39 · Final Expense $44 · under 2:00 is free",
-      "LIVE INBOUND CALLS FROM CONNECTED TV", ROOT / "og-home.png")
-og_tv(["Medicare TV Inbound Calls"], "$39 per billable call",
-      "Live Medicare inquiries from TV advertising · 120-second billing buffer",
-      "MEDICARE", ROOT / "og-medicare-tv.png")
-og_tv(["Final Expense TV Inbound Calls"], "$44 per billable call",
-      "Live Final Expense inquiries from TV advertising · 120-second billing buffer",
-      "FINAL EXPENSE", ROOT / "og-final-expense-tv.png")
-print("wrote og-home.png og-medicare-tv.png og-final-expense-tv.png")
+og(["Every call is free until", "it becomes an application."],
+   ["Live Final Expense, Medicare and ACA Health calls for licensed producers.",
+    "$199 · $125 · $100 per submitted application. $0 per call, $0 per month."],
+   "LIVE INSURANCE CALLS  ·  BILLED PER SUBMITTED APPLICATION", ROOT / "og-home.png")

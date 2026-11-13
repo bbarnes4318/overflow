@@ -627,27 +627,6 @@ function initDatabase() {
     )
   `).run();
 
-  // Requests for TV inbound call access (Medicare / Final Expense) from the
-  // netenroll.com product pages. Platform-owned, like the inquiries above.
-  db.prepare(`
-    CREATE TABLE IF NOT EXISTS tv_call_inquiries (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      source TEXT NOT NULL,
-      products TEXT NOT NULL,
-      contact_name TEXT NOT NULL,
-      agency_name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      phone TEXT NOT NULL,
-      agent_type TEXT,
-      states TEXT,
-      agent_count TEXT,
-      notes TEXT,
-      attribution TEXT,
-      client_ip TEXT,
-      created_at TEXT DEFAULT (datetime('now'))
-    )
-  `).run();
-
   // Registrations from the public A2P form. Platform-owned, like the inquiries.
   db.prepare(`
     CREATE TABLE IF NOT EXISTS a2p_registrations (
@@ -692,25 +671,6 @@ function insertRecruitingInquiry(row) {
     VALUES
       (@source, @agency_name, @contact_name, @email, @phone, @states, @agent_count, @offer, @timing, @notes, @client_ip)
   `).run(row).lastInsertRowid;
-}
-
-function insertTvCallInquiry(row) {
-  return db.prepare(`
-    INSERT INTO tv_call_inquiries
-      (source, products, contact_name, agency_name, email, phone, agent_type, states, agent_count, notes, attribution, client_ip)
-    VALUES
-      (@source, @products, @contact_name, @agency_name, @email, @phone, @agent_type, @states, @agent_count, @notes, @attribution, @client_ip)
-  `).run(row).lastInsertRowid;
-}
-
-// A double-click or a resubmit within the window returns the earlier row
-// instead of storing (and emailing) the same request twice.
-function findRecentTvCallInquiry(email, products, minutes = 10) {
-  return db.prepare(`
-    SELECT id FROM tv_call_inquiries
-    WHERE lower(email) = lower(?) AND products = ? AND created_at >= datetime('now', ?)
-    ORDER BY id DESC LIMIT 1
-  `).get(email, products, `-${minutes} minutes`);
 }
 
 function insertA2pRegistration(row) {
@@ -2697,8 +2657,6 @@ module.exports = {
   initDatabase,
   requireTenant,
   insertRecruitingInquiry,
-  insertTvCallInquiry,
-  findRecentTvCallInquiry,
   insertA2pRegistration,
   listA2pRegistrations,
   getA2pRegistration,
