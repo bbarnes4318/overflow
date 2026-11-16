@@ -8,6 +8,7 @@ const mergeFields = require('./merge_fields');
 const queueWorker = require('./queue');
 const variation = require('./variation');
 const contentLint = require('./content_lint');
+const pacing = require('./pacing');
 const mail = require('./mail');
 const a2p = require('./a2p');
 
@@ -1490,6 +1491,14 @@ app.get('/api/settings', (req, res) => {
     // form that reads them.)
     const { anthropic_api_key, ...rest } = settings;
 
+    // Report the sending hours actually enforced, not whatever an older version
+    // let someone store (e.g. 0-24), so the form shows the truth and saving it
+    // back passes validation.
+    const hours = pacing.quietWindow(rest.quiet_start_hour, rest.quiet_end_hour);
+    rest.quiet_hours_enabled = '1';
+    rest.quiet_start_hour = String(hours.start);
+    rest.quiet_end_hour = String(hours.end);
+
     // The numbers this tenant may send from. Derived from tenant_dids on every
     // read rather than mirrored into settings - the CSV that used to live here
     // was deleted by the multi-tenant migration precisely so there would be
@@ -1613,6 +1622,29 @@ app.post('/api/settings', async (req, res) => {
         rejected_keys: Object.keys(globalKeys)
       });
     }
+    // Sending hours: quiet hours cannot be switched off, and the window must
+    // sit inside the legal 8am-9pm. The pacer enforces both no matter what is
+    // stored; rejecting a bad window here tells the operator instead of
+    // silently saving a value that will not be honoured.
+    if ('quiet_hours_enabled' in tenantKeys) tenantKeys.quiet_hours_enabled = '1';
+    if ('quiet_start_hour' in tenantKeys || 'quiet_end_hour' in tenantKeys) {
+      const stored = db.getEffectiveSettings(req.tenantId);
+      const current = pacing.quietWindow(stored.quiet_start_hour, stored.quiet_end_hour);
+      const startRaw = 'quiet_start_hour' in tenantKeys ? tenantKeys.quiet_start_hour : current.start;
+      const endRaw = 'quiet_end_hour' in tenantKeys ? tenantKeys.quiet_end_hour : current.end;
+      const start = Number(startRaw);
+      const end = Number(endRaw);
+      if (!Number.isInteger(start) || !Number.isInteger(end) ||
+          start < pacing.LEGAL_START_HOUR || end > pacing.LEGAL_END_HOUR || start >= end) {
+        return res.status(400).json({
+          error: `Sending hours must be whole hours between ${pacing.LEGAL_START_HOUR} (8am) and ` +
+                 `${pacing.LEGAL_END_HOUR} (9pm), with the earliest hour before the latest.`
+        });
+      }
+      tenantKeys.quiet_start_hour = String(start);
+      tenantKeys.quiet_end_hour = String(end);
+    }
+
     if (Object.keys(globalKeys).length) db.updateSettings(globalKeys);
     db.updateTenantSettings(req.tenantId, tenantKeys);
     const updated = db.getEffectiveSettings(req.tenantId);

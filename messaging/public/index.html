@@ -819,19 +819,19 @@
           <small class="form-help">Ramps a new number from 10 messages a day up to the full cap over about a week. A brand new number opening at full volume looks exactly like a number bought to spam from.</small>
         </div>
 
-        <div class="form-group checkbox-row">
-          <label><input type="checkbox" id="setting-quiet" checked> Respect recipient local hours</label>
-          <small class="form-help">Holds messages outside the window below, in the recipient's own timezone (inferred from area code). TCPA allows 8am&ndash;9pm; the default is deliberately narrower to absorb inference error.</small>
+        <div class="form-group">
+          <label>Recipient sending hours (always on)</label>
+          <small class="form-help">Messages outside this window are held and sent automatically when it opens, in the recipient's own local time. The time zone is taken from both the area code and the contact's state when one is on file, and the stricter of the two applies. The window can be narrowed but never set outside 8am&ndash;9pm (the TCPA limit). The 9am&ndash;8pm default leaves an hour of margin for numbers whose time zone is guessed wrong.</small>
         </div>
 
         <div class="form-group form-row">
           <div>
             <label for="setting-quiet-start">Earliest hour</label>
-            <input type="number" id="setting-quiet-start" min="0" max="23" value="9">
+            <input type="number" id="setting-quiet-start" min="8" max="20" step="1" value="9">
           </div>
           <div>
             <label for="setting-quiet-end">Latest hour</label>
-            <input type="number" id="setting-quiet-end" min="1" max="24" value="20">
+            <input type="number" id="setting-quiet-end" min="9" max="21" step="1" value="20">
           </div>
         </div>
 
@@ -970,7 +970,7 @@
   <script src="lib/classification.js?v=fresh-2026"></script>
   <script src="lib/area_codes_v2.js?v=fresh-2026"></script>
   <script src="lib/area_codes.js?v=fresh-2026"></script>
-  <script src="app_v2.js?v=tabs-2026"></script>
+  <script src="app_v2.js?v=hours-2026"></script>
   <!-- app.js is NOT loaded. It and app_v2.js both declare `btnNewChat` at top
        level, and a duplicate const is a parse-time SyntaxError, so app.js has
        never executed a single line - it only cost 131KB of download and parse

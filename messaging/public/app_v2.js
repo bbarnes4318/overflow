@@ -2516,7 +2516,8 @@ async function handleSaveSettings(e) {
       
       setTimeout(() => { settingsStatus.textContent = ''; }, 3000);
     } else {
-      settingsStatus.textContent = 'Error saving settings';
+      const err = await res.json().catch(() => ({}));
+      settingsStatus.textContent = err.error || 'Error saving settings';
       settingsStatus.className = 'settings-status error';
     }
   } catch (err) {

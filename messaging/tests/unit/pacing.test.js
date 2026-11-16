@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
-const { Pacer, BLOCK, WARMUP_LADDER } = require('../../pacing');
+const { Pacer, BLOCK, WARMUP_LADDER, quietWindow } = require('../../pacing');
 const timezones = require('../../timezones');
 
 // A DID that has been sending for long enough to be past its warm-up ramp.
@@ -10,6 +10,8 @@ const OLD_DAY = '2020-01-01';
 
 function makePacer(overrides, summary) {
   return new Pacer({
+    // Lets the other gates be tested at any hour. Production never sets it.
+    allowQuietHoursOff: true,
     getSettings: () => Object.assign({
       pacing_enabled: '1',
       did_min_gap_ms: '10000',
@@ -218,4 +220,97 @@ test('timezone inference handles area codes that split from their state', () => 
   assert.strictEqual(timezones.timezoneFor('9155550100'), 'America/Denver');
   assert.strictEqual(timezones.timezoneFor('2145550100'), 'America/Chicago');
   assert.strictEqual(timezones.timezoneFor('not-a-number'), null);
+});
+
+
+/* ---------------- sending hours are locked ---------------- */
+
+// A pacer built the way queue.js builds it: no test escape hatch.
+function productionPacer(settings) {
+  return new Pacer({
+    getSettings: () => Object.assign({ pacing_enabled: '1', did_jitter_pct: '0', did_warmup_enabled: '0' }, settings || {}),
+    getDidSummary: () => ({})
+  });
+}
+
+// 2026-06-01 is in daylight time: New York = UTC-4, Los Angeles = UTC-7.
+const AT_6AM_NY = new Date('2026-06-01T10:00:00Z');
+const AT_1PM_NY = new Date('2026-06-01T17:00:00Z');
+const AT_930PM_NY = new Date('2026-06-02T01:30:00Z');
+
+test('quiet hours cannot be switched off by a stored setting', () => {
+  const pacer = productionPacer({ quiet_hours_enabled: '0' });
+  const verdict = pacer.evaluate(MSG, AT_6AM_NY);
+  assert.strictEqual(verdict.ok, false);
+  assert.strictEqual(verdict.reason, BLOCK.QUIET_HOURS);
+});
+
+test('turning pacing off removes rate limits but never the sending hours', () => {
+  const pacer = productionPacer({ pacing_enabled: '0', quiet_hours_enabled: '0' });
+  assert.strictEqual(pacer.evaluate(MSG, AT_6AM_NY).reason, BLOCK.QUIET_HOURS);
+  assert.strictEqual(pacer.evaluate(MSG, AT_1PM_NY).ok, true);
+});
+
+test('a stored window wider than 8am-9pm is clamped to it', () => {
+  const pacer = productionPacer({ quiet_start_hour: '0', quiet_end_hour: '24' });
+  // 6am and 9:30pm local are both outside 8-21.
+  assert.strictEqual(pacer.evaluate(MSG, AT_6AM_NY).reason, BLOCK.QUIET_HOURS);
+  assert.strictEqual(pacer.evaluate(MSG, AT_930PM_NY).reason, BLOCK.QUIET_HOURS);
+  // 8:30pm local is inside the legal window.
+  assert.strictEqual(pacer.evaluate(MSG, new Date('2026-06-02T00:30:00Z')).ok, true);
+});
+
+test('quietWindow clamps, and falls back to the defaults when the window is empty', () => {
+  assert.deepStrictEqual(quietWindow('0', '24'), { start: 8, end: 21 });
+  assert.deepStrictEqual(quietWindow('10', '18'), { start: 10, end: 18 });
+  assert.deepStrictEqual(quietWindow('15', '12'), { start: 9, end: 20 });
+  assert.deepStrictEqual(quietWindow('', 'abc'), { start: 9, end: 20 });
+  assert.deepStrictEqual(quietWindow('22', '23'), { start: 20, end: 21 });
+  assert.deepStrictEqual(quietWindow(null, undefined), { start: 9, end: 20 });
+});
+
+/* ---------------- stricter of area code and state on file ---------------- */
+
+test('a New York number for a contact who lives in California waits for California', () => {
+  const pacer = productionPacer();
+  const msg = { from_number: '5555550100', to_number: '2125550100', contact_state: 'CA' };
+  // 9:30am New York = 6:30am Los Angeles.
+  const verdict = pacer.evaluate(msg, new Date('2026-06-01T13:30:00Z'));
+  assert.strictEqual(verdict.reason, BLOCK.QUIET_HOURS);
+  // Held until 9am Pacific: 2.5 hours.
+  assert.strictEqual(verdict.retryInMs, 2.5 * 3600000);
+  // Without the state it would have gone out.
+  assert.strictEqual(pacer.evaluate({ ...msg, contact_state: null }, new Date('2026-06-01T13:30:00Z')).ok, true);
+});
+
+test('a California number for a contact in New York stops at 8pm New York time', () => {
+  const pacer = productionPacer();
+  const msg = { from_number: '5555550100', to_number: '3105550100', contact_state: 'new york' };
+  // 8:30pm New York = 5:30pm Los Angeles.
+  assert.strictEqual(pacer.evaluate(msg, new Date('2026-06-02T00:30:00Z')).reason, BLOCK.QUIET_HOURS);
+});
+
+test('an unknown area code with a state on file uses the state', () => {
+  const pacer = productionPacer();
+  const msg = { from_number: '5555550100', to_number: '0000000000', contact_state: 'NY' };
+  // 10am New York, 7am Pacific: the old both-coasts fallback would hold this.
+  assert.strictEqual(pacer.evaluate(msg, new Date('2026-06-01T14:00:00Z')).ok, true);
+});
+
+test('an unrecognised state is ignored, not treated as a block', () => {
+  const pacer = productionPacer();
+  const msg = { from_number: '5555550100', to_number: '2125550100', contact_state: 'Narnia' };
+  assert.strictEqual(pacer.evaluate(msg, AT_1PM_NY).ok, true);
+});
+
+test('state names resolve however they are written', () => {
+  assert.strictEqual(timezones.timezoneForState('TX'), 'America/Chicago');
+  assert.strictEqual(timezones.timezoneForState(' texas '), 'America/Chicago');
+  assert.strictEqual(timezones.timezoneForState('California'), 'America/Los_Angeles');
+  assert.strictEqual(timezones.timezoneForState('North Carolina'), 'America/New_York');
+  assert.strictEqual(timezones.timezoneForState('Washington, D.C.'), 'America/New_York');
+  assert.strictEqual(timezones.timezoneForState('hi'), 'Pacific/Honolulu');
+  assert.strictEqual(timezones.timezoneForState(''), null);
+  assert.strictEqual(timezones.timezoneForState(null), null);
+  assert.strictEqual(timezones.timezoneForState('Narnia'), null);
 });
