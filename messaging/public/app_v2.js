@@ -49,8 +49,12 @@ function replyClassificationOf(conv) {
  * Reply classification and business disposition are SEPARATE concepts
  * and both are preserved. Placement precedence:
  *   1. Hard suppression (opted out / wrong number) — legal state wins.
- *   2. Manual disposition — the human's business decision.
- *   3. Reply classification — the automatic read.
+ *   2. A custom tab the operator moved the thread into.
+ *   3. Manual disposition — the human's business decision.
+ *   4. Reply classification — the automatic read.
+ *
+ * Custom tabs are added to FOLDERS at runtime as 'tab-<id>' (see
+ * renderCustomTabs), each with a single view of the same name.
  * ------------------------------------------------------------------ */
 const FOLDERS = {
   'new':        { views: ['new'] },
@@ -61,7 +65,19 @@ const FOLDERS = {
   'storm-demo': { views: ['storm-demo'] }
 };
 
-const ALL_VIEWS = Object.values(FOLDERS).flatMap(f => f.views);
+// Recomputed on use: custom tabs come and go while the page is open.
+function allViews() {
+  return Object.values(FOLDERS).flatMap(f => f.views);
+}
+
+/** FOLDERS key (and view name) of a custom tab. */
+function tabKey(tabId) {
+  return `tab-${tabId}`;
+}
+
+function isCustomFolder(folder) {
+  return typeof folder === 'string' && folder.startsWith('tab-');
+}
 
 // Views whose rows are ordered by their scheduled date/time rather than recency
 const SCHEDULED_VIEWS = ['appointment', 'follow_up'];
@@ -84,12 +100,15 @@ function getConversationBucket(conv) {
   if (conv.opted_out) return 'opted_out';
   if (conv.wrong_number) return 'wrong_number';
 
-  // 2. The human's decision.
+  // 2. A tab the operator filed it in. A tab that no longer exists is ignored.
+  if (conv.tab_id && FOLDERS[tabKey(conv.tab_id)]) return tabKey(conv.tab_id);
+
+  // 3. The human's decision.
   if (conv.disposition && DISPOSITION_LABELS[conv.disposition]) {
     return conv.disposition;
   }
 
-  // 3. The automatic read of their reply.
+  // 4. The automatic read of their reply.
   const hasResponded = conv.stage && conv.stage.endsWith('-Responded');
   if (!hasResponded) return 'pending';
 
@@ -131,6 +150,9 @@ let currentStageFilter = 'all'; // Stage filter (Stage 1/Stage 2/Stage 3/all)
 let fromDate = '';
 let toDate = '';
 let selectedConversations = new Set(); // Selection/Bulk Actions state
+let customTabs = [];            // This tenant's own tabs: [{ id, name, position }]
+let lastCheckedConvId = null;   // Anchor for shift-click range selection
+let shiftSelecting = false;     // Set by the checkbox label's click, read by its change
 
 
 // DOM Elements
@@ -262,7 +284,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  loadConversations();
+  loadTabs().then(loadConversations);
+  setupCustomTabs();
   loadSettings();
   loadRecentActivity();
   setupWebSockets();
@@ -1183,6 +1206,12 @@ function handleWsMessage(payload) {
     case 'conversation_disposition':
       handleIncomingDisposition(data);
       break;
+    case 'conversations_moved':
+      handleConversationsMoved(data);
+      break;
+    case 'tabs_changed':
+      handleTabsChanged(data);
+      break;
   }
 }
 
@@ -1309,6 +1338,7 @@ function setActiveFolder(folder, view = null) {
     st.classList.toggle('active', st.dataset.view === currentView);
   });
 
+  updateTabManageRow();
   filterConversations();
   toggleViewsBasedOnFilter();
 }
@@ -1403,7 +1433,7 @@ function getFilteredConversations() {
 // Badge counts on every folder and sub-tab, honouring the search/stage/date filters.
 function updateTabCounts() {
   const counts = {};
-  ALL_VIEWS.forEach(v => { counts[v] = 0; });
+  allViews().forEach(v => { counts[v] = 0; });
 
   applyBaseFilters(conversations).forEach(c => {
     const bucket = getConversationBucket(c);
@@ -1503,7 +1533,12 @@ function getEmptyStateHtml() {
       title: 'No web form leads',
       body: 'Run a scan in the Storm Map app and click “Send Leads to SMS App”.'
     }
-  }[currentView] || { title: 'Nothing here', body: '' };
+  }[currentView] || (isCustomFolder(currentView)
+    ? {
+        title: `Nothing in ${escapeHTML(customTabName(currentView))} yet`,
+        body: 'Tick threads in any tab (or Select All), then click “Move”. You can also drag a thread onto this tab.'
+      }
+    : { title: 'Nothing here', body: '' });
 
   return `
     <div class="list-empty">
@@ -1555,6 +1590,11 @@ function renderConversations() {
     const item = document.createElement('div');
     item.className = `conversation-item bucket-${bucket} ${isActive ? 'active' : ''}`;
     item.dataset.id = c.id;
+    if (!c.isLead) {
+      item.draggable = true;
+      item.addEventListener('dragstart', (e) => startConversationDrag(e, c));
+      item.addEventListener('dragend', endConversationDrag);
+    }
 
     const initials = c.name ? c.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : '#';
     const displayName = c.name || c.phone_number;
@@ -1625,12 +1665,31 @@ function renderConversations() {
     // Handle checkbox change
     const checkbox = item.querySelector('.conv-select-checkbox');
     if (checkbox) {
+      // The label's click carries shiftKey; the input's change event does not.
+      checkbox.closest('label').addEventListener('click', (e) => {
+        shiftSelecting = e.shiftKey;
+      });
       checkbox.addEventListener('change', (e) => {
-        if (e.target.checked) {
+        const checked = e.target.checked;
+        // Shift-click ticks (or unticks) every thread between this one and the last one clicked.
+        const anchor = shiftSelecting && lastCheckedConvId !== null
+          ? filtered.findIndex(x => x.id === lastCheckedConvId)
+          : -1;
+        shiftSelecting = false;
+        if (anchor >= 0) {
+          const here = filtered.indexOf(c);
+          const [from, to] = anchor < here ? [anchor, here] : [here, anchor];
+          for (let i = from; i <= to; i++) {
+            if (checked) selectedConversations.add(filtered[i].id);
+            else selectedConversations.delete(filtered[i].id);
+          }
+          syncVisibleCheckboxes();
+        } else if (checked) {
           selectedConversations.add(c.id);
         } else {
           selectedConversations.delete(c.id);
         }
+        lastCheckedConvId = c.id;
         updateBulkActionBarUI(filtered);
       });
     }
@@ -3580,6 +3639,7 @@ function formatNoteTimestamp(dateInput) {
 // Selection & Bulk Action Helpers
 function clearSelection() {
   selectedConversations.clear();
+  lastCheckedConvId = null;
   const chkSelectAllConvs = document.getElementById('chk-select-all-convs');
   if (chkSelectAllConvs) chkSelectAllConvs.checked = false;
 }
@@ -3597,12 +3657,21 @@ function updateBulkActionBarUI(filteredList) {
 
   chkSelectAllConvs.checked = filteredList.length > 0 && selectedVisibleCount === filteredList.length;
   
+  const btnBulkMove = document.getElementById('btn-bulk-move');
   if (selectedConversations.size > 0) {
     btnBulkMsg.disabled = false;
     btnBulkMsg.querySelector('span').textContent = `Message Selected (${selectedConversations.size})`;
+    if (btnBulkMove) {
+      btnBulkMove.disabled = false;
+      btnBulkMove.querySelector('span').textContent = `Move (${selectedConversations.size})`;
+    }
   } else {
     btnBulkMsg.disabled = true;
     btnBulkMsg.querySelector('span').textContent = 'Message Selected';
+    if (btnBulkMove) {
+      btnBulkMove.disabled = true;
+      btnBulkMove.querySelector('span').textContent = 'Move';
+    }
   }
 }
 
@@ -3944,3 +4013,448 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+
+/* ------------------------------------------------------------------
+ * Custom tabs and moving threads between tabs
+ *
+ * An operator can create their own tabs and move any number of threads
+ * into them: tick threads (Select All, or shift-click for a range) and
+ * click "Move", or drag a thread (or the whole selection) onto a tab.
+ * Built-in tabs are targets too; moving to one sets the matching
+ * disposition, which is the same thing the disposition bar does.
+ * ------------------------------------------------------------------ */
+
+const MOVE_DISPOSITION_LABELS = {
+  none: 'New / Pending',
+  appointment: 'Hot Leads · Appointment',
+  follow_up: 'Hot Leads · Follow-Up',
+  customer: 'Customers',
+  no: 'Closed · No',
+  unqualified: 'Closed · Unqualified'
+};
+
+// Built-in tabs a thread can be dropped on, and the disposition that puts it there.
+// Hot Leads needs a date, so dropping there opens the Move dialog instead.
+const BUILTIN_DROP_TARGETS = {
+  'new': 'none',
+  customer: 'customer',
+  closed: 'no',
+  hot: 'follow_up'
+};
+
+let moveTarget = null;          // { tabId } or { disposition }
+let moveIds = [];               // Threads the open Move dialog applies to
+
+function customTabName(folder) {
+  const id = Number(String(folder).replace('tab-', ''));
+  const tab = customTabs.find(t => t.id === id);
+  return tab ? tab.name : 'this tab';
+}
+
+async function loadTabs() {
+  try {
+    const res = await fetch('/api/tabs');
+    if (!res.ok) return;
+    customTabs = await res.json();
+    renderCustomTabs();
+  } catch (err) {
+    console.error('Error loading tabs:', err);
+  }
+}
+
+/** Rebuild the custom tab buttons and their FOLDERS entries from customTabs. */
+function renderCustomTabs() {
+  Object.keys(FOLDERS).filter(isCustomFolder).forEach(k => delete FOLDERS[k]);
+  document.querySelectorAll('.folder-tab.folder-custom').forEach(el => el.remove());
+
+  const addBtn = document.getElementById('btn-add-tab');
+  customTabs.forEach(tab => {
+    const key = tabKey(tab.id);
+    FOLDERS[key] = { views: [key] };
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'folder-tab folder-custom';
+    btn.dataset.folder = key;
+    btn.setAttribute('role', 'tab');
+    btn.title = `${tab.name} (double-click to rename)`;
+    btn.innerHTML = `
+      <span class="tab-dot"></span>
+      <span class="tab-label">${escapeHTML(tab.name)}</span>
+      <span class="tab-count" id="count-folder-${key}">0</span>`;
+    btn.addEventListener('click', () => setActiveFolder(key));
+    btn.addEventListener('dblclick', () => renameCustomTab(tab.id));
+    if (addBtn) addBtn.before(btn); else document.querySelector('.folder-grid').appendChild(btn);
+  });
+
+  attachDropTargets();
+
+  // The open tab was deleted (here or in another window): fall back to New.
+  if (isCustomFolder(currentFolder) && !FOLDERS[currentFolder]) {
+    setActiveFolder('new');
+  } else {
+    document.querySelectorAll('.folder-tab').forEach(t => {
+      const isActive = t.dataset.folder === currentFolder;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    updateTabManageRow();
+  }
+}
+
+function updateTabManageRow() {
+  const row = document.getElementById('tab-manage-row');
+  if (!row) return;
+  const show = isCustomFolder(currentFolder) && Boolean(FOLDERS[currentFolder]);
+  row.style.display = show ? 'flex' : 'none';
+  if (show) row.querySelector('.tab-manage-hint').textContent = customTabName(currentFolder);
+}
+
+async function createCustomTab(name) {
+  const res = await fetch('/api/tabs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  if (!customTabs.some(t => t.id === data.id)) customTabs.push(data);
+  renderCustomTabs();
+  return data;
+}
+
+async function promptNewTab() {
+  const name = (prompt('Name for the new tab:') || '').trim();
+  if (!name) return;
+  try {
+    const tab = await createCustomTab(name);
+    setActiveFolder(tabKey(tab.id));
+  } catch (err) {
+    alert('Could not create tab: ' + err.message);
+  }
+}
+
+async function renameCustomTab(tabId) {
+  const tab = customTabs.find(t => t.id === tabId);
+  if (!tab) return;
+  const name = (prompt('Rename tab:', tab.name) || '').trim();
+  if (!name || name === tab.name) return;
+  try {
+    const res = await fetch(`/api/tabs/${tabId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    Object.assign(tab, data);
+    renderCustomTabs();
+  } catch (err) {
+    alert('Could not rename tab: ' + err.message);
+  }
+}
+
+async function deleteCustomTab(tabId) {
+  const tab = customTabs.find(t => t.id === tabId);
+  if (!tab) return;
+  const inside = conversations.filter(c => c.tab_id === tabId).length;
+  const msg = inside
+    ? `Delete the tab "${tab.name}"?\n\nIts ${inside} thread${inside === 1 ? '' : 's'} will NOT be deleted; they go back to the built-in tabs.`
+    : `Delete the tab "${tab.name}"?`;
+  if (!confirm(msg)) return;
+  try {
+    const res = await fetch(`/api/tabs/${tabId}`, { method: 'DELETE' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    handleTabsChanged({ tabs: customTabs.filter(t => t.id !== tabId), deleted_tab_id: tabId });
+  } catch (err) {
+    alert('Could not delete tab: ' + err.message);
+  }
+}
+
+function handleTabsChanged(data) {
+  if (data && Array.isArray(data.tabs)) customTabs = data.tabs;
+  if (data && data.deleted_tab_id) {
+    conversations.forEach(c => { if (c.tab_id === data.deleted_tab_id) c.tab_id = null; });
+    if (activeConversation && activeConversation.tab_id === data.deleted_tab_id) activeConversation.tab_id = null;
+  }
+  renderCustomTabs();
+  renderConversations();
+}
+
+/** Apply a move (ours or another window's) to the local list. */
+function handleConversationsMoved(data) {
+  if (!data || !Array.isArray(data.ids)) return;
+  const ids = new Set(data.ids);
+  conversations.forEach(c => { if (ids.has(c.id)) Object.assign(c, data.changes); });
+  data.ids.forEach(id => selectedConversations.delete(id));
+  if (activeConversation && ids.has(activeConversation.id)) {
+    Object.assign(activeConversation, data.changes);
+    updateDispositionBar(activeConversation);
+    updateSentimentBadge(activeConversation);
+  }
+  renderConversations();
+}
+
+/** Re-tick the rendered checkboxes from selectedConversations (after a range select). */
+function syncVisibleCheckboxes() {
+  document.querySelectorAll('.conv-select-checkbox').forEach(cb => {
+    cb.checked = selectedConversations.has(Number(cb.dataset.id));
+  });
+}
+
+/**
+ * Send a move to the server. target is { tabId } (a number, or null to leave
+ * custom tabs) or { disposition, scheduledAt }. Returns true on success.
+ */
+async function moveConversations(ids, target) {
+  if (!ids.length) return false;
+  const body = { conversation_ids: ids };
+  if ('tabId' in target) {
+    body.tab_id = target.tabId;
+  } else {
+    body.disposition = target.disposition === 'none' ? null : target.disposition;
+    if (target.scheduledAt) body.scheduled_at = target.scheduledAt;
+  }
+
+  try {
+    const res = await fetch('/api/conversations/move', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert('Could not move threads: ' + (data.error || res.statusText));
+      return false;
+    }
+    // The websocket echo does the same; applying it here keeps the UI right
+    // even when the socket is reconnecting. Reload to pick up exact server state.
+    clearSelection();
+    await loadConversations();
+    const where = 'tabId' in target
+      ? (target.tabId === null ? 'the built-in tabs' : customTabName(tabKey(target.tabId)))
+      : MOVE_DISPOSITION_LABELS[target.disposition];
+    let note = `Moved ${data.moved_count} thread${data.moved_count === 1 ? '' : 's'} to ${where}.`;
+    if (data.skipped_suppressed) {
+      note += ` ${data.skipped_suppressed} opted-out / wrong-number contact${data.skipped_suppressed === 1 ? '' : 's'} stayed in Closed.`;
+    }
+    showMoveToast(note);
+    return true;
+  } catch (err) {
+    console.error('Move error:', err);
+    alert('Connection error moving threads.');
+    return false;
+  }
+}
+
+function showMoveToast(text) {
+  let toast = document.getElementById('move-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'move-toast';
+    toast.className = 'move-toast';
+    toast.setAttribute('role', 'status');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.classList.add('show');
+  clearTimeout(showMoveToast._timer);
+  showMoveToast._timer = setTimeout(() => toast.classList.remove('show'), 4500);
+}
+
+/* ---- Move dialog ---- */
+
+function openMoveModal(ids, preselect = null) {
+  if (!ids.length) return;
+  moveIds = ids.slice();
+  moveTarget = null;
+
+  document.getElementById('move-count').textContent = moveIds.length;
+  document.getElementById('move-noun').textContent = moveIds.length === 1 ? 'thread' : 'threads';
+  document.getElementById('move-new-tab-name').value = '';
+  document.getElementById('move-schedule').style.display = 'none';
+
+  const list = document.getElementById('move-custom-targets');
+  list.innerHTML = '';
+  if (!customTabs.length) {
+    list.innerHTML = '<p class="move-empty">No tabs yet. Name one below to create it.</p>';
+  }
+  customTabs.forEach(tab => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'move-target';
+    btn.dataset.tabId = tab.id;
+    const here = currentFolder === tabKey(tab.id);
+    btn.disabled = here;
+    btn.innerHTML = `<span class="move-dot"></span>${escapeHTML(tab.name)}${here ? ' <small>current tab</small>' : ''}`;
+    list.appendChild(btn);
+  });
+  // Leave a custom tab without changing the disposition.
+  if (isCustomFolder(currentFolder)) {
+    const out = document.createElement('button');
+    out.type = 'button';
+    out.className = 'move-target';
+    out.dataset.tabId = 'none';
+    out.title = 'Keeps each thread\'s disposition; it shows wherever that puts it.';
+    out.innerHTML = '<span class="move-dot"></span>Remove from this tab <small>keep disposition</small>';
+    list.appendChild(out);
+  }
+
+  document.querySelectorAll('#move-modal .move-target').forEach(btn => btn.classList.remove('selected'));
+  if (preselect) {
+    const btn = document.querySelector(`#move-builtin-targets .move-target[data-disposition="${preselect}"]`);
+    if (btn) selectMoveTarget(btn);
+  }
+  updateMoveSubmit();
+  document.getElementById('move-modal').classList.add('open');
+}
+
+function selectMoveTarget(btn) {
+  document.querySelectorAll('#move-modal .move-target').forEach(b => b.classList.toggle('selected', b === btn));
+  if (btn.dataset.tabId !== undefined) {
+    moveTarget = { tabId: btn.dataset.tabId === 'none' ? null : Number(btn.dataset.tabId) };
+  } else {
+    moveTarget = { disposition: btn.dataset.disposition };
+  }
+
+  const needsDate = moveTarget.disposition === 'appointment' || moveTarget.disposition === 'follow_up';
+  const scheduleBox = document.getElementById('move-schedule');
+  const input = document.getElementById('move-datetime');
+  scheduleBox.style.display = needsDate ? 'block' : 'none';
+  input.required = needsDate;
+  if (needsDate && !input.value) {
+    const preset = new Date();
+    preset.setDate(preset.getDate() + (moveTarget.disposition === 'appointment' ? 1 : 3));
+    preset.setHours(10, 0, 0, 0);
+    input.value = toLocalInputValue(preset);
+  }
+  updateMoveSubmit();
+}
+
+function updateMoveSubmit() {
+  const btn = document.getElementById('btn-submit-move');
+  if (!moveTarget) {
+    btn.disabled = true;
+    btn.textContent = 'Choose a tab';
+    return;
+  }
+  btn.disabled = false;
+  const where = 'tabId' in moveTarget
+    ? (moveTarget.tabId === null ? 'out of this tab' : `to ${customTabName(tabKey(moveTarget.tabId))}`)
+    : `to ${MOVE_DISPOSITION_LABELS[moveTarget.disposition]}`;
+  btn.textContent = `Move ${moveIds.length} ${where}`;
+}
+
+/* ---- Drag and drop onto tabs ---- */
+
+let draggedIds = [];
+
+function startConversationDrag(e, conv) {
+  // Dragging a ticked thread drags the whole selection; otherwise just this one.
+  draggedIds = selectedConversations.has(conv.id) ? Array.from(selectedConversations) : [conv.id];
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', `${draggedIds.length} thread(s)`);
+  document.body.classList.add('dragging-threads');
+}
+
+function endConversationDrag() {
+  document.body.classList.remove('dragging-threads');
+  document.querySelectorAll('.folder-tab.drop-over').forEach(t => t.classList.remove('drop-over'));
+}
+
+function dropTargetFor(folder) {
+  if (isCustomFolder(folder)) return { tabId: Number(folder.replace('tab-', '')) };
+  if (folder in BUILTIN_DROP_TARGETS) return { disposition: BUILTIN_DROP_TARGETS[folder] };
+  return null;
+}
+
+function attachDropTargets() {
+  document.querySelectorAll('.folder-tab[data-folder]').forEach(tab => {
+    if (tab.dataset.dropReady) return;
+    if (!dropTargetFor(tab.dataset.folder)) return;
+    tab.dataset.dropReady = '1';
+    tab.addEventListener('dragover', (e) => {
+      if (!draggedIds.length || tab.dataset.folder === currentFolder) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      tab.classList.add('drop-over');
+    });
+    tab.addEventListener('dragleave', () => tab.classList.remove('drop-over'));
+    tab.addEventListener('drop', (e) => {
+      e.preventDefault();
+      tab.classList.remove('drop-over');
+      const ids = draggedIds;
+      draggedIds = [];
+      endConversationDrag();
+      const target = dropTargetFor(tab.dataset.folder);
+      if (!ids.length || !target) return;
+      // Appointments and follow-ups need a date: confirm it in the dialog.
+      if (target.disposition === 'follow_up') {
+        openMoveModal(ids, 'follow_up');
+        return;
+      }
+      moveConversations(ids, target);
+    });
+  });
+}
+
+function setupCustomTabs() {
+  const addBtn = document.getElementById('btn-add-tab');
+  if (addBtn) addBtn.addEventListener('click', promptNewTab);
+
+  const tabIdOfCurrent = () => Number(String(currentFolder).replace('tab-', ''));
+  document.getElementById('btn-rename-tab').addEventListener('click', () => renameCustomTab(tabIdOfCurrent()));
+  document.getElementById('btn-delete-tab').addEventListener('click', () => deleteCustomTab(tabIdOfCurrent()));
+
+  document.getElementById('btn-bulk-move').addEventListener('click', () => {
+    openMoveModal(Array.from(selectedConversations));
+  });
+
+  const modal = document.getElementById('move-modal');
+  document.getElementById('move-close').addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('open');
+    const target = e.target.closest('.move-target');
+    if (target && !target.disabled) selectMoveTarget(target);
+  });
+
+  const newTabInput = document.getElementById('move-new-tab-name');
+  const createAndMove = async () => {
+    const name = newTabInput.value.trim();
+    if (!name) { newTabInput.focus(); return; }
+    try {
+      const tab = await createCustomTab(name);
+      const ok = await moveConversations(moveIds, { tabId: tab.id });
+      if (ok) {
+        modal.classList.remove('open');
+        setActiveFolder(tabKey(tab.id));
+      }
+    } catch (err) {
+      alert('Could not create tab: ' + err.message);
+    }
+  };
+  document.getElementById('btn-move-new-tab').addEventListener('click', createAndMove);
+  newTabInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); createAndMove(); }
+  });
+
+  document.getElementById('move-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!moveTarget) return;
+    const target = Object.assign({}, moveTarget);
+    if (target.disposition === 'appointment' || target.disposition === 'follow_up') {
+      const value = document.getElementById('move-datetime').value;
+      if (!value) return;
+      // datetime-local is local wall-clock time; send the real instant.
+      target.scheduledAt = new Date(value).toISOString();
+    }
+    const btn = document.getElementById('btn-submit-move');
+    btn.disabled = true;
+    btn.textContent = 'Moving...';
+    const ok = await moveConversations(moveIds, target);
+    if (ok) modal.classList.remove('open');
+    else updateMoveSubmit();
+  });
+}

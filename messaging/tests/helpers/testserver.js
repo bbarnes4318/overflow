@@ -112,6 +112,7 @@ async function startServer({ label = 'api', env = {} } = {}) {
     request,
     get: (url, opts) => request('GET', url, undefined, opts),
     post: (url, body, opts) => request('POST', url, body, opts),
+    patch: (url, body, opts) => request('PATCH', url, body, opts),
     del: (url, opts) => request('DELETE', url, undefined, opts),
     superadmin: { username: SUPERADMIN_USERNAME, password: SUPERADMIN_PASSWORD },
 

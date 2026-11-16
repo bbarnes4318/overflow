@@ -834,6 +834,161 @@ app.post('/api/conversations/:id/disposition', (req, res) => {
   }
 });
 
+/* ------------------------------------------------------------------
+ * Custom inbox tabs
+ * ------------------------------------------------------------------ */
+
+function parseTabId(raw) {
+  return parseConversationId(raw);
+}
+
+/** Tell every open dashboard of this tenant the tab list changed. */
+function broadcastTabs(tenantId, extra = {}) {
+  broadcast(tenantId, 'tabs_changed', { tabs: db.getTabs(tenantId), ...extra });
+}
+
+app.get('/api/tabs', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
+  try {
+    res.json(db.getTabs(req.tenantId));
+  } catch (err) {
+    fail(res, 500, 'Could not load tabs', err);
+  }
+});
+
+app.post('/api/tabs', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
+  try {
+    const tab = db.createTab(req.tenantId, req.body && req.body.name);
+    broadcastTabs(req.tenantId);
+    res.status(201).json(tab);
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+app.patch('/api/tabs/:id', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
+  const tabId = parseTabId(req.params.id);
+  if (tabId === null) return res.status(400).json({ error: 'Invalid tab id' });
+  try {
+    const tab = db.renameTab(req.tenantId, tabId, req.body && req.body.name);
+    if (!tab) return res.status(404).json({ error: 'Tab not found' });
+    broadcastTabs(req.tenantId);
+    res.json(tab);
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
+app.delete('/api/tabs/:id', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
+  const tabId = parseTabId(req.params.id);
+  if (tabId === null) return res.status(400).json({ error: 'Invalid tab id' });
+  try {
+    const released = db.deleteTab(req.tenantId, tabId);
+    if (released === null) return res.status(404).json({ error: 'Tab not found' });
+    broadcastTabs(req.tenantId, { deleted_tab_id: tabId });
+    res.json({ success: true, released_count: released.length });
+  } catch (err) {
+    fail(res, 500, 'Could not delete tab', err);
+  }
+});
+
+/**
+ * Move many conversations at once.
+ *
+ *   { conversation_ids, tab_id: <id> }           into a custom tab
+ *   { conversation_ids, tab_id: null }           out of custom tabs, disposition kept
+ *   { conversation_ids, disposition: <d|null> }  to a built-in folder: sets the
+ *        disposition (scheduled_at required for appointment / follow_up), or
+ *        clears it with null so the thread is sorted automatically again.
+ *        Either way the thread leaves any custom tab.
+ *
+ * Opted-out and wrong-number contacts are never moved; they stay under Closed.
+ */
+app.post('/api/conversations/move', (req, res) => {
+  if (!requireTenantContext(req, res)) return;
+  const body = req.body || {};
+  const ids = body.conversation_ids;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'conversation_ids array is required' });
+  }
+  if (ids.length > MAX_BULK_RECIPIENTS) {
+    return res.status(400).json({ error: `Too many conversations (max ${MAX_BULK_RECIPIENTS})` });
+  }
+  const convIds = [];
+  for (const raw of ids) {
+    const id = parseConversationId(raw);
+    if (id === null) return res.status(400).json({ error: 'Invalid conversation id' });
+    convIds.push(id);
+  }
+
+  const hasTab = Object.prototype.hasOwnProperty.call(body, 'tab_id');
+  const hasDisposition = Object.prototype.hasOwnProperty.call(body, 'disposition');
+  if (hasTab === hasDisposition) {
+    return res.status(400).json({ error: 'Send either tab_id or disposition' });
+  }
+
+  try {
+    if (hasTab) {
+      let tabId = null;
+      if (body.tab_id !== null) {
+        tabId = parseTabId(body.tab_id);
+        if (tabId === null || !db.getTabById(req.tenantId, tabId)) {
+          return res.status(404).json({ error: 'Tab not found' });
+        }
+      }
+      const result = db.moveConversationsToTab(req.tenantId, convIds, tabId);
+      if (result.moved.length) {
+        broadcast(req.tenantId, 'conversations_moved', { ids: result.moved, changes: { tab_id: tabId } });
+      }
+      return res.json({ success: true, moved_count: result.moved.length, skipped_suppressed: result.skipped_suppressed });
+    }
+
+    const disposition = body.disposition === undefined ? null : body.disposition;
+    if (disposition !== null && !db.VALID_DISPOSITIONS.includes(disposition)) {
+      return res.status(400).json({ error: `Invalid disposition: ${disposition}` });
+    }
+    let utcSchedule = null;
+    if (disposition === 'appointment' || disposition === 'follow_up') {
+      const validation = validateScheduleInput(body.scheduled_at, { allowPast: body.allow_past === true });
+      if (!validation.ok) return res.status(400).json({ error: validation.error });
+      utcSchedule = validation.utc;
+    }
+
+    const actor = req.user && req.user.username;
+    const moved = [];
+    let skippedSuppressed = 0;
+    let last = null;
+    db.db.transaction(() => {
+      for (const id of convIds) {
+        const conv = db.getConversationById(req.tenantId, id);
+        if (!conv) continue;
+        if (conv.opted_out || conv.wrong_number) { skippedSuppressed++; continue; }
+        last = db.setConversationDisposition(req.tenantId, id, disposition, utcSchedule, null, actor);
+        moved.push(id);
+      }
+    })();
+
+    if (moved.length && last) {
+      broadcast(req.tenantId, 'conversations_moved', {
+        ids: moved,
+        changes: {
+          tab_id: null,
+          disposition: last.disposition,
+          disposition_at: last.disposition_at,
+          scheduled_at: last.scheduled_at,
+          disposition_note: null
+        }
+      });
+    }
+    res.json({ success: true, moved_count: moved.length, skipped_suppressed: skippedSuppressed });
+  } catch (err) {
+    fail(res, 400, err.message, err);
+  }
+});
+
 // 3.6b. Explicit re-opt-in. Deliberately separate from disposition changes so
 // that clearing a disposition can never resurrect a suppressed contact.
 app.post('/api/conversations/:id/opt-in', (req, res) => {
