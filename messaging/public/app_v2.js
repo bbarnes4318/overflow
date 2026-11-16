@@ -1183,6 +1183,37 @@ function setupWebSockets() {
   };
 }
 
+/*
+ * Websocket events arrive per message status change: several a second while a
+ * campaign sends. Each one used to refetch and re-render the whole conversation
+ * list (thousands of rows), with no limit on overlap, so an open page piled up
+ * downloads and renders until the browser locked the machine. Coalesce them:
+ * at most one refresh per LIVE_REFRESH_MS, never two in flight. User actions
+ * still call loadConversations() directly and stay instant.
+ */
+const LIVE_REFRESH_MS = 3000;
+let liveRefreshTimer = null;
+let liveRefreshList = false;
+let liveRefreshDirty = false;
+
+function scheduleLiveRefresh(withList) {
+  liveRefreshList = liveRefreshList || withList;
+  liveRefreshDirty = true;
+  if (liveRefreshTimer) return;
+  liveRefreshTimer = setTimeout(async () => {
+    const withListNow = liveRefreshList;
+    liveRefreshList = false;
+    liveRefreshDirty = false;
+    try {
+      await Promise.all([withListNow && loadConversations(), loadRecentActivity()]);
+    } finally {
+      liveRefreshTimer = null;
+      // Events that landed during the fetch get one more pass.
+      if (liveRefreshDirty) scheduleLiveRefresh(false);
+    }
+  }, LIVE_REFRESH_MS);
+}
+
 // 4. WebSocket Message Routing
 function handleWsMessage(payload) {
   const { type, data } = payload;
@@ -1219,7 +1250,7 @@ function handleIncomingConversationDeleted(data) {
   if (activeConversation && activeConversation.id === data.id) {
     resetChatToWelcomeBox();
   }
-  loadConversations();
+  scheduleLiveRefresh(true);
 }
 
 // Another browser tab (or user) dispositioned a lead
@@ -1259,7 +1290,7 @@ function updateQueueStatsUI(stats) {
   }
   
   // Update NOC timeline activity
-  loadRecentActivity();
+  scheduleLiveRefresh(false);
 }
 
 // Handle Inbound or New Outbound message websocket push
@@ -1273,10 +1304,8 @@ function handleIncomingNewMessage(msg) {
     fetch(`/api/conversations/${activeConversation.id}/read`, { method: 'POST' }).catch(e => {});
   }
   
-  // Reload conversation list to show correct preview
-  loadConversations();
-  // Update NOC timeline activity
-  loadRecentActivity();
+  // Reload conversation list and NOC timeline (coalesced)
+  scheduleLiveRefresh(true);
 }
 
 // Handle message status transition (queued -> sending -> sent/failed)
@@ -1306,10 +1335,8 @@ function handleIncomingMessageStatusUpdate(update) {
     }
   }
   
-  // Reload conversations side bar preview
-  loadConversations();
-  // Update NOC timeline activity
-  loadRecentActivity();
+  // Reload conversation list and NOC timeline (coalesced)
+  scheduleLiveRefresh(true);
 }
 
 // Open a folder (and optionally a specific view inside it)
