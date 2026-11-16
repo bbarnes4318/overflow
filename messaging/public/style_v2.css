@@ -3968,3 +3968,219 @@ body.notes-open #reminder-banner {
   text-align: center;
   letter-spacing: 0.3px;
 }
+
+/* ---------------- Custom tabs & moving threads ---------------- */
+.folder-custom { --tab-color: hsl(200, 85%, 60%); }
+
+.folder-tab.folder-add {
+  border: 1px dashed var(--border-color);
+  background: transparent;
+}
+.folder-tab.folder-add:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Drop target highlight while dragging threads onto a tab */
+body.dragging-threads .folder-tab[data-drop-ready] {
+  outline: 1px dashed rgba(255, 255, 255, 0.18);
+  outline-offset: -1px;
+}
+.folder-tab.drop-over {
+  color: var(--tab-color);
+  border-color: var(--tab-color);
+  background: color-mix(in srgb, var(--tab-color) 20%, transparent);
+}
+
+.tab-manage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0 7px 0;
+}
+.tab-manage-hint {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+}
+.tab-manage-btn {
+  padding: 4px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.tab-manage-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+.tab-manage-btn.tab-manage-danger:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* Bulk actions: Move sits beside Message Selected */
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-bulk-move {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition-smooth);
+}
+.btn-bulk-move:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+#btn-bulk-move:disabled {
+  display: none;
+}
+
+.conversation-item[draggable="true"] {
+  -webkit-user-drag: element;
+}
+
+/* Move dialog */
+.move-section-label {
+  margin: 4px 0 6px 0;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.move-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.move-target {
+  --tab-color: hsl(200, 85%, 60%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-main);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.move-target small {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.move-target:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+.move-target.selected {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+.move-target:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.move-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tab-color, hsl(200, 85%, 60%));
+  flex-shrink: 0;
+}
+.move-empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.move-new-tab {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.move-new-tab input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+}
+.move-new-tab input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.move-new-tab .btn-secondary {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+.move-schedule input[type="datetime-local"] {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-family: inherit;
+}
+.move-help {
+  margin: 4px 0 12px 0;
+}
+
+.move-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10000;
+}
+.move-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

@@ -548,6 +548,15 @@ function initDatabase() {
   db.prepare(`CREATE INDEX IF NOT EXISTS idx_conversations_wrong_number ON conversations(wrong_number)`).run();
   db.prepare(`CREATE INDEX IF NOT EXISTS idx_conversations_classification ON conversations(reply_classification)`).run();
 
+  // Migration: custom inbox tabs. A conversation the operator moved into one
+  // of their own tabs carries that tab's id; NULL means the built-in folders
+  // (New / Hot Leads / Customers / Closed / Pending) place it as before.
+  if (!tableInfo.some(column => column.name === 'tab_id')) {
+    db.prepare('ALTER TABLE conversations ADD COLUMN tab_id INTEGER').run();
+    console.log("Database migration: Added 'tab_id' column to conversations table.");
+  }
+  db.prepare(`CREATE INDEX IF NOT EXISTS idx_conversations_tab ON conversations(tab_id)`).run();
+
   // Migration: real carrier delivery receipts.
   //
   // The messages.status CHECK constraint cannot take a new value without
@@ -626,6 +635,21 @@ function initDatabase() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `).run();
+
+  // Custom inbox tabs, one set per tenant. Conversations point at a tab through
+  // conversations.tab_id; deleting a tab sends its threads back to the
+  // built-in folders.
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS conversation_tabs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tenant_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      position INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
+    )
+  `).run();
+  db.prepare(`CREATE INDEX IF NOT EXISTS idx_conversation_tabs_tenant ON conversation_tabs(tenant_id)`).run();
 
   // Registrations from the public A2P form. Platform-owned, like the inquiries.
   db.prepare(`
@@ -799,6 +823,7 @@ function migrateToMultiTenant() {
           wrong_number INTEGER NOT NULL DEFAULT 0,
           wrong_number_at TEXT,
           suppression_reason TEXT,
+          tab_id INTEGER,
           UNIQUE (tenant_id, phone_number),
           FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
         )
@@ -2203,7 +2228,9 @@ const VALID_DISPOSITIONS = ['appointment', 'follow_up', 'no', 'unqualified', 'cu
  *
  * This NEVER touches opted_out / wrong_number. Clearing a disposition returns
  * the lead to New for triage but leaves any legal suppression intact — undoing
- * a "No" must not resurrect someone who texted STOP.
+ * a "No" must not resurrect someone who texted STOP. *
+ * Setting or clearing a disposition also takes the conversation out of any
+ * custom tab: the disposition decides which built-in folder it lands in.
  */
 function setConversationDisposition(tenantId, id, disposition, scheduledAt = null, note = null, actor = null) {
   const tid = requireTenant(tenantId);
@@ -2226,7 +2253,8 @@ function setConversationDisposition(tenantId, id, disposition, scheduledAt = nul
     SET disposition = ?,
         disposition_at = CASE WHEN ? IS NULL THEN NULL ELSE datetime('now') END,
         scheduled_at = ?,
-        disposition_note = ?
+        disposition_note = ?,
+        tab_id = NULL
     WHERE id = ? AND tenant_id = ?
   `).run(disposition, disposition, nextSchedule, note || null, id, tid);
 
@@ -2240,6 +2268,109 @@ function setConversationDisposition(tenantId, id, disposition, scheduledAt = nul
               `${nextSchedule ? ` @ ${nextSchedule}Z` : ''}${actor ? ` by ${actor}` : ''}`);
 
   return db.prepare('SELECT * FROM conversations WHERE id = ? AND tenant_id = ?').get(id, tid);
+}
+
+/* ==================================================================
+ * Custom inbox tabs
+ * ================================================================== */
+
+const TAB_NAME_MAX = 40;
+const MAX_TABS_PER_TENANT = 30;
+
+function cleanTabName(name) {
+  const clean = String(name == null ? '' : name).replace(/\s+/g, ' ').trim();
+  if (!clean) throw new Error('Tab name is required');
+  if (clean.length > TAB_NAME_MAX) throw new Error(`Tab name must be ${TAB_NAME_MAX} characters or fewer`);
+  return clean;
+}
+
+/** This tenant's custom tabs, in display order. */
+function getTabs(tenantId) {
+  const tid = requireTenant(tenantId);
+  return db.prepare('SELECT * FROM conversation_tabs WHERE tenant_id = ? ORDER BY position, id').all(tid);
+}
+
+function getTabById(tenantId, tabId) {
+  const tid = requireTenant(tenantId);
+  return db.prepare('SELECT * FROM conversation_tabs WHERE id = ? AND tenant_id = ?').get(tabId, tid) || null;
+}
+
+/** Names are unique per tenant, ignoring case, so two tabs never look alike. */
+function tabNameTaken(tid, name, exceptId = null) {
+  return db.prepare(
+    'SELECT id FROM conversation_tabs WHERE tenant_id = ? AND lower(name) = lower(?) AND id != ?'
+  ).get(tid, name, exceptId || 0);
+}
+
+function createTab(tenantId, name) {
+  const tid = requireTenant(tenantId);
+  const clean = cleanTabName(name);
+  const { count } = db.prepare('SELECT COUNT(*) as count FROM conversation_tabs WHERE tenant_id = ?').get(tid);
+  if (count >= MAX_TABS_PER_TENANT) throw new Error(`You can have at most ${MAX_TABS_PER_TENANT} tabs`);
+  if (tabNameTaken(tid, clean)) throw new Error(`A tab named "${clean}" already exists`);
+  const { next } = db.prepare(
+    'SELECT COALESCE(MAX(position), -1) + 1 as next FROM conversation_tabs WHERE tenant_id = ?'
+  ).get(tid);
+  const result = db.prepare('INSERT INTO conversation_tabs (tenant_id, name, position) VALUES (?, ?, ?)')
+    .run(tid, clean, next);
+  return getTabById(tid, result.lastInsertRowid);
+}
+
+/** Returns the renamed tab, or null when it is not this tenant's. */
+function renameTab(tenantId, tabId, name) {
+  const tid = requireTenant(tenantId);
+  if (!getTabById(tid, tabId)) return null;
+  const clean = cleanTabName(name);
+  if (tabNameTaken(tid, clean, tabId)) throw new Error(`A tab named "${clean}" already exists`);
+  db.prepare('UPDATE conversation_tabs SET name = ? WHERE id = ? AND tenant_id = ?').run(clean, tabId, tid);
+  return getTabById(tid, tabId);
+}
+
+/**
+ * Delete a tab. Its conversations are not deleted: they go back to the
+ * built-in folders. Returns the ids of the conversations released, or null
+ * when the tab is not this tenant's.
+ */
+function deleteTab(tenantId, tabId) {
+  const tid = requireTenant(tenantId);
+  if (!getTabById(tid, tabId)) return null;
+  return db.transaction(() => {
+    const released = db.prepare('SELECT id FROM conversations WHERE tab_id = ? AND tenant_id = ?')
+      .all(tabId, tid).map(r => r.id);
+    db.prepare('UPDATE conversations SET tab_id = NULL WHERE tab_id = ? AND tenant_id = ?').run(tabId, tid);
+    db.prepare('DELETE FROM conversation_tabs WHERE id = ? AND tenant_id = ?').run(tabId, tid);
+    return released;
+  })();
+}
+
+/**
+ * Move conversations into a custom tab (tabId) or back to the built-in
+ * folders (tabId = null), keeping their disposition.
+ *
+ * Opted-out and wrong-number contacts are skipped: legal suppression always
+ * shows under Closed, so they can never be filed somewhere they get missed.
+ * Ids that are not this tenant's are ignored. Returns { moved, skipped_suppressed }
+ * where `moved` lists the ids that changed.
+ */
+function moveConversationsToTab(tenantId, conversationIds, tabId) {
+  const tid = requireTenant(tenantId);
+  if (tabId !== null && !getTabById(tid, tabId)) throw new Error('Tab not found');
+
+  const find = db.prepare('SELECT id, opted_out, wrong_number FROM conversations WHERE id = ? AND tenant_id = ?');
+  const update = db.prepare('UPDATE conversations SET tab_id = ? WHERE id = ? AND tenant_id = ?');
+
+  return db.transaction(() => {
+    const moved = [];
+    let skippedSuppressed = 0;
+    for (const id of conversationIds) {
+      const row = find.get(id, tid);
+      if (!row) continue;
+      if (row.opted_out || row.wrong_number) { skippedSuppressed++; continue; }
+      update.run(tabId, id, tid);
+      moved.push(id);
+    }
+    return { moved, skipped_suppressed: skippedSuppressed };
+  })();
 }
 
 /** Exclusive upper bound: midnight UTC at the start of the following day. */
@@ -2729,6 +2860,13 @@ module.exports = {
   getRecentMessages,
   markConversationRead,
   setConversationDisposition,
+  getTabs,
+  getTabById,
+  createTab,
+  renameTab,
+  deleteTab,
+  moveConversationsToTab,
+  TAB_NAME_MAX,
   VALID_DISPOSITIONS,
   BLOCKED_DISPOSITIONS,
   classifyReply: classification.classifyReply,

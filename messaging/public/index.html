@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="style_v2.css?v=fresh-2026">
+  <link rel="stylesheet" href="style_v2.css?v=tabs-2026">
 </head>
 <body>
   <div class="app-container">
@@ -100,6 +100,11 @@
             <span class="tab-label">Web Form</span>
             <span class="tab-count" id="count-folder-storm-demo">0</span>
           </button>
+          <!-- Your own tabs are inserted here, before the + button -->
+          <button type="button" class="folder-tab folder-add" id="btn-add-tab" title="Create a new tab to move threads into">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span class="tab-label">New tab</span>
+          </button>
         </div>
 
         <!-- Sub-tabs, shown only for folders that have them -->
@@ -142,6 +147,13 @@
             <span>Wrong #</span>
             <span class="subtab-count" id="count-wrong_number">0</span>
           </button>
+        </div>
+
+        <!-- Shown when one of your own tabs is open -->
+        <div class="tab-manage-row" id="tab-manage-row" style="display: none;">
+          <span class="tab-manage-hint">Your tab</span>
+          <button type="button" class="tab-manage-btn" id="btn-rename-tab">Rename</button>
+          <button type="button" class="tab-manage-btn tab-manage-danger" id="btn-delete-tab">Delete tab</button>
         </div>
       </nav>
 
@@ -187,10 +199,16 @@
           <span class="checkbox-custom"></span>
           <span class="select-all-label">Select All (<span id="visible-convs-count">0</span>)</span>
         </label>
+        <div class="bulk-actions">
+        <button type="button" id="btn-bulk-move" class="btn-bulk-move" title="Move the selected threads to another tab" disabled>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><polyline points="12 11 15 14 12 17"></polyline><line x1="8" y1="14" x2="15" y2="14"></line></svg>
+          <span>Move</span>
+        </button>
         <button type="button" id="btn-bulk-msg" class="btn-bulk-msg" title="Message Selected Contacts" disabled>
           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="bulk-send-icon"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           <span>Message Selected</span>
         </button>
+        </div>
       </div>
 
       <div class="conversations-list" id="conversations-list">
@@ -668,6 +686,54 @@
   </div>
 
   <!-- Appointment / Follow-Up Scheduling Modal -->
+  <!-- Move threads to another tab -->
+  <div class="modal" id="move-modal">
+    <div class="modal-content modal-narrow">
+      <div class="modal-header">
+        <h2>Move <span id="move-count">0</span> <span id="move-noun">threads</span></h2>
+        <button class="modal-close" id="move-close">&times;</button>
+      </div>
+      <form id="move-form">
+        <div class="move-section-label">Your tabs</div>
+        <div class="move-targets" id="move-custom-targets"></div>
+        <div class="move-new-tab">
+          <input type="text" id="move-new-tab-name" maxlength="40" placeholder="New tab name" autocomplete="off">
+          <button type="button" class="btn-secondary" id="btn-move-new-tab">Create &amp; move</button>
+        </div>
+
+        <div class="move-section-label">Built-in tabs</div>
+        <div class="move-targets" id="move-builtin-targets">
+          <button type="button" class="move-target" data-disposition="none" title="Clears the disposition. Replies go to New; no reply yet goes to Pending.">
+            <span class="move-dot" style="--tab-color: var(--success)"></span>New / Pending <small>sorted automatically</small>
+          </button>
+          <button type="button" class="move-target" data-disposition="appointment">
+            <span class="move-dot" style="--tab-color: hsl(14, 90%, 58%)"></span>Hot Leads <small>Appointment</small>
+          </button>
+          <button type="button" class="move-target" data-disposition="follow_up">
+            <span class="move-dot" style="--tab-color: hsl(14, 90%, 58%)"></span>Hot Leads <small>Follow-Up</small>
+          </button>
+          <button type="button" class="move-target" data-disposition="customer">
+            <span class="move-dot" style="--tab-color: hsl(265, 80%, 68%)"></span>Customers
+          </button>
+          <button type="button" class="move-target" data-disposition="no">
+            <span class="move-dot" style="--tab-color: var(--danger)"></span>Closed <small>No</small>
+          </button>
+          <button type="button" class="move-target" data-disposition="unqualified">
+            <span class="move-dot" style="--tab-color: var(--danger)"></span>Closed <small>Unqualified</small>
+          </button>
+        </div>
+
+        <div class="form-group move-schedule" id="move-schedule" style="display: none;">
+          <label for="move-datetime">Date &amp; time (applies to every selected thread)</label>
+          <input type="datetime-local" id="move-datetime">
+        </div>
+
+        <p class="form-help move-help">Opted-out and wrong-number contacts always stay under Closed and are not moved.</p>
+        <button type="submit" class="btn-primary btn-block" id="btn-submit-move" disabled>Move</button>
+      </form>
+    </div>
+  </div>
+
   <div class="modal" id="schedule-modal">
     <div class="modal-content modal-narrow">
       <div class="modal-header">
@@ -904,7 +970,7 @@
   <script src="lib/classification.js?v=fresh-2026"></script>
   <script src="lib/area_codes_v2.js?v=fresh-2026"></script>
   <script src="lib/area_codes.js?v=fresh-2026"></script>
-  <script src="app_v2.js?v=fresh-2026"></script>
+  <script src="app_v2.js?v=tabs-2026"></script>
   <!-- app.js is NOT loaded. It and app_v2.js both declare `btnNewChat` at top
        level, and a duplicate const is a parse-time SyntaxError, so app.js has
        never executed a single line - it only cost 131KB of download and parse

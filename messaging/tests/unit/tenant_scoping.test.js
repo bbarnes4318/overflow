@@ -22,7 +22,7 @@ const DB_FILE = path.resolve(__dirname, '..', '..', 'database.js');
 
 const TENANT_TABLES = [
   'conversations', 'messages', 'notes',
-  'suppression_events', 'reminder_state', 'users'
+  'suppression_events', 'reminder_state', 'users', 'conversation_tabs'
 ];
 
 // Statements that are global BY DESIGN. The value is why.
@@ -146,6 +146,12 @@ test('every scoped database function rejects a missing tenant_id', () => {
       ['markConversationRead', () => db.markConversationRead(undefined, 1)],
       ['deleteConversation', () => db.deleteConversation(undefined, 1)],
       ['setConversationDisposition', () => db.setConversationDisposition(undefined, 1, 'no')],
+      ['getTabs', () => db.getTabs()],
+      ['getTabById', () => db.getTabById(undefined, 1)],
+      ['createTab', () => db.createTab(undefined, 'x')],
+      ['renameTab', () => db.renameTab(undefined, 1, 'x')],
+      ['deleteTab', () => db.deleteTab(undefined, 1)],
+      ['moveConversationsToTab', () => db.moveConversationsToTab(undefined, [1], null)],
       ['recordOptOut', () => db.recordOptOut(undefined, 1)],
       ['recordWrongNumber', () => db.recordWrongNumber(undefined, 1)],
       ['recordOptIn', () => db.recordOptIn(undefined, 1, 'actor')],
