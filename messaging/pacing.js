@@ -37,6 +37,30 @@ const DEFAULTS = {
   max_concurrent_sends: '3'
 };
 
+// The legal sending window, in the recipient's local time. Federal TCPA rules
+// allow 8am-9pm. A tenant may narrow the window but never widen it past these,
+// and quiet hours cannot be switched off: the bounds are enforced here, where
+// every send is decided, so no stored setting can get around them.
+const LEGAL_START_HOUR = 8;
+const LEGAL_END_HOUR = 21;
+
+/**
+ * Clamp a requested window to the legal one. A window that is empty or
+ * inverted after clamping falls back to the defaults rather than to "never
+ * send" or "always send".
+ */
+function quietWindow(startValue, endValue) {
+  const blank = v => v === undefined || v === null || String(v).trim() === '';
+  const start = Math.round(num(blank(startValue) ? NaN : startValue, Number(DEFAULTS.quiet_start_hour)));
+  const end = Math.round(num(blank(endValue) ? NaN : endValue, Number(DEFAULTS.quiet_end_hour)));
+  const s = Math.min(LEGAL_END_HOUR - 1, Math.max(LEGAL_START_HOUR, start));
+  const e = Math.min(LEGAL_END_HOUR, Math.max(LEGAL_START_HOUR + 1, end));
+  if (s >= e) {
+    return { start: Number(DEFAULTS.quiet_start_hour), end: Number(DEFAULTS.quiet_end_hour) };
+  }
+  return { start: s, end: e };
+}
+
 // Daily allowance for a number by its age in days of active sending. A new DID
 // that opens at full volume looks exactly like a number bought to spam from.
 // Index is days active; past the end of the ladder the configured cap applies.
@@ -91,6 +115,9 @@ class Pacer {
     // Cached per DID: two tenants may pace their numbers differently, so one
     // shared cache entry would leak the first caller's limits to everyone.
     this.settingsCache = new Map();
+    // Test-only: lets the unit suite exercise the other gates at any hour.
+    // Production (queue.js) never sets it, so quiet hours are always enforced.
+    this.allowQuietHoursOff = deps.allowQuietHoursOff === true;
   }
 
   /**
@@ -146,9 +173,10 @@ class Pacer {
       failureThreshold: Math.min(1, Math.max(0, num(value('did_failure_threshold'), 0.5))),
       failureMinSamples: Math.max(3, num(value('did_failure_min_samples'), 8)),
       failurePauseMs: Math.max(60000, num(value('did_failure_pause_ms'), 900000)),
-      quietEnabled: String(value('quiet_hours_enabled')) === '1',
-      quietStart: Math.min(23, Math.max(0, num(value('quiet_start_hour'), 9))),
-      quietEnd: Math.min(24, Math.max(1, num(value('quiet_end_hour'), 20))),
+      // Always on, whatever is stored, unless a test explicitly opts out.
+      quietEnabled: this.allowQuietHoursOff ? String(value('quiet_hours_enabled')) === '1' : true,
+      quietStart: quietWindow(value('quiet_start_hour'), value('quiet_end_hour')).start,
+      quietEnd: quietWindow(value('quiet_start_hour'), value('quiet_end_hour')).end,
       maxConcurrent: Math.max(1, Math.min(20, num(value('max_concurrent_sends'), 3)))
     };
     this.settingsCache.set(key, { cfg, at: now });
@@ -203,16 +231,23 @@ class Pacer {
    * Milliseconds until the recipient's local time enters the sending window,
    * or 0 if it already has.
    *
-   * When the recipient's timezone cannot be inferred the window must hold in
-   * both Eastern and Pacific, which is compliant for any US number.
+   * The window must hold in every zone the recipient might be in: the one
+   * their area code implies AND the one their state on file implies, so the
+   * stricter of the two wins. A number's area code says where it was issued,
+   * not where the person lives now.
+   *
+   * When neither can be inferred the window must hold in both Eastern and
+   * Pacific, which is compliant for any continental US number.
    */
-  quietHoursDelay(toNumber, cfg, at) {
+  quietHoursDelay(toNumber, cfg, at, contactState = null) {
     const now = at || new Date();
-    const local = timezones.localTimeFor(toNumber, now);
-    const zones = local
-      ? [local]
-      : [timezones.localTimeFor('+12125550100', now), timezones.localTimeFor('+13105550100', now)]
-          .filter(Boolean);
+    const byAreaCode = timezones.localTimeFor(toNumber, now);
+    const byState = timezones.localTimeInZone(timezones.timezoneForState(contactState), now);
+    let zones = [byAreaCode, byState].filter(Boolean);
+    if (!zones.length) {
+      zones = [timezones.localTimeFor('+12125550100', now), timezones.localTimeFor('+13105550100', now)]
+        .filter(Boolean);
+    }
 
     if (!zones.length) return 0;
 
@@ -237,6 +272,21 @@ class Pacer {
     // Paced on the overrides of whichever tenant owns the sending number.
     const cfg = this.config(msg.from_number);
     const now = at || new Date();
+
+    // Checked before anything else, and before the pacing switch: turning
+    // pacing off removes the rate limits, never the legal sending hours.
+    if (cfg.quietEnabled) {
+      const delay = this.quietHoursDelay(msg.to_number, cfg, now, msg.contact_state);
+      if (delay > 0) {
+        return {
+          ok: false,
+          reason: BLOCK.QUIET_HOURS,
+          retryInMs: delay,
+          detail: `outside ${cfg.quietStart}:00-${cfg.quietEnd}:00 recipient local time`
+        };
+      }
+    }
+
     if (!cfg.enabled) return { ok: true };
 
     const entry = this.didState(msg.from_number, now);
@@ -249,18 +299,6 @@ class Pacer {
         retryInMs: entry.pausedUntil - nowMs,
         detail: `DID ${entry.did} paused: ${entry.pauseReason}`
       };
-    }
-
-    if (cfg.quietEnabled) {
-      const delay = this.quietHoursDelay(msg.to_number, cfg, now);
-      if (delay > 0) {
-        return {
-          ok: false,
-          reason: BLOCK.QUIET_HOURS,
-          retryInMs: delay,
-          detail: `outside ${cfg.quietStart}:00-${cfg.quietEnd}:00 recipient local time`
-        };
-      }
     }
 
     const allowance = this.dailyAllowance(entry, cfg, now);
@@ -374,4 +412,7 @@ class Pacer {
   }
 }
 
-module.exports = { Pacer, BLOCK, DEFAULTS, WARMUP_LADDER, dayKey, normalizeDid };
+module.exports = {
+  Pacer, BLOCK, DEFAULTS, WARMUP_LADDER, dayKey, normalizeDid,
+  quietWindow, LEGAL_START_HOUR, LEGAL_END_HOUR
+};

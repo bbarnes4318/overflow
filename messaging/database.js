@@ -1526,12 +1526,16 @@ function pickVariant(pool, index) {
 }
 
 function getDueQueuedMessages(limit = 200) {
+  // contact_state comes along so the quiet-hours gate can hold a send to the
+  // stricter of the area code's zone and the zone of the state on file.
   return db.prepare(`
-    SELECT * FROM messages
-    WHERE status = 'queued'
-    AND direction = 'outbound'
-    AND (scheduled_at IS NULL OR scheduled_at <= datetime('now'))
-    ORDER BY created_at ASC, id ASC
+    SELECT m.*, c.state AS contact_state
+    FROM messages m
+    LEFT JOIN conversations c ON c.id = m.conversation_id AND c.tenant_id = m.tenant_id
+    WHERE m.status = 'queued'
+    AND m.direction = 'outbound'
+    AND (m.scheduled_at IS NULL OR m.scheduled_at <= datetime('now'))
+    ORDER BY m.created_at ASC, m.id ASC
     LIMIT ?
   `).all(limit);
 }
