@@ -1334,9 +1334,11 @@ function handleIncomingMessageStatusUpdate(update) {
       }
     }
   }
-  
-  // Reload conversation list and NOC timeline (coalesced)
-  scheduleLiveRefresh(true);
+
+  // The sidebar shows no delivery status, so a status change needs no list
+  // refetch. This event fires per message while a campaign sends; refetching
+  // the full list for it was the bulk of the page's network and CPU.
+  scheduleLiveRefresh(false);
 }
 
 // Open a folder (and optionally a specific view inside it)
@@ -1408,8 +1410,8 @@ function applyBaseFilters(list) {
       if (stageBase !== currentStageFilter) return false;
     }
 
-    // 3. Date Range Filter
-    const activityDate = getLocalDateString(c.last_message_at || c.created_at);
+    // 3. Date Range Filter (only computed when a range is set)
+    const activityDate = (fromDate || toDate) ? getLocalDateString(c.last_message_at || c.created_at) : null;
     if (activityDate) {
       if (fromDate && activityDate < fromDate) return false;
       if (toDate && activityDate > toDate) return false;
@@ -3597,14 +3599,17 @@ function updateCharCounter(textarea, counterEl) {
   }
 }
 
+// Built once. Constructing an Intl.DateTimeFormat costs ~50us; this ran per
+// conversation, twice per render, which was 1.1s of frozen tab at 10k rows.
+const EST_DATE_FORMAT = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+
 // Helper to convert ISO/SQLite datetime string to EST YYYY-MM-DD string
 function getLocalDateString(dateStr) {
   if (!dateStr) return null;
   const date = parseUtc(dateStr) || new Date(dateStr.includes('T') || dateStr.includes(' ') ? dateStr.replace(' ', 'T') : dateStr);
   if (!date || isNaN(date.getTime())) return null;
   try {
-    const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
-    return formatter.format(date);
+    return EST_DATE_FORMAT.format(date);
   } catch (e) {
     return null;
   }

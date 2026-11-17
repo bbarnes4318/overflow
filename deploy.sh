@@ -330,6 +330,8 @@ if [ -d "${MESSAGING_DIR}" ]; then
   if [ "${WEB_SERVICE}" = "nginx" ]; then
     install -m 0644 "${REMOTE_DIR}/deploy/nginx-upgrade-map.conf" \
                     /etc/nginx/conf.d/netenroll-upgrade-map.conf
+    install -m 0644 "${REMOTE_DIR}/deploy/nginx-gzip.conf" \
+                    /etc/nginx/conf.d/netenroll-gzip.conf
 
     # certbot rewrites the vhost in place to add the TLS listener. Re-installing
     # the plain HTTP version on every deploy would undo that, so it is written

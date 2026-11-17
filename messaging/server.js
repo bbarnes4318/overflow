@@ -426,14 +426,11 @@ function requireSuperadmin(req, res) {
   return false;
 }
 
-// Serve main static assets with strict no-cache headers
+// Static assets: always revalidate (never served stale), but with an ETag so
+// an unchanged file is a 304 instead of a full re-download on every visit.
 app.use(express.static(path.resolve(__dirname, 'public'), {
-  etag: false,
-  lastModified: false,
-  setHeaders: (res, filePath) => {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache');
   }
 }));
 

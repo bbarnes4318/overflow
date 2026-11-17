@@ -888,6 +888,9 @@ function migrateToMultiTenant() {
   db.prepare('CREATE INDEX IF NOT EXISTS idx_conversations_tenant_last ON conversations(tenant_id, last_message_at)').run();
   db.prepare('CREATE INDEX IF NOT EXISTS idx_messages_tenant ON messages(tenant_id)').run();
   db.prepare('CREATE INDEX IF NOT EXISTS idx_messages_tenant_conv ON messages(tenant_id, conversation_id)').run();
+  // Covers the three per-row subqueries in getConversations (last direction,
+  // last inbound time and text): 216ms -> 161ms at 10k conversations.
+  db.prepare('CREATE INDEX IF NOT EXISTS idx_messages_conv_dir_created ON messages(conversation_id, direction, created_at, id)').run();
   db.prepare('CREATE INDEX IF NOT EXISTS idx_messages_tenant_ref ON messages(tenant_id, ref_id)').run();
   db.prepare('CREATE INDEX IF NOT EXISTS idx_notes_tenant ON notes(tenant_id)').run();
   db.prepare('CREATE INDEX IF NOT EXISTS idx_suppression_events_tenant ON suppression_events(tenant_id)').run();
