@@ -1997,13 +1997,21 @@ input[type="radio"] {
   padding: 24px 16px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  /* visibility:hidden, not just opacity:0. A transparent modal is still
+     painted, and its full-screen backdrop blur with it. Seven closed modals
+     stacked seven full-screen blurs that the GPU redrew on every repaint,
+     which froze whole machines on integrated graphics. Hidden elements are
+     not painted at all. The delay keeps the fade-out visible. */
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
   z-index: 100;
 }
 
 .modal.open {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.2s ease, visibility 0s;
 }
 
 .modal-content {
